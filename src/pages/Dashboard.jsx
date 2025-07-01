@@ -14,10 +14,6 @@ export default function Dashboard() {
   const gym_id = 1;
   const { data, isLoading } = useDashboardSummary(gym_id);
 
-  useEffect(() => {
-    console.log(data);
-  });
-
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -48,7 +44,7 @@ export default function Dashboard() {
       </div>
 
       {/* 👇 Important: Attach `ref` to a wrapping div */}
-      <div ref={ref} className="w-full max-w-4xl mt-6">
+      <div ref={ref} className="w-full max-w-4xl mt-6 px-3">
         <Suspense fallback={<EarningsChartSkeleton />}>
           {inView ? (
             <EarningsChart earnings={data ? data.earnings : "-"} />
@@ -57,7 +53,6 @@ export default function Dashboard() {
           )}
         </Suspense>
       </div>
-      <VirtualizedMemberList />
     </div>
   );
 }
