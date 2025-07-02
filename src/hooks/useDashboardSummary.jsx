@@ -14,7 +14,7 @@ export const useDashboardSummary = (gym_id) => {
       return res.data;
     },
     enabled: !!gym_id,
-    staleTime: 1000 * 60, // optional
+    staleTime: 1000 * 60,
 
     // ✅ only fetch if gym_id is truthy
   });

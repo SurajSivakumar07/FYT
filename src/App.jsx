@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Dashboard from "./pages/Dashboard";
 import BottomNav from "./components/Navigation/BottomNav";
 import TopTabNav from "./components/Navigation/TopTabNav";
 import Navbar from "./components/DashboardCards/Navbar";
 import { Route, Routes } from "react-router-dom";
 import Members from "./pages/Members";
+import { useTrainers } from "./hooks/useTrainers";
+import { usePlans } from "./hooks/usePlans";
+import AddMembers from "./components/members/AddMembers";
 
 export default function App() {
   return (
@@ -13,6 +16,7 @@ export default function App() {
       <Routes>
         <Route element={<Dashboard />} path="/" />
         <Route element={<Members />} path="/members" />
+        <Route element={<AddMembers />} path="/add-member" />
       </Routes>
       <BottomNav />
     </>
