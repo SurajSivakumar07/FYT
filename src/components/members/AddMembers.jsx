@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   User,
   Phone,
@@ -13,93 +14,12 @@ import {
 } from "lucide-react";
 import { usePlans } from "../../hooks/usePlans";
 import { useTrainers } from "../../hooks/useTrainers";
-import { usePostMembers } from "../../hooks/usePostMembers";
-
-const CustomDropdown = ({
-  id,
-  value,
-  onChange,
-  options,
-  placeholder,
-  error,
-  isOpen,
-  setIsOpen,
-  isLoading,
-}) => (
-  <div className="relative space-y-2">
-    <label htmlFor={id} className="block text-sm font-medium text-gray-700">
-      {placeholder}
-    </label>
-    <button
-      type="button"
-      onClick={() => setIsOpen(!isOpen)}
-      className={`w-full px-4 py-3 pl-10 pr-10 border border-gray-300 rounded-lg bg-white text-gray-900 text-sm font-medium shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-blue-400 cursor-pointer flex items-center justify-between ${
-        error ? "border-red-500" : ""
-      } ${isLoading ? "opacity-50" : ""}`}
-      aria-expanded={isOpen}
-      aria-controls={`${id}-menu`}
-      disabled={isLoading}
-    >
-      {value || placeholder}
-      <svg
-        className={`w-4 h-4 text-gray-400 transform transition-transform ${
-          isOpen ? "rotate-180" : ""
-        }`}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </button>
-    {isOpen && (
-      <div
-        id={`${id}-menu`}
-        className="absolute z-10 w-full mt-1 bg-white text-gray-900 rounded-lg shadow-md border border-gray-200 max-h-60 overflow-auto space-y-1"
-      >
-        {options.map((option, index) => (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => {
-              onChange(option.value);
-              setIsOpen(false);
-            }}
-            className="w-full px-4 py-2 text-sm hover:bg-gray-100 flex items-center justify-between transition-colors duration-200 border-b border-gray-200 last:border-b-0"
-          >
-            <span>{option.label}</span>
-            {value === option.value && (
-              <CheckCircle className="w-5 h-5 text-green-400" />
-            )}
-          </button>
-        ))}
-      </div>
-    )}
-    {error && (
-      <p className="text-red-500 text-sm flex items-center">
-        <AlertCircle className="w-4 h-4 mr-1" />
-        {error}
-      </p>
-    )}
-    {isLoading && (
-      <p className="text-gray-500 text-sm flex items-center">
-        <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-        Loading...
-      </p>
-    )}
-  </div>
-);
+import CustomDropdown from "./CustomDropdown";
 
 export default function AddMembers() {
-  const gymId = 1;
+  const gymId = sessionStorage.getItem("gym_id") || 1;
+  const url = import.meta.env.VITE_API_URL;
 
-  const [durationDays, setDuration] = useState(0);
   const [memberData, setMemberData] = useState({
     gym_id: gymId,
     member_id: "",
@@ -111,18 +31,15 @@ export default function AddMembers() {
     blood_group: "",
     address: "",
     membership_plan_id: null,
-
     start_date: "",
     end_date: "",
     status: "active",
     type: "regular",
     trainer_id: null,
-
     transaction: {
       member_id: "",
       gym_id: gymId,
       amount_paid: "",
-
       transaction_type: "",
       payment_date: "",
       status: "paid",
@@ -131,22 +48,13 @@ export default function AddMembers() {
     photo_url_1: null,
     photo_url_2: null,
   });
-  useEffect(() => {
-    setMemberData((prev) => ({
-      ...prev,
-      transaction: {
-        ...prev.transaction,
-        member_id: prev.member_id,
-      },
-    }));
-  }, [memberData.member_id]);
   const [errors, setErrors] = useState({});
   const [submissionError, setSubmissionError] = useState("");
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [isPlansOpen, setIsPlansOpen] = useState(false);
   const [isTrainerOpen, setIsTrainerOpen] = useState(false);
   const [isBloodGroupOpen, setIsBloodGroupOpen] = useState(false);
-  const [isSectionOpen, setIsSectionOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data: plans = [], isLoading: plansLoading } = usePlans(gymId);
   const { data: trainers = [], isLoading: trainersLoading } =
@@ -154,19 +62,25 @@ export default function AddMembers() {
 
   const calculateEndDate = (startDate, durationDays) => {
     if (!startDate || !durationDays) return "";
-
     const joinDate = new Date(startDate);
     if (isNaN(joinDate)) return "";
-
     const endDate = new Date(joinDate);
     endDate.setDate(joinDate.getDate() + parseInt(durationDays, 10));
-
     return endDate.toISOString().split("T")[0];
   };
 
   const calculateBalance = (planPrice, amountPaid) => {
     const paid = parseFloat(amountPaid) || 0;
-    return Math.max(0, planPrice - paid);
+    return Math.floor(Math.max(0, planPrice - paid));
+  };
+
+  const convertToISODate = (inputDate) => {
+    const date = new Date(inputDate);
+    if (isNaN(date.getTime())) {
+      console.error("Invalid date input:", inputDate);
+      return "";
+    }
+    return date.toISOString().slice(0, 10); // "YYYY-MM-DD"
   };
 
   const validateForm = () => {
@@ -178,9 +92,9 @@ export default function AddMembers() {
       { key: "email", label: "Email Address" },
       { key: "dob", label: "Date of Birth" },
       { key: "gender", label: "Gender" },
+      { key: "blood_group", label: "Blood Group" },
       { key: "address", label: "Address" },
       { key: "membership_plan_id", label: "Membership Plan" },
-      { key: "section", label: "Section" },
       { key: "start_date", label: "Start Date" },
       { key: "end_date", label: "End Date" },
       { key: "type", label: "Membership Type" },
@@ -224,21 +138,17 @@ export default function AddMembers() {
     ) {
       newErrors.amount_paid = "Amount paid cannot be negative";
     }
-    if (
-      memberData.transaction.discount &&
-      parseFloat(memberData.transaction.discount) < 0
-    ) {
-      newErrors.discount = "Discount cannot be negative";
+
+    if (memberData.start_date && memberData.end_date) {
+      const start = new Date(memberData.start_date);
+      const end = new Date(memberData.end_date);
+      if (end < start) {
+        newErrors.end_date = "End date cannot be before start date";
+      }
     }
-    const selectedPlan = plans.find(
-      (plan) => plan.id === memberData.membership_plan_id
-    );
-    const planPrice = selectedPlan ? parseFloat(selectedPlan.price) || 0 : 0;
-    if (
-      memberData.transaction.discount &&
-      parseFloat(memberData.transaction.discount) > planPrice
-    ) {
-      newErrors.discount = "Discount cannot exceed plan price";
+
+    if (!["regular", "pt", "sm"].includes(memberData.type)) {
+      newErrors.type = "Membership type must be Regular, PT, or SM";
     }
 
     setErrors(newErrors);
@@ -260,8 +170,14 @@ export default function AddMembers() {
       ...prev,
       start_date: startDate,
       end_date: endDate,
+      transaction: { ...prev.transaction, payment_date: startDate },
     }));
-    setErrors((prev) => ({ ...prev, start_date: "", end_date: "" }));
+    setErrors((prev) => ({
+      ...prev,
+      start_date: "",
+      end_date: "",
+      payment_date: "",
+    }));
   };
 
   const handleInputChange = (e) => {
@@ -269,6 +185,10 @@ export default function AddMembers() {
     setMemberData((prev) => ({
       ...prev,
       [name]: value,
+      transaction: {
+        ...prev.transaction,
+        member_id: name === "member_id" ? value : prev.transaction.member_id,
+      },
     }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -284,11 +204,7 @@ export default function AddMembers() {
         ...prev.transaction,
         [name]: value,
       };
-      if (name === "discount") {
-        const disc = parseFloat(value) || 0;
-        updatedTransaction.amount_paid = (planPrice - disc).toFixed(2);
-      }
-      if (name === "amount_paid" || name === "discount") {
+      if (name === "amount_paid") {
         updatedTransaction.balance = calculateBalance(
           planPrice,
           updatedTransaction.amount_paid
@@ -303,23 +219,50 @@ export default function AddMembers() {
     });
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
-  const { mutate, isPending, isSuccess, error } = usePostMembers();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmissionError("");
     setSubmissionSuccess(false);
-    if (memberData.trainer_id != null) {
-      memberData.trainer_id = parseInt(memberData.trainer_id);
+    setIsLoading(true);
+
+    if (!validateForm()) {
+      setIsLoading(false);
+      const firstErrorField = Object.keys(errors)[0];
+      const errorElement =
+        document.querySelector(`[name="${firstErrorField}"]`) ||
+        document.querySelector(`[data-field="${firstErrorField}"]`);
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
     }
 
-    mutate(memberData);
-    // if (!validateForm()) {
-    //   return;
-    // }
-    console.log(memberData);
-    console.log(isPending);
-    if (isSuccess) {
+    const payload = {
+      ...memberData,
+      gym_id: parseInt(memberData.gym_id),
+      membership_plan_id: parseInt(memberData.membership_plan_id),
+      trainer_id: memberData.trainer_id
+        ? parseInt(memberData.trainer_id)
+        : null,
+      dob: convertToISODate(memberData.dob),
+      start_date: convertToISODate(memberData.start_date),
+      end_date: convertToISODate(memberData.end_date),
+      transaction: {
+        ...memberData.transaction,
+        gym_id: parseInt(memberData.gym_id),
+        member_id: memberData.member_id,
+        amount_paid: parseFloat(memberData.transaction.amount_paid) || 0,
+        balance: parseInt(memberData.transaction.balance) || 0,
+        payment_date: convertToISODate(memberData.transaction.payment_date),
+      },
+      photo_url_1: memberData.photo_url_1,
+      photo_url_2: memberData.photo_url_2,
+    };
+    console.log(payload);
+
+    try {
+      const response = await axios.post(`${url}/members`, payload);
       setSubmissionSuccess(true);
       setMemberData({
         gym_id: gymId,
@@ -332,18 +275,15 @@ export default function AddMembers() {
         blood_group: "",
         address: "",
         membership_plan_id: null,
-
         start_date: "",
         end_date: "",
         status: "active",
         type: "regular",
         trainer_id: null,
-        trainer_name: "",
         transaction: {
           member_id: "",
           gym_id: gymId,
           amount_paid: "",
-
           transaction_type: "",
           payment_date: "",
           status: "paid",
@@ -353,6 +293,23 @@ export default function AddMembers() {
         photo_url_2: null,
       });
       setErrors({});
+    } catch (err) {
+      console.error("Error submitting member:", err);
+      if (err.response?.status === 405) {
+        setSubmissionError(
+          "Method Not Allowed. Verify the endpoint supports POST."
+        );
+      } else if (err.response?.status === 400) {
+        setSubmissionError(
+          `Invalid data: ${err.response.data.detail || err.message}`
+        );
+      } else if (err.response?.status === 401) {
+        setSubmissionError("Unauthorized. Please check your access token.");
+      } else {
+        setSubmissionError(`Failed to register member: ${err.message}`);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -370,19 +327,6 @@ export default function AddMembers() {
             Fill out the form below to register a new gym member
           </p>
         </div>
-
-        {submissionSuccess && (
-          <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 flex items-center rounded-lg shadow-sm">
-            <CheckCircle className="w-5 h-5 mr-2" />
-            <p>Member registered successfully!</p>
-          </div>
-        )}
-        {submissionError && (
-          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 flex items-center rounded-lg shadow-sm">
-            <AlertCircle className="w-5 h-5 mr-2" />
-            <p>{submissionError}</p>
-          </div>
-        )}
 
         <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
           <div className="space-y-6">
@@ -609,6 +553,31 @@ export default function AddMembers() {
                 </p>
               )}
             </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="blood_group"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Blood Group
+              </label>
+              <CustomDropdown
+                id="blood_group"
+                value={memberData.blood_group}
+                onChange={(value) => {
+                  setMemberData((prev) => ({ ...prev, blood_group: value }));
+                  setErrors((prev) => ({ ...prev, blood_group: "" }));
+                }}
+                options={["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+                  (group) => ({ value: group, label: group })
+                )}
+                placeholder="Select Blood Group"
+                error={errors.blood_group}
+                isOpen={isBloodGroupOpen}
+                setIsOpen={setIsBloodGroupOpen}
+                isLoading={false}
+              />
+            </div>
           </div>
 
           <div className="space-y-6">
@@ -622,19 +591,20 @@ export default function AddMembers() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <CustomDropdown
                 id="membership_plan_id"
-                value={memberData.membership_plan_name}
+                value={
+                  plans.find(
+                    (plan) => plan.id === memberData.membership_plan_id
+                  )?.name || ""
+                }
                 onChange={(planId) => {
                   const selectedPlan = plans.find((plan) => plan.id === planId);
                   if (selectedPlan) {
                     const planPrice = parseFloat(selectedPlan.price) || 0;
-                    const disc =
-                      parseFloat(memberData.transaction.discount) || 0;
-                    const amountPaid = (planPrice - disc).toFixed(2);
+                    const amountPaid = planPrice.toFixed(2);
                     const balance = calculateBalance(planPrice, amountPaid);
                     setMemberData((prev) => ({
                       ...prev,
-                      membership_plan_id: selectedPlan.id,
-
+                      membership_plan_id: parseInt(selectedPlan.id),
                       transaction: {
                         ...prev.transaction,
                         amount_paid: amountPaid,
@@ -642,7 +612,6 @@ export default function AddMembers() {
                         status: balance > 0 ? "pending" : "paid",
                       },
                     }));
-                    setDuration(selectedPlan.duration_days);
                     if (memberData.start_date) {
                       const endDate = calculateEndDate(
                         memberData.start_date,
@@ -655,7 +624,7 @@ export default function AddMembers() {
                 }}
                 options={plans.map((plan) => ({
                   value: plan.id,
-                  label: plan.name,
+                  label: `${plan.name} - ₹${plan.price} (${plan.duration_days} days)`,
                 }))}
                 placeholder="Select Plan"
                 error={errors.membership_plan_id}
@@ -752,17 +721,16 @@ export default function AddMembers() {
               {memberData.type === "pt" && (
                 <CustomDropdown
                   id="trainer_id"
-                  value={memberData.trainer_name} // Display trainer name
+                  value={
+                    trainers.find(
+                      (trainer) => trainer.id === memberData.trainer_id
+                    )?.name || ""
+                  }
                   onChange={(trainerId) => {
-                    const selectedTrainer = trainers.find(
-                      (trainer) => trainer.id === trainerId
-                    );
-                    if (selectedTrainer) {
-                      setMemberData((prev) => ({
-                        ...prev,
-                        trainer_id: parseInt(selectedTrainer.id, 10),
-                      }));
-                    }
+                    setMemberData((prev) => ({
+                      ...prev,
+                      trainer_id: parseInt(trainerId),
+                    }));
                     setErrors((prev) => ({ ...prev, trainer_id: "" }));
                   }}
                   options={trainers.map((trainer) => ({
@@ -776,22 +744,6 @@ export default function AddMembers() {
                   isLoading={trainersLoading}
                 />
               )}
-
-              <CustomDropdown
-                id="blood_group"
-                value={memberData.blood_group}
-                onChange={(value) =>
-                  setMemberData((prev) => ({ ...prev, blood_group: value }))
-                }
-                options={["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
-                  (group) => ({ value: group, label: group })
-                )}
-                placeholder="Select Blood Group"
-                error={errors.blood_group}
-                isOpen={isBloodGroupOpen}
-                setIsOpen={setIsBloodGroupOpen}
-                isLoading={false}
-              />
             </div>
           </div>
 
@@ -835,38 +787,6 @@ export default function AddMembers() {
                   <p className="text-red-500 text-sm flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.amount_paid}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="discount"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Discount
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-3.5 text-gray-400 font-medium">
-                    ₹
-                  </span>
-                  <input
-                    id="discount"
-                    type="number"
-                    name="discount"
-                    placeholder="0.00"
-                    value={memberData.transaction.discount}
-                    onChange={handleTransactionChange}
-                    className={`w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 placeholder-gray-400 text-gray-900 shadow-sm hover:border-green-400 ${
-                      errors.discount ? "border-red-500" : ""
-                    }`}
-                    min="0"
-                  />
-                </div>
-                {errors.discount && (
-                  <p className="text-red-500 text-sm flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.discount}
                   </p>
                 )}
               </div>
@@ -954,15 +874,34 @@ export default function AddMembers() {
               </div>
             </div>
           </div>
+          {submissionSuccess && (
+            <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 flex items-center rounded-lg shadow-sm">
+              <CheckCircle className="w-5 h-5 mr-2" />
+              <p>Member registered successfully!</p>
+            </div>
+          )}
+          {submissionError && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 flex items-center rounded-lg shadow-sm">
+              <AlertCircle className="w-5 h-5 mr-2" />
+              <p>{submissionError}</p>
+            </div>
+          )}
 
           <div className="pt-6">
             <button
               type="submit"
               onClick={handleSubmit}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={plansLoading || trainersLoading}
+              disabled={plansLoading || trainersLoading || isLoading}
             >
-              Register New Member
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Registering...
+                </span>
+              ) : (
+                "Register New Member"
+              )}
             </button>
           </div>
         </div>
