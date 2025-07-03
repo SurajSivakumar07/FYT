@@ -13,8 +13,7 @@ export default function SearchAndFilter({
   const dropdownRef = useRef(null);
 
   const activeFiltersCount =
-    (search ? 1 : 0) + (type ? 1 : 0) + (statusFilter ? 1 : 0);
-
+    (search ? 1 : 0) + (type ? 1 : 0) + (statusFilter !== "all" ? 1 : 0);
   const memberTypes = [
     { value: "", label: "All Member Types", icon: "👥" },
     { value: "pt", label: "Personal Trainer", icon: "🏋️" },
@@ -23,7 +22,7 @@ export default function SearchAndFilter({
   ];
 
   const activityStatusOptions = [
-    { value: "", label: "All Status", icon: "📋" },
+    { value: "all", label: "All Status", icon: "📋" },
     { value: "active", label: "Active", icon: "✅" },
     { value: "expired", label: "Expired", icon: "❌" },
     { value: "expiring", label: "Expiring Soon", icon: "⏳" },
@@ -35,7 +34,8 @@ export default function SearchAndFilter({
   const clearAllFilters = () => {
     setSearch("");
     setType("");
-    setStatusFilter("");
+
+    setStatusFilter("all"); // ✅ fix
     setIsFilterOpen(false);
   };
 
@@ -202,9 +202,9 @@ export default function SearchAndFilter({
                   <h4 className="text-sm font-semibold text-gray-900">
                     Filter by Status
                   </h4>
-                  {statusFilter && (
+                  {statusFilter !== "all" && (
                     <button
-                      onClick={() => setStatusFilter("")}
+                      onClick={() => setStatusFilter("all")}
                       className="text-xs text-blue-600"
                     >
                       Clear
