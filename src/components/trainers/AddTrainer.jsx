@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { usePostTrainer } from "../../hooks/usePostTrainer";
+import { CheckCircle } from "lucide-react";
 
 export default function AddTrainer() {
   const gymId = 1;
@@ -34,12 +35,21 @@ export default function AddTrainer() {
       {
         onSuccess: (res) => {
           console.log("Trainer added", res);
+          handleReset();
         },
         onError: (err) => {
           console.log("error", err);
         },
       }
     );
+  };
+
+  const handleReset = () => {
+    setPlanData({
+      planName: "",
+      duration: "",
+      price: "",
+    });
   };
 
   return (

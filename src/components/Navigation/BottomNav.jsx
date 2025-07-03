@@ -77,6 +77,15 @@ export default function BottomNav() {
             >
               🏋🏼 Add Trainer
             </button>
+            <button
+              className="hover:bg-gray-100 rounded px-3 py-2 text-left"
+              onClick={() => {
+                setIsOpen(false);
+                navigate("/add-enquiry");
+              }}
+            >
+              ? Add Enquiry
+            </button>
           </div>
         </div>
       </div>

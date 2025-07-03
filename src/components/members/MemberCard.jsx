@@ -1,6 +1,10 @@
+import { useNavigate } from "react-router-dom";
+
 export default function MemberCard({ user, style }) {
+  const navigate = useNavigate();
+
   return (
-    <div style={style}>
+    <div style={style} onClick={() => navigate(`/users/${user?.member_id}`)}>
       {/* 👇 Adds spacing between cards using padding instead of margin */}
       <div className="px-4 pb-3 box-border w-full">
         <div className="flex items-start bg-white p-3 rounded-xl shadow-sm w-full max-w-md mx-auto">

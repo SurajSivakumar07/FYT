@@ -20,9 +20,6 @@ export default function Dashboard() {
     triggerOnce: true,
     threshold: 0.1,
   });
-  const handleExpiryClick = () => {
-    navigate("/members?status=expired");
-  };
 
   return (
     <div className="flex flex-col items-center p-1  bg-gradient-to-br from-blue-50 via-white to-purple-100  h-min-100vh overflow-x-hidden">

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useCreatePlan } from "../../hooks/useCreatePlan";
-import { data } from "react-router-dom";
+
 import { CheckCircle } from "lucide-react";
 export default function AddPlans() {
   const { mutate, isPending, isSuccess, isError, error } = useCreatePlan();
