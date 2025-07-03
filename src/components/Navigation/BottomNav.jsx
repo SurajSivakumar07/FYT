@@ -95,7 +95,7 @@ export default function BottomNav() {
             <Plus className="w-6 h-6" />
           </button>
 
-          <NavLink to="/members" className="group">
+          <NavLink to="/members?status=all" className="group">
             <User className="w-6 h-6 text-gray-500 group-hover:text-black transition-colors" />
           </NavLink>
         </div>
