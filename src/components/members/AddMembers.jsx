@@ -314,7 +314,7 @@ export default function AddMembers() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4 shadow-md">
@@ -323,9 +323,6 @@ export default function AddMembers() {
           <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">
             New Member Registration
           </h1>
-          <p className="text-lg text-gray-600">
-            Fill out the form below to register a new gym member
-          </p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">

@@ -72,10 +72,10 @@ export default function BottomNav() {
               className="hover:bg-gray-100 rounded px-3 py-2 text-left"
               onClick={() => {
                 setIsOpen(false);
-                navigate("/log-payment");
+                navigate("/add-trainer");
               }}
             >
-              💰 Log Payment
+              🏋🏼 Add Trainer
             </button>
           </div>
         </div>
