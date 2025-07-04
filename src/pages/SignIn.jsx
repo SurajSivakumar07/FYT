@@ -21,8 +21,8 @@ const SignIn = () => {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: email,
+        password: password,
       });
 
       if (error) {
@@ -44,7 +44,7 @@ const SignIn = () => {
         sessionStorage.setItem("gym_id", result.gym_id);
 
         setLoading(false);
-        navigate("/", { state: result }); // Navigate to dashboard
+        navigate("/", { state: result });
       } catch (error) {
         console.error("Failed to fetch gym ID:", error);
         setLoading(false);

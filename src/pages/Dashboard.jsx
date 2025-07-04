@@ -1,10 +1,9 @@
-import Navbar from "../components/DashboardCards/Navbar";
 import StatCard from "../components/DashboardCards/StatCard";
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense } from "react";
 import { useInView } from "react-intersection-observer";
 import EarningsChartSkeleton from "../components/skeleton/EarningsChartSkeleton";
 import { useDashboardSummary } from "../hooks/useDashboardSummary";
-import VirtualizedMemberList from "../components/members/VirtualizedMemberList";
+
 import { useNavigate } from "react-router-dom";
 
 const EarningsChart = React.lazy(() =>

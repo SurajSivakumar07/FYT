@@ -339,12 +339,7 @@ const ProfilePage = () => {
             <MemberInformation memberData={member} showIdProof />
           )}
           {activeTab === "actions" && <WhatsAppNotification />}
-          {activeTab === "attendance" && (
-            <Attendance
-              attendanceData={attendanceData}
-              onAddAttendance={handleAddAttendance}
-            />
-          )}
+          {activeTab === "attendance" && <Attendance id={userId} />}
           {activeTab === "trainer" && member?.type === "pt" && (
             <TrainerDetails
               trainerData={{

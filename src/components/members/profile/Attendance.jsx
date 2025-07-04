@@ -1,281 +1,354 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, Check, X } from "lucide-react";
+import { useParams } from "react-router-dom";
 
-const Attendance = ({ attendanceData, onAddAttendance }) => {
+const Attendance = ({ id }) => {
+  const [markedDates, setMarkedDates] = useState({});
+  const [selectedDates, setSelectedDates] = useState(new Set());
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [pendingAttendance, setPendingAttendance] = useState(new Set());
 
-  const getAttendanceCount = () => {
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
+  const API_BASE_URL = "http://localhost:8000";
+  const gym_id = 1;
 
-    return Object.keys(attendanceData).filter((date) => {
-      const d = new Date(date);
-      return (
-        d.getMonth() === currentMonth &&
-        d.getFullYear() === currentYear &&
-        attendanceData[date]
-      );
-    }).length;
+  const formatDateForBackend = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatTimeForBackend = (date) => {
+    return date.toTimeString().split(" ")[0].slice(0, 8);
+  };
+
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/gyms/${gym_id}/members/${id}/attendance`
+        );
+        const data = await response.json();
+        console.log("Fetched attendance:", data);
+
+        const marked = {};
+        data.forEach(({ date }) => {
+          marked[date] = {
+            marked: true,
+            attended: true, // If your API returns attended: false, adjust here
+          };
+        });
+
+        setMarkedDates(marked);
+      } catch (error) {
+        console.error("Error fetching attendance data:", error);
+        setError(`Failed to fetch attendance data: ${error.message}`);
+      }
+    };
+
+    fetchAttendance();
+  }, [id]);
+
+  const handleDateClick = (date) => {
+    const dateString = formatDateForBackend(date);
+    const updatedSelected = new Set(selectedDates);
+
+    if (updatedSelected.has(dateString)) {
+      updatedSelected.delete(dateString);
+    } else {
+      updatedSelected.add(dateString);
+    }
+
+    setSelectedDates(updatedSelected);
+  };
+
+  const saveAttendance = async () => {
+    if (selectedDates.size === 0) {
+      alert("Please select at least one date.");
+      return;
+    }
+
+    setIsSaving(true);
+    setError("");
+    const now = new Date();
+    const time = formatTimeForBackend(now);
+    const maxRetries = 3;
+    const retryDelay = 1000;
+
+    const attemptRequest = async (payload, retries) => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/attendance`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+      } catch (error) {
+        if (
+          retries > 0 &&
+          (error.name === "TypeError" || error.message.includes("fetch"))
+        ) {
+          console.log(
+            `Retrying... (${maxRetries - retries + 1}/${maxRetries})`
+          );
+          await new Promise((resolve) => setTimeout(resolve, retryDelay));
+          return attemptRequest(payload, retries - 1);
+        }
+        throw error;
+      }
+    };
+
+    try {
+      for (const dateString of selectedDates) {
+        const payload = {
+          member_id: id,
+          gym_id: gym_id,
+          date: dateString,
+        };
+        console.log("Sending payload:", payload);
+        await attemptRequest(payload, maxRetries);
+      }
+
+      alert("Attendance saved for selected dates.");
+
+      const updatedMarked = { ...markedDates };
+      selectedDates.forEach((dateString) => {
+        updatedMarked[dateString] = {
+          marked: true,
+          attended: true,
+        };
+      });
+
+      setMarkedDates(updatedMarked);
+      setSelectedDates(new Set());
+    } catch (error) {
+      console.error("Save failed:", error);
+      let errorMessage = "Failed to save attendance.";
+      if (error.message.includes("fetch")) {
+        errorMessage =
+          "Network error. Ensure the backend server is running and accessible.";
+      }
+      setError(errorMessage);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const getDaysInMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  };
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
 
-  const getFirstDayOfMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-  };
-
-  const navigateMonth = (direction) => {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(newDate.getMonth() + direction);
-    setCurrentDate(newDate);
-    setSelectedDate(null);
-    setPendingAttendance(new Set());
-  };
-
-  const handleDateClick = (dateKey) => {
-    if (attendanceData[dateKey]) return; // Already attended, can't change
-
-    setSelectedDate(dateKey);
-    const newPending = new Set(pendingAttendance);
-    if (newPending.has(dateKey)) {
-      newPending.delete(dateKey);
-    } else {
-      newPending.add(dateKey);
-    }
-    setPendingAttendance(newPending);
-  };
-
-  const handleSave = () => {
-    pendingAttendance.forEach((dateKey) => {
-      onAddAttendance(dateKey);
-    });
-    setPendingAttendance(new Set());
-    setSelectedDate(null);
-  };
-
-  const handleCancel = () => {
-    setPendingAttendance(new Set());
-    setSelectedDate(null);
-  };
-
-  const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth(currentDate);
-    const firstDay = getFirstDayOfMonth(currentDate);
     const days = [];
+    const endDate = new Date(lastDay);
+    endDate.setDate(endDate.getDate() + (6 - lastDay.getDay()));
 
-    for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="h-10"></div>);
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateKey = `${currentDate.getFullYear()}-${String(
-        currentDate.getMonth() + 1
-      ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-      const isAttended = attendanceData[dateKey];
-      const isPending = pendingAttendance.has(dateKey);
-      const isSelected = selectedDate === dateKey;
-      const isToday =
-        day === new Date().getDate() &&
-        currentDate.getMonth() === new Date().getMonth() &&
-        currentDate.getFullYear() === new Date().getFullYear();
-
-      days.push(
-        <div
-          key={day}
-          className={`h-10 w-10 flex items-center justify-center text-sm rounded-full transition-all duration-200 cursor-pointer relative ${
-            isAttended
-              ? "bg-softBlue text-white"
-              : isPending
-              ? "bg-green-100 text-green-700 border-2 border-green-300"
-              : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-          } ${isToday ? "ring-2 ring-softPink" : ""} ${
-            isAttended ? "cursor-not-allowed" : ""
-          }`}
-          onClick={() => handleDateClick(dateKey)}
-          role="button"
-          aria-label={
-            isAttended
-              ? `Already attended on ${dateKey}`
-              : isPending
-              ? `Remove attendance for ${dateKey}`
-              : `Mark attendance for ${dateKey}`
-          }
-        >
-          {day}
-          {isPending && (
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-          )}
-        </div>
-      );
+    for (
+      let d = new Date(startDate);
+      d <= endDate;
+      d.setDate(d.getDate() + 1)
+    ) {
+      days.push(new Date(d));
     }
 
     return days;
   };
 
+  const navigateMonth = (direction) => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(currentDate.getMonth() + direction);
+    setCurrentDate(newDate);
+  };
+
+  const isToday = (date) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+
+  const isCurrentMonth = (date) => {
+    return date.getMonth() === currentDate.getMonth();
+  };
+
+  const getDateStatus = (date) => {
+    const dateString = formatDateForBackend(date);
+    const marked = markedDates[dateString];
+    const isSelected = selectedDates.has(dateString);
+
+    return {
+      isSelected,
+      isPresent: marked?.attended === true,
+      isAbsent: marked?.attended === false,
+      isMarked: marked?.marked === true,
+    };
+  };
+
+  const days = getDaysInMonth(currentDate);
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-md">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-black">Attendance</h2>
-        <div className="flex items-center gap-2">
+    <div className="flex flex-col items-center pt-10 bg-gradient-to-br from-blue-50 to-white-100 min-h-screen">
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 max-w-md">
+          {error}
+        </div>
+      )}
+
+      <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 w-full max-w-md">
+        <div className="flex items-center justify-between mb-6">
           <button
             onClick={() => navigateMonth(-1)}
-            className="p-1.5 hover:bg-softBlue/20 rounded-full transition-colors"
-            aria-label="Previous month"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <svg
-              className="w-5 h-5 text-softBlue"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 19l-7-7 7-7"
-              ></path>
-            </svg>
+            <ChevronLeft size={20} className="text-gray-600" />
           </button>
-          <span className="text-sm font-medium text-black">
-            {currentDate.toLocaleDateString("en-IN", {
-              month: "long",
-              year: "numeric",
-            })}
-          </span>
+          <h2 className="text-xl font-semibold text-gray-800">
+            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+          </h2>
           <button
             onClick={() => navigateMonth(1)}
-            className="p-1.5 hover:bg-softBlue/20 rounded-full transition-colors"
-            aria-label="Next month"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <svg
-              className="w-5 h-5 text-softBlue"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 5l7 7-7 7"
-              ></path>
-            </svg>
+            <ChevronRight size={20} className="text-gray-600" />
           </button>
+        </div>
+
+        <div className="grid grid-cols-7 gap-1 mb-4">
+          {weekDays.map((day) => (
+            <div
+              key={day}
+              className="text-center text-sm font-medium text-gray-500 py-2"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {days.map((date, index) => {
+            const status = getDateStatus(date);
+            const todayClass = isToday(date) ? "ring-2 ring-blue-400" : "";
+            const currentMonthClass = isCurrentMonth(date)
+              ? "text-gray-900"
+              : "text-gray-400";
+
+            let bgClass = "bg-white hover:bg-gray-50";
+            let iconElement = null;
+
+            if (status.isSelected) {
+              bgClass = "bg-blue-500 text-white hover:bg-blue-600";
+            } else if (status.isPresent) {
+              bgClass = "bg-green-100 text-green-800 hover:bg-green-200";
+              iconElement = (
+                <Check size={12} className="absolute top-1 right-1" />
+              );
+            } else if (status.isAbsent) {
+              bgClass = "bg-red-100 text-red-800 hover:bg-red-200";
+              iconElement = <X size={12} className="absolute top-1 right-1" />;
+            }
+
+            return (
+              <button
+                key={index}
+                onClick={() => handleDateClick(date)}
+                className={`relative aspect-square p-2 rounded-lg text-sm font-medium transition-all
+                ${bgClass} ${todayClass} ${currentMonthClass}
+                transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400`}
+              >
+                {date.getDate()}
+                {iconElement}
+                {status.isMarked && (
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-current rounded-full"></div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex justify-center gap-4 mt-6 text-xs">
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-green-100 rounded border border-green-200"></div>
+            <span className="text-gray-600">Present</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-red-100 rounded border border-red-200"></div>
+            <span className="text-gray-600">Absent</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-blue-500 rounded"></div>
+            <span className="text-gray-600">Selected</span>
+          </div>
         </div>
       </div>
 
-      {Object.keys(attendanceData).length === 0 ? (
-        <div className="text-center">
-          <p className="text-black mb-4">No attendance data available</p>
+      {selectedDates.size > 0 && (
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 w-full max-w-md">
+          <h3 className="font-semibold text-gray-800 mb-3">Selected Dates</h3>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {Array.from(selectedDates).map((dateString) => (
+              <span
+                key={dateString}
+                className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+              >
+                {new Date(dateString).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
+            ))}
+          </div>
           <button
-            onClick={() =>
-              onAddAttendance(
-                `${new Date().getFullYear()}-${String(
-                  new Date().getMonth() + 1
-                ).padStart(2, "0")}-${String(new Date().getDate()).padStart(
-                  2,
-                  "0"
-                )}`
-              )
-            }
-            className="bg-softBlue text-white py-2 px-4 rounded-lg hover:bg-softBlue/90 transition-all duration-200"
-            aria-label="Add today's attendance"
+            onClick={saveAttendance}
+            disabled={isSaving}
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105"
           >
-            Add Today's Attendance
+            {isSaving ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Saving...
+              </div>
+            ) : (
+              "Save Attendance"
+            )}
           </button>
         </div>
-      ) : (
-        <>
-          <div className="mb-4">
-            <div className="text-center bg-gradient-to-r from-softBlue/20 to-softPink/20 p-4 rounded-lg">
-              <p className="text-3xl font-bold text-softBlue">
-                {getAttendanceCount()}
-              </p>
-              <p className="text-sm text-softBlue font-medium">
-                Days Attended This Month
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-600 font-medium mb-3">
-            <div>Sun</div>
-            <div>Mon</div>
-            <div>Tue</div>
-            <div>Wed</div>
-            <div>Thu</div>
-            <div>Fri</div>
-            <div>Sat</div>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1 mb-4">{renderCalendar()}</div>
-
-          {pendingAttendance.size > 0 && (
-            <div className="mb-4 p-4 bg-softBlue/10 rounded-lg border border-softBlue/20">
-              <p className="text-sm text-softBlue font-medium mb-3">
-                Selected {pendingAttendance.size} date(s) for attendance
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleSave}
-                  className="bg-softBlue text-white py-2 px-4 rounded-lg hover:bg-softBlue/90 transition-all duration-200 flex items-center gap-2"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M5 13l4 4L19 7"
-                    ></path>
-                  </svg>
-                  Save Attendance
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-all duration-200 flex items-center gap-2"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    ></path>
-                  </svg>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between text-xs font-medium">
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-softBlue rounded-full mr-2"></div>
-              <span className="text-black">Attended</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-              <span className="text-black">Pending</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-gray-200 rounded-full mr-2"></div>
-              <span className="text-black">Absent</span>
-            </div>
-          </div>
-        </>
       )}
+
+      {/* Stats (Optional Dummy Values) */}
+      <div className="flex gap-4 w-full max-w-md">
+        <div className="flex-1 bg-white rounded-2xl shadow-lg p-6 text-center">
+          <div className="text-3xl font-bold text-blue-600 mb-2">24</div>
+          <div className="text-sm text-gray-600 font-medium">This Month</div>
+        </div>
+        <div className="flex-1 bg-white rounded-2xl shadow-lg p-6 text-center">
+          <div className="text-3xl font-bold text-green-600 mb-2">89</div>
+          <div className="text-sm text-gray-600 font-medium">Total Days</div>
+        </div>
+      </div>
     </div>
   );
 };
