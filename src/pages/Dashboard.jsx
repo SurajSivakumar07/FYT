@@ -21,35 +21,43 @@ export default function Dashboard() {
     threshold: 0.1,
   });
 
+  // Move onClick handlers out of JSX to avoid inline function creation
+  const handleActiveMembersClick = () => navigate("/members?status=active");
+  const handleExpiringSoonClick = () => navigate("/members?status=expiring");
+  const handleTotalMembersClick = () => navigate("/members?status=all");
+
   return (
-    <div className="flex flex-col items-center p-1  bg-gradient-to-br from-blue-50 via-white to-purple-100  h-min-100vh overflow-x-hidden">
+    <div className="flex flex-col items-center p-1 bg-gradient-to-br from-blue-50 via-white to-purple-100 min-h-screen w-full overflow-x-hidden">
       {/* Cards */}
-      <div className="grid grid-cols-2 gap-3 w-full max-w-md">
+      <div className="grid grid-cols-2 gap-3 w-full max-w-md overflow-x-hidden max-w-full">
         <StatCard
           title="Active members"
           value={data ? data.active_members : "-"}
           color="text-blue-600"
           arrow
-          onClick={() => navigate("/members?status=active")}
+          onClick={handleActiveMembersClick}
         />
         <StatCard
           title="Expiring in 10 days"
           value={data ? data.expiring_soon : "-"}
           color="text-red-500"
           arrow
-          onClick={() => navigate("/members?status=expiring")}
+          onClick={handleExpiringSoonClick}
         />
         <StatCard title="Earnings" value={data ? data.earnings : "-"} info />
         <StatCard
           title="Total members"
           value={data ? data.total_members : "-"}
           arrow
-          onClick={() => navigate("/members?status=all")}
+          onClick={handleTotalMembersClick}
         />
       </div>
 
       {/* 👇 Important: Attach `ref` to a wrapping div */}
-      <div ref={ref} className="w-full max-w-4xl mt-6 px-3">
+      <div
+        ref={ref}
+        className="w-full max-w-4xl mt-6 px-3 overflow-x-hidden max-w-full"
+      >
         <Suspense fallback={<EarningsChartSkeleton />}>
           {inView ? (
             <EarningsChart earnings={data ? data.earnings : "-"} />
