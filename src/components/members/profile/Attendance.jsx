@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { useParams } from "react-router-dom";
 
@@ -6,12 +6,12 @@ const Attendance = ({ id }) => {
   const [markedDates, setMarkedDates] = useState({});
   const [selectedDates, setSelectedDates] = useState(new Set());
   const [isSaving, setIsSaving] = useState(false);
+
   const [error, setError] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
-
-  const API_BASE_URL = "http://localhost:8000";
+  const [totalAttendance, setTotalAttendace] = useState([]);
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const gym_id = 1;
-
   const formatDateForBackend = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -31,6 +31,7 @@ const Attendance = ({ id }) => {
         );
         const data = await response.json();
         console.log("Fetched attendance:", data);
+        setTotalAttendace(data);
 
         const marked = {};
         data.forEach(({ date }) => {
@@ -65,7 +66,6 @@ const Attendance = ({ id }) => {
 
   const saveAttendance = async () => {
     if (selectedDates.size === 0) {
-      alert("Please select at least one date.");
       return;
     }
 
@@ -209,7 +209,16 @@ const Attendance = ({ id }) => {
     "December",
   ];
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
+  const totalDaysPresentThisMonth = useMemo(() => {
+    return Object.entries(markedDates).filter(([date, status]) => {
+      const dateObj = new Date(date);
+      return (
+        status.attended === true &&
+        dateObj.getMonth() === currentDate.getMonth() &&
+        dateObj.getFullYear() === currentDate.getFullYear()
+      );
+    }).length;
+  }, [markedDates, currentDate]);
   return (
     <div className="flex flex-col items-center pt-10 bg-gradient-to-br from-blue-50 to-white-100 min-h-screen">
       {error && (
@@ -294,10 +303,7 @@ const Attendance = ({ id }) => {
             <div className="w-3 h-3 bg-green-100 rounded border border-green-200"></div>
             <span className="text-gray-600">Present</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-red-100 rounded border border-red-200"></div>
-            <span className="text-gray-600">Absent</span>
-          </div>
+
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 bg-blue-500 rounded"></div>
             <span className="text-gray-600">Selected</span>
@@ -341,11 +347,16 @@ const Attendance = ({ id }) => {
       {/* Stats (Optional Dummy Values) */}
       <div className="flex gap-4 w-full max-w-md">
         <div className="flex-1 bg-white rounded-2xl shadow-lg p-6 text-center">
-          <div className="text-3xl font-bold text-blue-600 mb-2">24</div>
-          <div className="text-sm text-gray-600 font-medium">This Month</div>
+          <div className="text-3xl font-bold text-blue-600 mb-2">
+            {totalDaysPresentThisMonth}
+          </div>
+          <div className="text-sm text-gray-600 font-medium">Current Month</div>
         </div>
+
         <div className="flex-1 bg-white rounded-2xl shadow-lg p-6 text-center">
-          <div className="text-3xl font-bold text-green-600 mb-2">89</div>
+          <div className="text-3xl font-bold text-green-600 mb-2">
+            {totalAttendance.length}
+          </div>
           <div className="text-sm text-gray-600 font-medium">Total Days</div>
         </div>
       </div>
