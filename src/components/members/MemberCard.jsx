@@ -50,7 +50,7 @@ const MemberCard = memo(({ user, style }) => {
   const formattedExpiry = formatExpiryDate(user.end_date);
 
   return (
-    <div style={style}>
+    <div style={style} onClick={() => navigate(`/users/${user.member_id}`)}>
       <div className="px-4 pb-3 box-border w-full">
         <div className="flex items-start bg-white p-3 rounded-xl shadow-sm w-full max-w-md mx-auto">
           {/* Profile Picture */}
@@ -67,10 +67,9 @@ const MemberCard = memo(({ user, style }) => {
                 {user.name.toUpperCase()}
               </h3>
               <span className="text-xs font-medium text-gray-500 ml-2 flex-shrink-0">
-                #{user.member_id}
+                ID#{user.member_id}
               </span>
             </div>
-
             {/* <p className="text-sm text-gray-600 mb-2 truncate">
               📞 {user.phone_number}
             </p> */}
