@@ -1,7 +1,9 @@
 import React, { Suspense, lazy } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import BottomNav from "./components/Navigation/BottomNav";
 import Navbar from "./components/DashboardCards/Navbar";
+import SignIn from "./pages/SignIn";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 // Lazy load components for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -33,7 +35,7 @@ class RouteErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Route Error:', error, errorInfo);
+    console.error("Route Error:", error, errorInfo);
   }
 
   render() {
@@ -41,10 +43,14 @@ class RouteErrorBoundary extends React.Component {
       return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
-            <p className="text-gray-600 mb-4">Please refresh the page and try again.</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Something went wrong
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Please refresh the page and try again.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
               Refresh Page
@@ -59,23 +65,79 @@ class RouteErrorBoundary extends React.Component {
 }
 
 export default function App() {
+  const location = useLocation();
+  const hideTabBar = location.pathname === "/signin";
+
   return (
     <RouteErrorBoundary>
-      <Navbar />
+      {!hideTabBar && <Navbar />}
       <main className="min-h-screen bg-gray-50">
         <Suspense fallback={<PageLoader />}>
           <Routes>
-            <Route element={<Dashboard />} path="/" />
-            <Route element={<Members />} path="/members" />
-            <Route element={<AddMembers />} path="/add-member" />
-            <Route element={<AddPlans />} path="/add-plan" />
-            <Route element={<AddTrainer />} path="/add-trainer" />
-            <Route element={<EnquiryForm />} path="/add-enquiry" />
-            <Route element={<ProfilePage />} path="/users/:userId" />
+            {/* Public route */}
+            <Route path="/signin" element={<SignIn />} />
+
+            {/* Protected routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/members"
+              element={
+                <ProtectedRoute>
+                  <Members />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add-member"
+              element={
+                <ProtectedRoute>
+                  <AddMembers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add-plan"
+              element={
+                <ProtectedRoute>
+                  <AddPlans />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add-trainer"
+              element={
+                <ProtectedRoute>
+                  <AddTrainer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add-enquiry"
+              element={
+                <ProtectedRoute>
+                  <EnquiryForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users/:userId"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </Suspense>
       </main>
-      <BottomNav />
+      {!hideTabBar && <BottomNav />}
     </RouteErrorBoundary>
   );
 }
