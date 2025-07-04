@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback, memo } from "react";
 import {
   User,
   Phone,
@@ -17,10 +17,274 @@ import {
   Eye,
 } from "lucide-react";
 
-const GymMemberDetails = () => {
+// Memoized sub-components for better performance
+const PersonalInfoSection = memo(({ memberData, formatDate }) => (
+  <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
+    <h2 className="text-xl font-semibold mb-6 flex items-center">
+      <User className="w-5 h-5 mr-2 text-indigo-600" />
+      Personal Information
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Phone Number
+        </label>
+        <div className="flex items-center mt-2">
+          <Phone className="w-4 h-4 mr-2 text-indigo-400" />
+          <span className="font-medium text-gray-800">
+            {memberData.phone_number}
+          </span>
+        </div>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Email
+        </label>
+        <div className="flex items-center mt-2">
+          <Mail className="w-4 h-4 mr-2 text-indigo-400" />
+          <span className="font-medium text-gray-800">
+            {memberData.email}
+          </span>
+        </div>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Date of Birth
+        </label>
+        <div className="flex items-center mt-2">
+          <Calendar className="w-4 h-4 mr-2 text-indigo-400" />
+          <span className="font-medium text-gray-800">
+            {formatDate(memberData.dob)}
+          </span>
+        </div>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Gender
+        </label>
+        <p className="font-medium text-gray-800 mt-2">
+          {memberData.gender}
+        </p>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Blood Group
+        </label>
+        <p className="font-medium text-gray-800 mt-2">
+          {memberData.blood_group}
+        </p>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Member Type
+        </label>
+        <p className="font-medium text-gray-800 mt-2 capitalize">
+          {memberData.type}
+        </p>
+      </div>
+      <div className="sm:col-span-2">
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Address
+        </label>
+        <div className="flex items-center mt-2">
+          <MapPin className="w-4 h-4 mr-2 text-indigo-400" />
+          <span className="font-medium text-gray-800">
+            {memberData.address}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+));
+PersonalInfoSection.displayName = 'PersonalInfoSection';
+
+const MembershipSection = memo(({ memberData, formatDate, daysUntilExpiry }) => (
+  <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
+    <h2 className="text-xl font-semibold mb-6 flex items-center">
+      <CreditCard className="w-5 h-5 mr-2 text-indigo-600" />
+      Membership Details
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Membership Plan
+        </label>
+        <p className="font-medium text-gray-800 mt-2">
+          {memberData.membership_plan}
+        </p>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Trainer
+        </label>
+        <p className="font-medium text-gray-800 mt-2">
+          {memberData.trainer_name}
+        </p>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Start Date
+        </label>
+        <p className="font-medium text-gray-800 mt-2">
+          {formatDate(memberData.start_date)}
+        </p>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          End Date
+        </label>
+        <p className="font-medium text-gray-800 mt-2">
+          {formatDate(memberData.end_date)}
+        </p>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Days Until Expiry
+        </label>
+        <p
+          className={`font-medium mt-2 ${
+            daysUntilExpiry <= 30 ? "text-red-500" : "text-green-500"
+          }`}
+        >
+          {daysUntilExpiry} days
+        </p>
+      </div>
+    </div>
+  </div>
+));
+MembershipSection.displayName = 'MembershipSection';
+
+const PaymentSection = memo(({ memberData, formatDate }) => (
+  <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
+    <h2 className="text-xl font-semibold mb-6 flex items-center">
+      <CreditCard className="w-5 h-5 mr-2 text-indigo-600" />
+      Payment Information
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Amount Paid
+        </label>
+        <p className="font-medium text-lg text-gray-800 mt-2">
+          ₹{memberData.transaction.amount_paid}
+        </p>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Payment Date
+        </label>
+        <p className="font-medium text-gray-800 mt-2">
+          {formatDate(memberData.transaction.payment_date)}
+        </p>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Payment Status
+        </label>
+        <div className="flex items-center mt-2">
+          {memberData.transaction.balance === 0 ? (
+            <>
+              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+              <span className="font-medium text-green-600">
+                Fully Paid
+              </span>
+            </>
+          ) : (
+            <>
+              <Clock className="w-4 h-4 mr-2 text-orange-500" />
+              <span className="font-medium text-orange-600">
+                Pending: ₹{memberData.transaction.balance}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide">
+          Transaction Type
+        </label>
+        <p className="font-medium text-gray-800 mt-2 capitalize">
+          {memberData.transaction.transaction_type}
+        </p>
+      </div>
+    </div>
+  </div>
+));
+PaymentSection.displayName = 'PaymentSection';
+
+const IDProofSection = memo(({ memberData }) => (
+  <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
+    <h2 className="text-xl font-semibold mb-6 flex items-center">
+      <FileText className="w-5 h-5 mr-2 text-indigo-600" />
+      ID Proof & Documents
+    </h2>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div>
+          <label className="text-xs text-gray-500 uppercase tracking-wide">
+            Document Type
+          </label>
+          <p className="font-medium text-gray-800 mt-2">
+            {memberData.id_proof.type}
+          </p>
+        </div>
+        <div>
+          <label className="text-xs text-gray-500 uppercase tracking-wide">
+            Document Number
+          </label>
+          <p className="font-medium text-gray-800 mt-2">
+            {memberData.id_proof.number}
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">
+          Document Image
+        </label>
+        <div className="relative group">
+          <img
+            src={memberData.id_proof.document_url}
+            alt="ID Proof Document"
+            className="w-full max-w-md h-32 object-cover rounded-lg border border-gray-200 transition-transform duration-300 group-hover:scale-[1.02]"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center">
+            <button className="bg-white text-gray-800 px-4 py-1.5 rounded-full text-sm font-medium flex items-center transform transition-transform duration-200 hover:scale-105">
+              <Eye className="w-4 h-4 mr-1" />
+              View Full
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+));
+IDProofSection.displayName = 'IDProofSection';
+
+const QuickActionsSection = memo(() => (
+  <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
+    <h2 className="text-xl font-semibold mb-6">Quick Actions</h2>
+    <div className="space-y-3">
+      <button className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 flex items-center justify-center transition-all duration-200 hover:shadow-md">
+        <MessageSquare className="w-4 h-4 mr-2" />
+        Send Invoice via WhatsApp
+      </button>
+      <button className="w-full bg-amber-500 text-white py-2.5 px-4 rounded-lg hover:bg-amber-600 flex items-center justify-center transition-all duration-200 hover:shadow-md">
+        <Bell className="w-4 h-4 mr-2" />
+        Send Expiry Reminder
+      </button>
+    </div>
+  </div>
+));
+QuickActionsSection.displayName = 'QuickActionsSection';
+
+// Main component with optimizations
+const GymMemberDetails = memo(() => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const memberData = {
+  // Static data - in real app this would come from props/API
+  const memberData = useMemo(() => ({
     gym_id: "GYM001",
     member_id: "MEM2024001",
     name: "John Doe",
@@ -55,9 +319,10 @@ const GymMemberDetails = () => {
       document_url:
         "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=250&fit=crop",
     },
-  };
+  }), []);
 
-  const attendanceData = {
+  // Static attendance data - in real app this would be fetched
+  const attendanceData = useMemo(() => ({
     "2024-07-01": true,
     "2024-07-02": true,
     "2024-07-03": false,
@@ -80,9 +345,26 @@ const GymMemberDetails = () => {
     "2024-07-27": true,
     "2024-07-29": true,
     "2024-07-30": true,
-  };
+  }), []);
 
-  const getAttendanceCount = () => {
+  // Memoized date formatting function
+  const formatDate = useCallback((dateString) => {
+    return new Date(dateString).toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }, []);
+
+  // Memoized expensive calculations
+  const daysUntilExpiry = useMemo(() => {
+    const endDate = new Date(memberData.end_date);
+    const today = new Date();
+    const timeDiff = endDate - today;
+    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  }, [memberData.end_date]);
+
+  const attendanceCount = useMemo(() => {
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
 
@@ -94,38 +376,25 @@ const GymMemberDetails = () => {
         attendanceData[date]
       );
     }).length;
-  };
+  }, [currentDate, attendanceData]);
 
-  const getDaysInMonth = (date) => {
+  // Calendar utilities
+  const getDaysInMonth = useCallback((date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  };
+  }, []);
 
-  const getFirstDayOfMonth = (date) => {
+  const getFirstDayOfMonth = useCallback((date) => {
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-  };
+  }, []);
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-IN", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const calculateDaysUntilExpiry = () => {
-    const endDate = new Date(memberData.end_date);
-    const today = new Date();
-    const timeDiff = endDate - today;
-    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-  };
-
-  const navigateMonth = (direction) => {
+  const navigateMonth = useCallback((direction) => {
     const newDate = new Date(currentDate);
     newDate.setMonth(newDate.getMonth() + direction);
     setCurrentDate(newDate);
-  };
+  }, [currentDate]);
 
-  const renderCalendar = () => {
+  // Memoized calendar rendering
+  const renderCalendar = useCallback(() => {
     const daysInMonth = getDaysInMonth(currentDate);
     const firstDay = getFirstDayOfMonth(currentDate);
     const days = [];
@@ -159,9 +428,7 @@ const GymMemberDetails = () => {
     }
 
     return days;
-  };
-
-  const daysUntilExpiry = calculateDaysUntilExpiry();
+  }, [currentDate, attendanceData, getDaysInMonth, getFirstDayOfMonth]);
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -176,6 +443,7 @@ const GymMemberDetails = () => {
                     src={memberData.photo_url}
                     alt={memberData.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
                 <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1.5 shadow-md">
@@ -207,260 +475,18 @@ const GymMemberDetails = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 sm:p-8">
-          {/* Personal Information */}
+          {/* Left Column - Member Info */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
-              <h2 className="text-xl font-semibold mb-6 flex items-center">
-                <User className="w-5 h-5 mr-2 text-indigo-600" />
-                Personal Information
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Phone Number
-                  </label>
-                  <div className="flex items-center mt-2">
-                    <Phone className="w-4 h-4 mr-2 text-indigo-400" />
-                    <span className="font-medium text-gray-800">
-                      {memberData.phone_number}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Email
-                  </label>
-                  <div className="flex items-center mt-2">
-                    <Mail className="w-4 h-4 mr-2 text-indigo-400" />
-                    <span className="font-medium text-gray-800">
-                      {memberData.email}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Date of Birth
-                  </label>
-                  <div className="flex items-center mt-2">
-                    <Calendar className="w-4 h-4 mr-2 text-indigo-400" />
-                    <span className="font-medium text-gray-800">
-                      {formatDate(memberData.dob)}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Gender
-                  </label>
-                  <p className="font-medium text-gray-800 mt-2">
-                    {memberData.gender}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Blood Group
-                  </label>
-                  <p className="font-medium text-gray-800 mt-2">
-                    {memberData.blood_group}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Member Type
-                  </label>
-                  <p className="font-medium text-gray-800 mt-2 capitalize">
-                    {memberData.type}
-                  </p>
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Address
-                  </label>
-                  <div className="flex items-center mt-2">
-                    <MapPin className="w-4 h-4 mr-2 text-indigo-400" />
-                    <span className="font-medium text-gray-800">
-                      {memberData.address}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Membership Details */}
-            <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
-              <h2 className="text-xl font-semibold mb-6 flex items-center">
-                <CreditCard className="w-5 h-5 mr-2 text-indigo-600" />
-                Membership Details
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Membership Plan
-                  </label>
-                  <p className="font-medium text-gray-800 mt-2">
-                    {memberData.membership_plan}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Trainer
-                  </label>
-                  <p className="font-medium text-gray-800 mt-2">
-                    {memberData.trainer_name}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Start Date
-                  </label>
-                  <p className="font-medium text-gray-800 mt-2">
-                    {formatDate(memberData.start_date)}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    End Date
-                  </label>
-                  <p className="font-medium text-gray-800 mt-2">
-                    {formatDate(memberData.end_date)}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Days Until Expiry
-                  </label>
-                  <p
-                    className={`font-medium mt-2 ${
-                      daysUntilExpiry <= 30 ? "text-red-500" : "text-green-500"
-                    }`}
-                  >
-                    {daysUntilExpiry} days
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Information */}
-            <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
-              <h2 className="text-xl font-semibold mb-6 flex items-center">
-                <CreditCard className="w-5 h-5 mr-2 text-indigo-600" />
-                Payment Information
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Amount Paid
-                  </label>
-                  <p className="font-medium text-lg text-gray-800 mt-2">
-                    ₹{memberData.transaction.amount_paid}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Payment Date
-                  </label>
-                  <p className="font-medium text-gray-800 mt-2">
-                    {formatDate(memberData.transaction.payment_date)}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Payment Status
-                  </label>
-                  <div className="flex items-center mt-2">
-                    {memberData.transaction.balance === 0 ? (
-                      <>
-                        <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                        <span className="font-medium text-green-600">
-                          Fully Paid
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <Clock className="w-4 h-4 mr-2 text-orange-500" />
-                        <span className="font-medium text-orange-600">
-                          Pending: ₹{memberData.transaction.balance}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide">
-                    Transaction Type
-                  </label>
-                  <p className="font-medium text-gray-800 mt-2 capitalize">
-                    {memberData.transaction.transaction_type}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* ID Proof Section */}
-            <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
-              <h2 className="text-xl font-semibold mb-6 flex items-center">
-                <FileText className="w-5 h-5 mr-2 text-indigo-600" />
-                ID Proof & Documents
-              </h2>
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  <div>
-                    <label className="text-xs text-gray-500 uppercase tracking-wide">
-                      Document Type
-                    </label>
-                    <p className="font-medium text-gray-800 mt-2">
-                      {memberData.id_proof.type}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-500 uppercase tracking-wide">
-                      Document Number
-                    </label>
-                    <p className="font-medium text-gray-800 mt-2">
-                      {memberData.id_proof.number}
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">
-                    Document Image
-                  </label>
-                  <div className="relative group">
-                    <img
-                      src={memberData.id_proof.document_url}
-                      alt="ID Proof Document"
-                      className="w-full max-w-md h-32 object-cover rounded-lg border border-gray-200 transition-transform duration-300 group-hover:scale-[1.02]"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center">
-                      <button className="bg-white text-gray-800 px-4 py-1.5 rounded-full text-sm font-medium flex items-center transform transition-transform duration-200 hover:scale-105">
-                        <Eye className="w-4 h-4 mr-1" />
-                        View Full
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <PersonalInfoSection memberData={memberData} formatDate={formatDate} />
+            <MembershipSection memberData={memberData} formatDate={formatDate} daysUntilExpiry={daysUntilExpiry} />
+            <PaymentSection memberData={memberData} formatDate={formatDate} />
+            <IDProofSection memberData={memberData} />
           </div>
 
           {/* Right Sidebar */}
           <div className="space-y-6">
-            {/* Quick Actions */}
-            <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
-              <h2 className="text-xl font-semibold mb-6">Quick Actions</h2>
-              <div className="space-y-3">
-                <button className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 flex items-center justify-center transition-all duration-200 hover:shadow-md">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Send Invoice via WhatsApp
-                </button>
-                <button className="w-full bg-amber-500 text-white py-2.5 px-4 rounded-lg hover:bg-amber-600 flex items-center justify-center transition-all duration-200 hover:shadow-md">
-                  <Bell className="w-4 h-4 mr-2" />
-                  Send Expiry Reminder
-                </button>
-              </div>
-            </div>
-
+            <QuickActionsSection />
+            
             {/* Attendance Calendar */}
             <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all duration-300 hover:shadow-md">
               <div className="flex items-center justify-between mb-6">
@@ -469,6 +495,7 @@ const GymMemberDetails = () => {
                   <button
                     onClick={() => navigateMonth(-1)}
                     className="p-1.5 hover:bg-indigo-50 rounded-full transition-colors duration-200"
+                    aria-label="Previous month"
                   >
                     <ChevronLeft className="w-5 h-5 text-indigo-600" />
                   </button>
@@ -481,6 +508,7 @@ const GymMemberDetails = () => {
                   <button
                     onClick={() => navigateMonth(1)}
                     className="p-1.5 hover:bg-indigo-50 rounded-full transition-colors duration-200"
+                    aria-label="Next month"
                   >
                     <ChevronRight className="w-5 h-5 text-indigo-600" />
                   </button>
@@ -490,7 +518,7 @@ const GymMemberDetails = () => {
               <div className="mb-6">
                 <div className="text-center bg-indigo-50 p-4 rounded-xl">
                   <p className="text-3xl font-bold text-indigo-600">
-                    {getAttendanceCount()}
+                    {attendanceCount}
                   </p>
                   <p className="text-sm text-indigo-600 font-medium">
                     Days Attended This Month
@@ -498,27 +526,19 @@ const GymMemberDetails = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-600 font-medium mb-3">
-                <div>Sun</div>
-                <div>Mon</div>
-                <div>Tue</div>
-                <div>Wed</div>
-                <div>Thu</div>
-                <div>Fri</div>
-                <div>Sat</div>
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 gap-1 mb-4">
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                  <div
+                    key={day}
+                    className="h-8 flex items-center justify-center text-xs font-medium text-gray-500"
+                  >
+                    {day}
+                  </div>
+                ))}
               </div>
-
-              <div className="grid grid-cols-7 gap-1">{renderCalendar()}</div>
-
-              <div className="mt-4 flex items-center justify-between text-xs font-medium">
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-emerald-500 rounded-full mr-2"></div>
-                  <span className="text-gray-700">Attended</span>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-3 h-3 bg-gray-200 rounded-full mr-2"></div>
-                  <span className="text-gray-700">Absent</span>
-                </div>
+              <div className="grid grid-cols-7 gap-1">
+                {renderCalendar()}
               </div>
             </div>
           </div>
@@ -526,6 +546,8 @@ const GymMemberDetails = () => {
       </div>
     </div>
   );
-};
+});
+
+GymMemberDetails.displayName = 'GymMemberDetails';
 
 export default GymMemberDetails;
