@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import React from "react";
 
-export default function MemberCard({ user, style }) {
+function MemberCard({ user, style }) {
   const navigate = useNavigate();
 
   return (
@@ -38,3 +39,5 @@ export default function MemberCard({ user, style }) {
     </div>
   );
 }
+
+export default React.memo(MemberCard);

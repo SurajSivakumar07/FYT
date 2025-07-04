@@ -1,10 +1,6 @@
 import { FixedSizeList as List } from "react-window";
 import MemberCard from "./MemberCard";
-import { useMembers } from "../../hooks/useMembers";
-import { useEffect, useState, useMemo } from "react";
-import { data } from "react-router-dom";
-import SearchBar from "./SearchBar";
-import FilterPanel from "./FilterPanel";
+import { useMemo } from "react";
 
 // const users = Array.from({ length: 100 }).map((_, i) => ({
 //   id: `DGYM${1000 + i}`,
@@ -18,37 +14,35 @@ import FilterPanel from "./FilterPanel";
 // }));
 
 export default function VirtualizedMemberList({ members }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("");
+  // Memoise the list to avoid recalculation on parent re-renders
+  const memoisedMembers = useMemo(() => members, [members]);
 
-  const filteredMembers = useMemo(() => {
-    return members.filter((user) => {
-      const matchSearch =
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.phone.includes(searchTerm);
-      const matchFilter = filter ? user.type === filter : true;
-      return matchSearch && matchFilter;
-    });
-  }, [members, searchTerm, filter]);
+  // Each row receives the memoised array as itemData so we can access the member directly
+  const Row = ({ index, style, data }) => {
+    const user = data[index];
+    return <MemberCard user={user} style={style} />;
+  };
 
-  const Row = ({ index, style }) => (
-    <MemberCard user={members[index]} style={style} />
-  );
+  if (!memoisedMembers || memoisedMembers.length === 0) {
+    return (
+      <div className="p-4 w-full max-w-md mx-auto">
+        <p className="text-center text-gray-500 mt-4">No members found</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 w-full max-w-md mx-auto">
-      {filteredMembers.length === 0 ? (
-        <p className="text-center text-gray-500 mt-4">No members found</p>
-      ) : (
-        <List
-          height={Math.min(filteredMembers.length * 180, 900)} // Responsive scroll area
-          itemCount={filteredMembers.length}
-          itemSize={120}
-          width="100%"
-        >
-          {Row}
-        </List>
-      )}
+      <List
+        height={Math.min(memoisedMembers.length * 140, 900)} // ensure we don't exceed viewport
+        itemCount={memoisedMembers.length}
+        itemSize={140}
+        width="100%"
+        itemData={memoisedMembers}
+        itemKey={(index, data) => data[index].member_id || index}
+      >
+        {Row}
+      </List>
     </div>
   );
 }
