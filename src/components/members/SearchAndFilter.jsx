@@ -1,19 +1,20 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, memo } from "react";
 
-export default function SearchAndFilter({
+const SearchAndFilter = memo(({
   search,
   setSearch,
   type,
   setType,
   statusFilter,
   setStatusFilter,
-}) {
+}) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const activeFiltersCount =
     (search ? 1 : 0) + (type ? 1 : 0) + (statusFilter !== "all" ? 1 : 0);
+
   const memberTypes = [
     { value: "", label: "All Member Types", icon: "👥" },
     { value: "pt", label: "Personal Trainer", icon: "🏋️" },
@@ -28,26 +29,38 @@ export default function SearchAndFilter({
     { value: "expiring", label: "Expiring Soon", icon: "⏳" },
   ];
 
-  const selectedType =
-    memberTypes.find((item) => item.value === type) || memberTypes[0];
 
-  const clearAllFilters = () => {
+
+  // Memoized handlers to prevent unnecessary re-renders
+  const clearAllFilters = useCallback(() => {
     setSearch("");
     setType("");
-
-    setStatusFilter("all"); // ✅ fix
+    setStatusFilter("all");
     setIsFilterOpen(false);
-  };
+  }, [setSearch, setType, setStatusFilter]);
 
-  const handleTypeSelect = (value) => {
+  const handleTypeSelect = useCallback((value) => {
     setType(value);
     setIsDropdownOpen(false);
-  };
+  }, [setType]);
 
-  const handleStatusSelect = (value) => {
+  const handleStatusSelect = useCallback((value) => {
     setStatusFilter(value);
     setIsDropdownOpen(false);
-  };
+  }, [setStatusFilter]);
+
+  const handleSearchChange = useCallback((e) => {
+    setSearch(e.target.value);
+  }, [setSearch]);
+
+  const handleSearchClear = useCallback(() => {
+    setSearch("");
+  }, [setSearch]);
+
+  const toggleDropdown = useCallback(() => {
+    setIsDropdownOpen(!isDropdownOpen);
+    setIsFilterOpen(false);
+  }, [isDropdownOpen]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -81,6 +94,7 @@ export default function SearchAndFilter({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -92,15 +106,17 @@ export default function SearchAndFilter({
           </div>
           <input
             type="text"
-            placeholder="Search members..."
+            placeholder="Search by name or phone..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-md shadow-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            onChange={handleSearchChange}
+            className="w-full pl-9 pr-10 py-3 border border-gray-200 rounded-lg shadow-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200"
+            aria-label="Search members"
           />
           {search && (
             <button
-              onClick={() => setSearch("")}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              onClick={handleSearchClear}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-100 rounded-r-lg transition-colors duration-200"
+              aria-label="Clear search"
             >
               <svg
                 className="h-5 w-5 text-gray-400 hover:text-gray-600"
@@ -122,15 +138,15 @@ export default function SearchAndFilter({
         {/* Filter Button */}
         <div className="relative" ref={dropdownRef}>
           <button
-            onClick={() => {
-              setIsDropdownOpen(!isDropdownOpen);
-              setIsFilterOpen(false);
-            }}
-            className={`relative p-3 rounded-lg border transition-all ${
+            onClick={toggleDropdown}
+            className={`relative p-3 rounded-lg border transition-all duration-200 ${
               isDropdownOpen || activeFiltersCount > 0
-                ? "bg-blue-50 border-blue-200 text-blue-600"
-                : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
+                ? "bg-blue-50 border-blue-200 text-blue-600 shadow-md"
+                : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:shadow-sm"
             }`}
+            aria-label={`Filter options ${activeFiltersCount > 0 ? `(${activeFiltersCount} active)` : ''}`}
+            aria-expanded={isDropdownOpen}
+            aria-haspopup="true"
           >
             <svg
               className="h-5 w-5"
@@ -146,7 +162,7 @@ export default function SearchAndFilter({
               />
             </svg>
             {activeFiltersCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
                 {activeFiltersCount}
               </span>
             )}
@@ -154,23 +170,25 @@ export default function SearchAndFilter({
 
           {/* Dropdown Menu */}
           <div
-            className={`absolute top-full right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden transition-all duration-200 ${
+            className={`absolute top-full right-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden transition-all duration-200 ${
               isDropdownOpen
                 ? "opacity-100 translate-y-0 visible"
                 : "opacity-0 -translate-y-2 invisible"
             }`}
+            role="menu"
+            aria-hidden={!isDropdownOpen}
           >
-            <div className="p-4">
+            <div className="p-5">
               {/* Type Filter */}
-              <div className="mb-4">
-                <div className="flex justify-between items-center mb-2">
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-3">
                   <h4 className="text-sm font-semibold text-gray-900">
                     Filter by Type
                   </h4>
                   {type && (
                     <button
                       onClick={() => setType("")}
-                      className="text-xs text-blue-600"
+                      className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
                     >
                       Clear
                     </button>
@@ -181,11 +199,12 @@ export default function SearchAndFilter({
                     <button
                       key={option.value}
                       onClick={() => handleTypeSelect(option.value)}
-                      className={`w-full px-3 py-2 text-left rounded-lg flex items-center gap-3 ${
+                      className={`w-full px-3 py-2.5 text-left rounded-lg flex items-center gap-3 transition-all duration-200 ${
                         type === option.value
-                          ? "bg-blue-50 text-blue-700"
-                          : "hover:bg-gray-50"
+                          ? "bg-blue-50 text-blue-700 border border-blue-200"
+                          : "hover:bg-gray-50 border border-transparent"
                       }`}
+                      role="menuitem"
                     >
                       <span className="text-lg">{option.icon}</span>
                       <span className="text-sm font-medium">
@@ -198,14 +217,14 @@ export default function SearchAndFilter({
 
               {/* Activity Status Filter */}
               <div>
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-center mb-3">
                   <h4 className="text-sm font-semibold text-gray-900">
                     Filter by Status
                   </h4>
                   {statusFilter !== "all" && (
                     <button
                       onClick={() => setStatusFilter("all")}
-                      className="text-xs text-blue-600"
+                      className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
                     >
                       Clear
                     </button>
@@ -216,11 +235,12 @@ export default function SearchAndFilter({
                     <button
                       key={option.value}
                       onClick={() => handleStatusSelect(option.value)}
-                      className={`w-full px-3 py-2 text-left rounded-lg flex items-center gap-3 ${
+                      className={`w-full px-3 py-2.5 text-left rounded-lg flex items-center gap-3 transition-all duration-200 ${
                         statusFilter === option.value
-                          ? "bg-blue-50 text-blue-700"
-                          : "hover:bg-gray-50"
+                          ? "bg-blue-50 text-blue-700 border border-blue-200"
+                          : "hover:bg-gray-50 border border-transparent"
                       }`}
+                      role="menuitem"
                     >
                       <span className="text-lg">{option.icon}</span>
                       <span className="text-sm font-medium">
@@ -230,6 +250,18 @@ export default function SearchAndFilter({
                   ))}
                 </div>
               </div>
+
+              {/* Clear All Button */}
+              {activeFiltersCount > 0 && (
+                <div className="mt-6 pt-4 border-t border-gray-100">
+                  <button
+                    onClick={clearAllFilters}
+                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-200 text-sm font-medium"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -237,57 +269,62 @@ export default function SearchAndFilter({
 
       {/* Active Filter Tags */}
       {activeFiltersCount > 0 && (
-        <div className="mt-3 pt-3 border-t border-gray-100 flex flex-wrap items-center gap-2 text-xs text-gray-600">
-          <span className="font-medium">Active Filters:</span>
+        <div className="mt-4 pt-4 border-t border-gray-100 flex flex-wrap items-center gap-2 text-xs text-gray-600">
+          <span className="font-medium text-gray-700">Active Filters:</span>
           {search && (
-            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
-              "{search}"
+            <span className="px-3 py-1.5 bg-blue-100 text-blue-800 rounded-full flex items-center gap-2">
+              <span className="font-medium">"{search}"</span>
               <button
-                onClick={() => setSearch("")}
-                className="ml-1 text-blue-600"
+                onClick={handleSearchClear}
+                className="text-blue-600 hover:text-blue-800 transition-colors"
+                aria-label="Remove search filter"
               >
                 ✕
               </button>
             </span>
           )}
           {type && (
-            <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full">
-              {type === "pt"
-                ? "🏋️ Trainer"
-                : type === "sm"
-                ? "💪 Strength"
-                : "👤 Regular"}
+            <span className="px-3 py-1.5 bg-green-100 text-green-800 rounded-full flex items-center gap-2">
+              <span className="font-medium">
+                {type === "pt"
+                  ? "🏋️ Trainer"
+                  : type === "sm"
+                  ? "💪 Strength"
+                  : "👤 Regular"}
+              </span>
               <button
                 onClick={() => setType("")}
-                className="ml-1 text-green-600"
+                className="text-green-600 hover:text-green-800 transition-colors"
+                aria-label="Remove type filter"
               >
                 ✕
               </button>
             </span>
           )}
-          {statusFilter && (
-            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full">
-              {statusFilter === "active"
-                ? "✅ Active"
-                : statusFilter === "expired"
-                ? "❌ Expired"
-                : "⏳ Expiring"}
+          {statusFilter !== "all" && (
+            <span className="px-3 py-1.5 bg-yellow-100 text-yellow-800 rounded-full flex items-center gap-2">
+              <span className="font-medium">
+                {statusFilter === "active"
+                  ? "✅ Active"
+                  : statusFilter === "expired"
+                  ? "❌ Expired"
+                  : "⏳ Expiring"}
+              </span>
               <button
-                onClick={() => setStatusFilter("")}
-                className="ml-1 text-yellow-600"
+                onClick={() => setStatusFilter("all")}
+                className="text-yellow-600 hover:text-yellow-800 transition-colors"
+                aria-label="Remove status filter"
               >
                 ✕
               </button>
             </span>
           )}
-          <button
-            onClick={clearAllFilters}
-            className="ml-auto text-red-600 hover:underline text-xs"
-          >
-            Clear All
-          </button>
         </div>
       )}
     </div>
   );
-}
+});
+
+SearchAndFilter.displayName = 'SearchAndFilter';
+
+export default SearchAndFilter;

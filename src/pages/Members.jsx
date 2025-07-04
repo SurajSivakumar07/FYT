@@ -1,32 +1,56 @@
 // src/pages/members/MembersPage.jsx
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import SearchAndFilter from "../components/members/SearchAndFilter";
 import { useMembers } from "../hooks/useMembers";
+import { useDebounce } from "../hooks/useDebounce";
 import VirtualizedMemberList from "../components/members/VirtualizedMemberList";
 import { useLocation } from "react-router-dom";
-import { useMemo, useEffect } from "react";
+
+// Loading skeleton component
+const MemberListSkeleton = () => (
+  <div className="space-y-4">
+    {Array.from({ length: 5 }).map((_, index) => (
+      <div key={index} className="bg-white p-4 rounded-xl shadow-sm animate-pulse">
+        <div className="flex items-center">
+          <div className="w-12 h-12 bg-gray-300 rounded-full mr-4"></div>
+          <div className="flex-1">
+            <div className="h-4 bg-gray-300 rounded mb-2 w-3/4"></div>
+            <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
 
 export default function Members() {
   const gym_id = 1;
   const location = useLocation();
 
-  const { data: members = [], isLoading } = useMembers(gym_id);
+  const { data: members = [], isLoading, error } = useMembers(gym_id);
 
   const [search, setSearch] = useState("");
   const [type, setType] = useState("");
-
-  // Filter logic (can be memoized)
   const [statusFilter, setStatusFilter] = useState("all");
 
+  // Debounce search input to reduce filtering frequency
+  const debouncedSearch = useDebounce(search, 300);
+
+  // Memoize expensive filter operations
   const filteredMembers = useMemo(() => {
+    if (!members.length) return [];
+
     const now = new Date();
     const tenDaysLater = new Date();
     tenDaysLater.setDate(now.getDate() + 10);
 
     return members.filter((member) => {
+      // Use debounced search value
       const matchSearch = member.name
         ?.toLowerCase()
-        .includes(search.toLowerCase());
+        .includes(debouncedSearch.toLowerCase()) ||
+        member.phone_number?.includes(debouncedSearch);
+      
       const matchType = type ? member.type === type : true;
 
       const expiryDate = new Date(member.end_date);
@@ -46,37 +70,84 @@ export default function Members() {
 
       return matchSearch && matchType && matchStatus;
     });
-  }, [members, search, type, statusFilter]);
+  }, [members, debouncedSearch, type, statusFilter]);
 
+  // Memoize search and filter handlers
+  const handleSearchChange = useCallback((value) => {
+    setSearch(value);
+  }, []);
+
+  const handleTypeChange = useCallback((value) => {
+    setType(value);
+  }, []);
+
+  const handleStatusChange = useCallback((value) => {
+    setStatusFilter(value);
+  }, []);
+
+  // Handle URL-based status filtering
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const statusParam = params.get("status");
 
-    if (
-      statusParam === "expired" ||
-      statusParam === "active" ||
-      statusParam === "expiring"
-    ) {
+    if (["expired", "active", "expiring"].includes(statusParam)) {
       setStatusFilter(statusParam);
     } else {
       setStatusFilter("all");
     }
   }, [location.search]);
-  return (
-    <div className="p-4">
-      <SearchAndFilter
-        search={search}
-        setSearch={setSearch}
-        type={type}
-        setType={setType}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
-      />
 
-      {isLoading ? (
-        <div className="text-center text-gray-500 py-10">
-          Loading members...
+  // Error state
+  if (error) {
+    return (
+      <div className="p-4">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <div className="text-red-400 mb-4">
+            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-red-800 mb-2">Failed to load members</h3>
+          <p className="text-red-600 mb-4">There was an error loading the member list. Please try again.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Retry
+          </button>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 max-w-7xl mx-auto">
+      {/* Header with member count */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Members</h1>
+        {!isLoading && (
+          <p className="text-gray-600">
+            {filteredMembers.length} of {members.length} members
+            {debouncedSearch && ` matching "${debouncedSearch}"`}
+          </p>
+        )}
+      </div>
+
+      {/* Search and Filter */}
+      <div className="mb-6">
+        <SearchAndFilter
+          search={search}
+          setSearch={handleSearchChange}
+          type={type}
+          setType={handleTypeChange}
+          statusFilter={statusFilter}
+          setStatusFilter={handleStatusChange}
+        />
+      </div>
+
+      {/* Loading State */}
+      {isLoading ? (
+        <MemberListSkeleton />
       ) : (
         <VirtualizedMemberList members={filteredMembers} />
       )}
