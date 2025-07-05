@@ -58,7 +58,7 @@ const SignIn = () => {
 
   return (
     <div
-      className="relative flex min-h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-purple-100 justify-center overflow-x-hidden"
+      className="relative flex min-h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-white-50 justify-center overflow-x-hidden"
       style={{ fontFamily: 'Lexend, "Noto Sans", sans-serif' }}
     >
       {/* Background gradients */}
@@ -71,21 +71,17 @@ const SignIn = () => {
       <div className="relative flex flex-col items-center w-full max-w-md mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Logo */}
         <div className="w-full mb-8">
-          <div className="flex flex-col items-center justify-center bg-gradient-to-r from-blue-50 via-white rounded-3xl min-h-[140px] sm:min-h-[160px] shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white backdrop-blur-sm"></div>
+          <div className="flex flex-col items-center justify-center  rounded-3xl min-h-[140px] sm:min-h-[160px]   relative overflow-hidden">
             <div className="relative z-10 text-center">
               <span className="text-black text-5xl sm:text-6xl font-black tracking-wider drop-shadow-lg">
-                FYT
+                FYTZ
               </span>
-              <p className="text-blue-100 text-sm font-medium mt-2 tracking-wide">
-                Your Trusted Platform
-              </p>
             </div>
           </div>
         </div>
 
         {/* Sign In Form */}
-        <div className="w-full bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-8 border border-white/20">
+        <div className="w-full bg-white/80  rounded-3xl  p-6 sm:p-8 border border-white/20">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email */}
             <div className="space-y-2">
@@ -147,8 +143,8 @@ const SignIn = () => {
               type="submit"
               className={`w-full h-14 rounded-2xl font-bold text-base transition-all duration-300 shadow-lg ${
                 isSubmitting
-                  ? "bg-slate-400 cursor-not-allowed text-white"
-                  : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                  ? "bg-slate-400 cursor-not-allowed text-black"
+                  : "  bg-white text-black hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
               }`}
               disabled={isSubmitting}
             >

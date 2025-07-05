@@ -3,7 +3,6 @@ import { FaBell, FaQuestionCircle, FaChevronDown } from "react-icons/fa";
 import profile from "../../assets/profile.jpg";
 import gymLogo from "../../assets/gym_logo.jpg";
 import { useNavigate, NavLink } from "react-router-dom";
-import { Home, Plus, User, X } from "lucide-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
