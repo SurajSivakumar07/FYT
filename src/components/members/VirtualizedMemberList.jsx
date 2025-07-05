@@ -19,7 +19,7 @@ const VirtualizedMemberList = memo(({ members }) => {
 
   if (members.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12">
+      <div className="flex flex-col items-center justify-center py-12 ">
         <div className="text-gray-400 mb-4">
           <svg
             className="w-16 h-16 mx-auto"
@@ -44,7 +44,7 @@ const VirtualizedMemberList = memo(({ members }) => {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto ">
       <div className="mb-4 text-sm text-gray-600">
         Showing {members.length} member{members.length !== 1 ? "s" : ""}
       </div>
@@ -54,7 +54,7 @@ const VirtualizedMemberList = memo(({ members }) => {
         itemSize={120}
         width="100%"
         overscanCount={5} // Render 5 extra items for smoother scrolling
-        className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+        className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 "
       >
         {Row}
       </List>

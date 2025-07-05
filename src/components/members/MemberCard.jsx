@@ -213,11 +213,7 @@ const MemberCard = memo(({ user, style }) => {
   const initialsColor = getInitialsColor(user.name);
 
   return (
-    <div
-      style={style}
-      onClick={() => navigate(`/users/${user.member_id}`)}
-      className="mb-4"
-    >
+    <div style={style} onClick={() => navigate(`/users/${user.member_id}`)}>
       <div className="px-4 pb-3 box-border w-full ">
         <div className="flex items-start bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer borderw-full max-w-md mx-auto group relative">
           {/* Status Color Indicator */}
@@ -243,13 +239,13 @@ const MemberCard = memo(({ user, style }) => {
             <div className="flex flex-wrap justify-between gap-2 mb-2 ">
               <div className="font-light">
                 <p>{formattedExpiry}</p>
-                <div className="mt-0.5">
+                {/* <div className="mt-0.5">
                   <span
                     className={`px-2 py-1   text-xs font-medium uppercase tracking-wide `}
                   >
                     {user.type}
                   </span>
-                </div>
+                </div> */}
               </div>
 
               <div>
