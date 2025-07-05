@@ -10,7 +10,10 @@ import { useLocation } from "react-router-dom";
 const MemberListSkeleton = () => (
   <div className="space-y-4">
     {Array.from({ length: 5 }).map((_, index) => (
-      <div key={index} className="bg-white p-4 rounded-xl shadow-sm animate-pulse">
+      <div
+        key={index}
+        className="bg-white p-4 rounded-xl shadow-sm animate-pulse"
+      >
         <div className="flex items-center">
           <div className="w-12 h-12 bg-gray-300 rounded-full mr-4"></div>
           <div className="flex-1">
@@ -26,7 +29,9 @@ const MemberListSkeleton = () => (
 export default function Members() {
   const gym_id = 1;
   const location = useLocation();
-
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  const [monthRange, setMonthRange] = useState([]);
   const { data: members = [], isLoading, error } = useMembers(gym_id);
 
   const [search, setSearch] = useState("");
@@ -45,12 +50,10 @@ export default function Members() {
     tenDaysLater.setDate(now.getDate() + 10);
 
     return members.filter((member) => {
-      // Use debounced search value
-      const matchSearch = member.name
-        ?.toLowerCase()
-        .includes(debouncedSearch.toLowerCase()) ||
+      const matchSearch =
+        member.name?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
         member.phone_number?.includes(debouncedSearch);
-      
+
       const matchType = type ? member.type === type : true;
 
       const expiryDate = new Date(member.end_date);
@@ -68,9 +71,17 @@ export default function Members() {
           ? isExpiringSoon
           : true;
 
-      return matchSearch && matchType && matchStatus;
+      // Format start date
+      const startDate = member.start_date ? new Date(member.start_date) : null;
+      const joinMonth = startDate ? startDate.toISOString().slice(5, 7) : "";
+      const joinYear = startDate ? startDate.getFullYear().toString() : "";
+
+      const matchMonth = !month || joinMonth === month;
+      const matchYear = !year || joinYear === year;
+
+      return matchSearch && matchType && matchStatus && matchMonth && matchYear;
     });
-  }, [members, debouncedSearch, type, statusFilter]);
+  }, [members, debouncedSearch, type, statusFilter, month, year]);
 
   // Memoize search and filter handlers
   const handleSearchChange = useCallback((value) => {
@@ -103,14 +114,28 @@ export default function Members() {
       <div className="p-4">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
           <div className="text-red-400 mb-4">
-            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-12 h-12 mx-auto"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-red-800 mb-2">Failed to load members</h3>
-          <p className="text-red-600 mb-4">There was an error loading the member list. Please try again.</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <h3 className="text-lg font-medium text-red-800 mb-2">
+            Failed to load members
+          </h3>
+          <p className="text-red-600 mb-4">
+            There was an error loading the member list. Please try again.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
             Retry
@@ -137,11 +162,15 @@ export default function Members() {
       <div className="mb-6">
         <SearchAndFilter
           search={search}
-          setSearch={handleSearchChange}
+          setSearch={setSearch}
           type={type}
-          setType={handleTypeChange}
+          setType={setType}
           statusFilter={statusFilter}
-          setStatusFilter={handleStatusChange}
+          setStatusFilter={setStatusFilter}
+          month={month}
+          setMonth={setMonth}
+          year={year} // ✅ Add this
+          setYear={setYear} // ✅ Add this
         />
       </div>
 
