@@ -5,6 +5,7 @@ import Navbar from "./components/DashboardCards/Navbar";
 import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Trainers from "./pages/Trainers";
+import Analysis from "./pages/Analysis";
 
 // Lazy load components for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -139,6 +140,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Trainers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/view-analysis"
+              element={
+                <ProtectedRoute>
+                  <Analysis />
                 </ProtectedRoute>
               }
             />

@@ -5,7 +5,7 @@ const url = import.meta.env.VITE_API_URL;
 
 export const useMeberProfile = (gym_id, id) => {
   return useQuery({
-    queryKey: ["memberprofile", gym_id],
+    queryKey: ["memberprofile"],
     queryFn: async () => {
       const res = await axios.get(
         `${url}/gyms/${gym_id}/members/${id}/full-details`
@@ -13,5 +13,7 @@ export const useMeberProfile = (gym_id, id) => {
       return res.data;
     },
     enabled: !!gym_id,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 };

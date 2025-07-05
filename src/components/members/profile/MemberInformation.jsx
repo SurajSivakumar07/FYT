@@ -266,27 +266,7 @@ const MemberInformation = React.memo(
                   {memberData.membership_plan_id}
                 </p>
               </div>
-              <div>
-                <label className="text-xs text-gray-500 uppercase flex items-center gap-1">
-                  <svg
-                    className="w-4 h-4 text-softBlue"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                  Trainer
-                </label>
-                <p className="font-medium text-black mt-2">
-                  {memberData.trainer_name}
-                </p>
-              </div>
+
               <div>
                 <label className="text-xs text-gray-500 uppercase flex items-center gap-1">
                   <svg
@@ -353,6 +333,19 @@ const MemberInformation = React.memo(
                   {daysUntilExpiry} days
                 </p>
               </div>
+
+              {memberData.diet_chart && (
+                <div>
+                  <a
+                    href={memberData.diet_chart}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    View Diet Chart
+                  </a>
+                </div>
+              )}
             </div>
           </>
         )}

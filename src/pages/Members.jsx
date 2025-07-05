@@ -169,8 +169,8 @@ export default function Members() {
           setStatusFilter={setStatusFilter}
           month={month}
           setMonth={setMonth}
-          year={year} // ✅ Add this
-          setYear={setYear} // ✅ Add this
+          year={year}
+          setYear={setYear}
         />
       </div>
 

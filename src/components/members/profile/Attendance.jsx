@@ -49,7 +49,7 @@ const Attendance = ({ id }) => {
     };
 
     fetchAttendance();
-  }, [id]);
+  }, [selectedDates]);
 
   const handleDateClick = (date) => {
     const dateString = formatDateForBackend(date);
@@ -116,8 +116,6 @@ const Attendance = ({ id }) => {
         console.log("Sending payload:", payload);
         await attemptRequest(payload, maxRetries);
       }
-
-      alert("Attendance saved for selected dates.");
 
       const updatedMarked = { ...markedDates };
       selectedDates.forEach((dateString) => {

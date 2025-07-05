@@ -9,14 +9,21 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { supabase } from "../services/supabase/supabase";
 import { useMeberProfile } from "../hooks/useMemberProfile";
+import EditMemberModal from "../components/members/profile/EditMemberModal";
+import { useEditMemberProfile } from "../hooks/useEditMemberProfile";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("personal");
   const [uploading, setUploading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [errorEditing, SetError] = useState(false);
+  const [errorEditingMess, SetErrorMes] = useState(false);
 
   const gym_id = 1; // Consider making this dynamic
   const { userId } = useParams();
   const queryClient = useQueryClient();
+
+  const url = import.meta.env.VITE_API_URL;
 
   const {
     data: memberData = {},
@@ -24,40 +31,30 @@ const ProfilePage = () => {
     error,
   } = useMeberProfile(gym_id, userId);
 
-  const [attendanceData, setAttendanceData] = useState({
-    "2024-07-01": true,
-    "2024-07-02": true,
-    "2024-07-03": false,
-    "2024-07-05": true,
-    "2024-07-06": true,
-    "2024-07-08": true,
-    "2024-07-09": false,
-    "2024-07-10": true,
-    "2024-07-12": true,
-    "2024-07-13": true,
-    "2024-07-15": true,
-    "2024-07-16": true,
-    "2024-07-17": false,
-    "2024-07-19": true,
-    "2024-07-20": true,
-    "2024-07-22": true,
-    "2024-07-23": true,
-    "2024-07-24": false,
-    "2024-07-26": true,
-    "2024-07-27": true,
-    "2024-07-29": true,
-    "2024-07-30": true,
-  });
-
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
+  const { mutate: updateMember } = useEditMemberProfile();
 
-  const handleAddAttendance = (date) => {
-    setAttendanceData((prev) => ({
-      ...prev,
-      [date]: true,
-    }));
+  const handleSave = async (updatedData) => {
+    // try {
+    //   const res = await axios.put(
+    //     `${url}/members/${memberData.member.member_id}`,
+    //     updatedData
+    //   );
+
+    //   if (res.status === 200) {
+    //     alert("Updated successfully");
+    //   }
+    // } catch (err) {
+    //   console.error(err);
+    //   SetErrorMes(err.message);
+    //   SetError(true);
+    // }
+    updateMember({
+      memberId: memberData.member.member_id,
+      updatedData,
+    });
   };
 
   const resizeImage = (file, maxWidth, maxHeight, quality = 0.7) => {
@@ -168,7 +165,7 @@ const ProfilePage = () => {
 
       // 🔥 Update photo URL in backend
       await axios.put(
-        `http://localhost:8000/gyms/${gym_id}/members/${memberData.member.member_id}/photo-url`,
+        `${url}/gyms/${gym_id}/members/${memberData.member.member_id}/photo-url`,
         { photo_url: photoUrl }
       );
 
@@ -269,10 +266,49 @@ const ProfilePage = () => {
                 </svg>
                 {member?.status === "active" ? "Active" : "Inactive"}
               </span>
+              {memberData?.transactions[0]?.balance == null ||
+              memberData?.transactions[0]?.balance === 0 ? (
+                <span className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold shadow-sm mt-2 ml-2">
+                  <svg
+                    className="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Fully Paid
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold shadow-sm mt-2 ml-2">
+                  <svg
+                    className="w-4 h-4 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8v4l3 3"
+                    />
+                  </svg>
+                  Balance: ₹{memberData?.transactions[0]?.balance}
+                </span>
+              )}
             </div>
           </div>
           <div className="flex flex-col items-end gap-2 mt-4 sm:mt-0">
-            <button className="bg-black text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:bg-softBlue/90 transition-all duration-200 flex items-center gap-2">
+            <button
+              className="bg-black text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:bg-softBlue/90 transition-all duration-200 flex items-center gap-2"
+              onClick={() => setIsOpen(true)}
+            >
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -288,7 +324,22 @@ const ProfilePage = () => {
               </svg>
               Edit Profile
             </button>
+
+            {memberData?.transactions[0]?.balance > 0 && (
+              <button
+                className="bg-gradient-to-r from-orange-400 to-orange-600 text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:from-orange-500 hover:to-orange-700 transition-all duration-200 flex items-center gap-2 mt-2"
+                onClick={() => setIsOpen(true)}
+              >
+                <span>
+                  Update Balance
+                  <span className="ml-2 bg-white/80 text-orange-700 px-2 py-0.5 rounded-full text-xs font-bold">
+                    ₹{memberData?.transactions[0]?.balance}
+                  </span>
+                </span>
+              </button>
+            )}
           </div>
+          {errorEditing ? "" : errorEditingMess}
         </div>
       </div>
 
@@ -335,9 +386,9 @@ const ProfilePage = () => {
           {activeTab === "membership" && (
             <MemberInformation memberData={member} showMembership />
           )}
-          {activeTab === "id-proof" && (
+          {/* {activeTab === "id-proof" && (
             <MemberInformation memberData={member} showIdProof />
-          )}
+          )} */}
           {activeTab === "actions" && <WhatsAppNotification />}
           {activeTab === "attendance" && <Attendance id={userId} />}
           {activeTab === "trainer" && member?.type === "pt" && (
@@ -352,6 +403,12 @@ const ProfilePage = () => {
           )}
         </div>
       </div>
+      <EditMemberModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        memberData={memberData.member}
+        onSave={handleSave}
+      />
     </div>
   );
 };
