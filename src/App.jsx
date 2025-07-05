@@ -4,6 +4,7 @@ import BottomNav from "./components/Navigation/BottomNav";
 import Navbar from "./components/DashboardCards/Navbar";
 import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Trainers from "./pages/Trainers";
 
 // Lazy load components for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -76,7 +77,6 @@ export default function App() {
           <Routes>
             {/* Public route */}
             <Route path="/signin" element={<SignIn />} />
-
             {/* Protected routes */}
             <Route
               path="/"
@@ -131,6 +131,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/view-trainer"
+              element={
+                <ProtectedRoute>
+                  <Trainers />
                 </ProtectedRoute>
               }
             />

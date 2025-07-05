@@ -42,7 +42,7 @@ export default function Navbar() {
               navigation("/");
             }}
           >
-            Settings
+            FitnessZone
           </div>
         </div>
 
