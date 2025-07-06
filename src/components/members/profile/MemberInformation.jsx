@@ -39,7 +39,7 @@ const MemberInformation = React.memo(
     const [modalOpen, setModalOpen] = useState(false);
     const [uploading, setUploading] = useState(false);
     const { userId } = useParams();
-    const [documentUrl, setDocumentUrl] = useState(memberData.document_url);
+    const [documentUrl, setDocumentUrl] = useState(memberData.doucumet_url);
     // Update local state when memberData changes
     useEffect(() => {
       setDocumentUrl(memberData.document_url);
@@ -533,7 +533,7 @@ const MemberInformation = React.memo(
                   </label>
 
                   <div className="relative group max-w-lg">
-                    {documentUrl ? (
+                    {documentUrl ? ( // Changed from memberData.doucumet_url to documentUrl
                       <img
                         src={documentUrl}
                         alt="Document Preview"

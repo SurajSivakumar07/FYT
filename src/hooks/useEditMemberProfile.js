@@ -6,7 +6,7 @@ export const useEditMemberProfile = () => {
 
   return useMutation({
     mutationFn: ({ memberId, updatedData }) =>
-      EditMemberProfileApi(memberId, updatedData),
+      EditMemberProfileApi({ memberId, updatedData }),
 
     onSuccess: () => {
       // Invalidate specific member query

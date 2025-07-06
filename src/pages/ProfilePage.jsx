@@ -38,7 +38,7 @@ const ProfilePage = () => {
 
   const handleSave = async (updatedData) => {
     updateMember({
-      memberId: memberData.member.member_id,
+      memberId: memberData?.member?.member_id,
       updatedData,
     });
   };
