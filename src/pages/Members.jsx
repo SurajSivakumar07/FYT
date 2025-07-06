@@ -59,7 +59,7 @@ export default function Members() {
       const expiryDate = new Date(member.end_date);
       const isExpired = expiryDate < now;
       const isExpiringSoon = expiryDate >= now && expiryDate <= tenDaysLater;
-
+      const pendingBalance = member.balance > 0;
       const matchStatus =
         statusFilter === "all"
           ? true
@@ -69,6 +69,8 @@ export default function Members() {
           ? !isExpired
           : statusFilter === "expiring"
           ? isExpiringSoon
+          : statusFilter === "pending_balance"
+          ? pendingBalance
           : true;
 
       // Format start date
@@ -101,7 +103,9 @@ export default function Members() {
     const params = new URLSearchParams(location.search);
     const statusParam = params.get("status");
 
-    if (["expired", "active", "expiring"].includes(statusParam)) {
+    if (
+      ["expired", "active", "expiring", "pending_balance"].includes(statusParam)
+    ) {
       setStatusFilter(statusParam);
     } else {
       setStatusFilter("all");

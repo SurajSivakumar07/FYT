@@ -24,6 +24,8 @@ export default function Dashboard() {
   const handleActiveMembersClick = () => navigate("/members?status=active");
   const handleExpiringSoonClick = () => navigate("/members?status=expiring");
   const handleTotalMembersClick = () => navigate("/members?status=all");
+  const handlePendingMemberClick = () =>
+    navigate("/members?status=pending_balance");
 
   return (
     <div className="flex flex-col items-center p-1 bg-gradient-to-br from-blue-50 via-white to-purple-100 min-h-screen w-full overflow-x-hidden">
@@ -64,6 +66,15 @@ export default function Dashboard() {
             <EarningsChartSkeleton />
           )}
         </Suspense>
+      </div>
+      <div className="grid grid-cols-2 gap-3 w-full max-w-md overflow-x-hidden max-w-full mt-3 ml-9">
+        <StatCard
+          title="Pending Balance"
+          value={data ? data.pending_balance_members : "-"}
+          color="text-blue-600"
+          arrow
+          onClick={handlePendingMemberClick}
+        />
       </div>
     </div>
   );

@@ -58,6 +58,7 @@ const SearchAndFilter = memo(
       { value: "active", label: "Active", icon: "✅" },
       { value: "expired", label: "Expired", icon: "❌" },
       { value: "expiring", label: "Expiring Soon", icon: "⏳" },
+      { value: "pending_balance", label: "Pending Balance", icon: "💰" },
     ];
     const yearOptions = [
       { value: "", label: "All Years", icon: "📆" },
@@ -339,12 +340,15 @@ const SearchAndFilter = memo(
                       Filter by Status
                     </h4>
                     {statusFilter !== "all" && (
-                      <button
-                        onClick={() => setStatusFilter("all")}
-                        className="text-xs text-blue-600 hover:text-blue-800 transition-colors"
-                      >
-                        Clear
-                      </button>
+                      <span className="px-3 py-1.5 bg-yellow-100 text-yellow-800 rounded-full flex items-center gap-2">
+                        <button
+                          onClick={() => setStatusFilter("all")}
+                          className="text-yellow-600 hover:text-yellow-800 transition-colors"
+                          aria-label="Remove status filter"
+                        >
+                          ✕
+                        </button>
+                      </span>
                     )}
                   </div>
                   <div className="space-y-1">

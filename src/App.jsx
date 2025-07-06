@@ -4,8 +4,6 @@ import BottomNav from "./components/Navigation/BottomNav";
 import Navbar from "./components/DashboardCards/Navbar";
 import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import Trainers from "./pages/Trainers";
-import Analysis from "./pages/Analysis";
 
 // Lazy load components for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -16,7 +14,8 @@ const AddTrainer = lazy(() => import("./components/trainers/AddTrainer"));
 const EnquiryForm = lazy(() => import("./components/enquiry/EnquiryForm"));
 const GymMemberDetails = lazy(() => import("./components/GymMemberDetails"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
-
+const Trainers = lazy(() => import("./pages/Trainers"));
+const Analysis = lazy(() => import("./pages/Analysis"));
 // Loading fallback component
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
