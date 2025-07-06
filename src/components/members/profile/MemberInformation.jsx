@@ -533,7 +533,7 @@ const MemberInformation = React.memo(
                   </label>
 
                   <div className="relative group max-w-lg">
-                    {documentUrl ? ( // Changed from memberData.doucumet_url to documentUrl
+                    {documentUrl ? (
                       <img
                         src={documentUrl}
                         alt="Document Preview"
