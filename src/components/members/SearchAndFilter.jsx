@@ -428,7 +428,9 @@ const SearchAndFilter = memo(
                     ? "✅ Active"
                     : statusFilter === "expired"
                     ? "❌ Expired"
-                    : "⏳ Expiring"}
+                    : "⏳ Expiring"
+                    ? "pending_balance"
+                    : statusFilter === "Pedning Balance"}
                 </span>
                 <button
                   onClick={() => setStatusFilter("all")}
