@@ -37,20 +37,6 @@ const ProfilePage = () => {
   const { mutate: updateMember } = useEditMemberProfile();
 
   const handleSave = async (updatedData) => {
-    // try {
-    //   const res = await axios.put(
-    //     `${url}/members/${memberData.member.member_id}`,
-    //     updatedData
-    //   );
-
-    //   if (res.status === 200) {
-    //     alert("Updated successfully");
-    //   }
-    // } catch (err) {
-    //   console.error(err);
-    //   SetErrorMes(err.message);
-    //   SetError(true);
-    // }
     updateMember({
       memberId: memberData.member.member_id,
       updatedData,
@@ -206,35 +192,59 @@ const ProfilePage = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-softBlue via-softPink to-blue-100 opacity-60"></div>
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
           <div className="flex items-center gap-6">
-            <div className="relative">
-              <div className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-br from-softBlue via-white to-softPink" />
-              <div className="relative group">
-                <input
-                  type="file"
-                  id="profile-photo-upload"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  accept="image/jpeg,image/png"
-                />
-                <label
-                  htmlFor="profile-photo-upload"
-                  className="cursor-pointer"
-                >
-                  <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 shadow hover:opacity-80 transition-opacity">
-                    <img
-                      src={
-                        member?.photo_url && member.photo_url.trim() !== null
-                          ? member.photo_url
-                          : "https://www.svgrepo.com/show/513156/user.svg"
-                      }
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-sm">
-                    {uploading ? "Uploading..." : "Change"}
-                  </div>
-                </label>
-              </div>
+            <div className="relative group">
+              {member?.photo_url && member.photo_url.trim() !== "" ? (
+                // Show uploaded photo
+                <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 shadow">
+                  <img
+                    src={member.photo_url}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                // Show upload area
+                <>
+                  <input
+                    type="file"
+                    id="profile-photo-upload"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/jpeg,image/png"
+                    disabled={uploading}
+                  />
+                  <label
+                    htmlFor="profile-photo-upload"
+                    className="cursor-pointer"
+                  >
+                    <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-center">
+                      {uploading ? (
+                        <div className="text-center">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-1"></div>
+                          <p className="text-xs text-blue-600">Uploading...</p>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <svg
+                            className="w-8 h-8 text-gray-400 mb-1 mx-auto"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                            />
+                          </svg>
+                          <p className="text-xs text-gray-600">Upload Photo</p>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                </>
+              )}
             </div>
             <div>
               <h1 className="text-4xl font-extrabold text-black drop-shadow-sm mb-1">
@@ -386,9 +396,9 @@ const ProfilePage = () => {
           {activeTab === "membership" && (
             <MemberInformation memberData={member} showMembership />
           )}
-          {/* {activeTab === "id-proof" && (
+          {activeTab === "id-proof" && (
             <MemberInformation memberData={member} showIdProof />
-          )} */}
+          )}
           {activeTab === "actions" && <WhatsAppNotification />}
           {activeTab === "attendance" && <Attendance id={userId} />}
           {activeTab === "trainer" && member?.type === "pt" && (

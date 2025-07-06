@@ -1,5 +1,8 @@
-import React, { useMemo, useState } from "react";
-
+import React, { useMemo, useState, useEffect } from "react";
+import { supabase } from "../../../services/supabase/supabase";
+import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 const MemberInformation = React.memo(
   ({ memberData, showMembership, showIdProof }) => {
     const formattedDob = useMemo(() => {
@@ -34,6 +37,146 @@ const MemberInformation = React.memo(
     }, [memberData.end_date]);
 
     const [modalOpen, setModalOpen] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const { userId } = useParams();
+    const [documentUrl, setDocumentUrl] = useState(memberData.document_url);
+    // Update local state when memberData changes
+    useEffect(() => {
+      setDocumentUrl(memberData.document_url);
+    }, [memberData.document_url]);
+    const queryClient = useQueryClient();
+    const resizeImage = (file, maxWidth, maxHeight, quality = 0.7) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          img.src = e.target.result;
+        };
+
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to JPEG with specified quality
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error("Failed to create blob"));
+              }
+            },
+            "image/jpeg",
+            quality
+          );
+        };
+
+        img.onerror = () => reject(new Error("Failed to load image"));
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
+      });
+    };
+    const url = import.meta.env.VITE_API_URL;
+
+    const handleFileChangeDocument = async (e) => {
+      console.log("inside the button of the document url url");
+      const gym_id = 1;
+      const file = e.target.files[0];
+      if (!file || !memberData?.member_id || !gym_id) {
+        alert("Missing file or member/gym ID");
+        return;
+      }
+
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+        alert("Please upload a JPEG or PNG image");
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File size must be less than 10MB");
+        return;
+      }
+
+      setUploading(true);
+      try {
+        let quality = 0.7;
+        let resizedBlob = await resizeImage(file, 800, 800, quality);
+        let sizeKB = resizedBlob.size / 1024;
+
+        while (sizeKB > 500 && quality > 0.1) {
+          quality -= 0.1;
+          resizedBlob = await resizeImage(file, 800, 800, quality);
+          sizeKB = resizedBlob.size / 1024;
+        }
+
+        if (sizeKB > 500) {
+          alert("Could not compress image below 500 KB");
+          return;
+        }
+
+        const filePath = `photosdocument/${
+          memberData?.member_id
+        }-${Date.now()}.jpg`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("members-document")
+          .upload(filePath, resizedBlob, {
+            contentType: "image/jpeg",
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData, error: urlError } = supabase.storage
+          .from("members-document")
+          .getPublicUrl(filePath);
+
+        if (urlError) throw urlError;
+
+        const photoUrl = urlData.publicUrl;
+        console.log(photoUrl);
+
+        //Update photo URL in backend
+        try {
+          console.log("inside the file of document url");
+
+          await axios.put(
+            `${url}/gyms/${gym_id}/members/${memberData.member_id}/document-url`,
+            { document_url: photoUrl }
+          );
+          setDocumentUrl(photoUrl);
+        } catch (err) {
+          console.log(err);
+        }
+
+        queryClient.invalidateQueries(["memberprofile", gym_id, userId]);
+        alert("Photo uploaded successfully!");
+      } catch (err) {
+        console.error("Upload error:", err);
+        alert("Failed to upload photo");
+      } finally {
+        setUploading(false);
+      }
+    };
 
     return (
       <div className="bg-white rounded-2xl p-8 shadow-lg space-y-8">
@@ -350,51 +493,31 @@ const MemberInformation = React.memo(
           </>
         )}
 
-        {showIdProof && (
-          <>
-            <h2 className="text-2xl font-bold mb-6 flex items-center text-black gap-2">
-              <svg
-                className="w-6 h-6 text-softBlue"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                />
-              </svg>
-              ID Proof & Documents
-            </h2>
-            <div className="border-2 border-softPink rounded-xl p-6 bg-softPink/5 space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="p-6">
+          {showIdProof && (
+            <>
+              <h2 className="text-2xl font-bold mb-6 flex items-center text-black gap-2">
+                <svg
+                  className="w-6 h-6 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                  />
+                </svg>
+                ID Proof & Documents
+              </h2>
+
+              <div className="">
                 <div>
-                  <label className="text-xs text-gray-500 uppercase flex items-center gap-1">
+                  <label className="text-xs text-gray-500 uppercase mb-2 block flex items-center gap-1">
                     <svg
-                      className="w-4 h-4 text-softBlue"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"
-                      />
-                    </svg>
-                    Document Type
-                  </label>
-                  <p className="font-medium text-black mt-2">
-                    {memberData.id_proof.type}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 uppercase flex items-center gap-1">
-                    <svg
-                      className="w-4 h-4 text-softBlue"
+                      className="w-4 h-4 text-blue-600"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -406,123 +529,71 @@ const MemberInformation = React.memo(
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                       />
                     </svg>
-                    Document Number
+                    Document Image
                   </label>
-                  <p className="font-medium text-black mt-2">
-                    {memberData.id_proof.number}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <label className="text-xs text-gray-500 uppercase mb-2 block flex items-center gap-1">
-                  <svg
-                    className="w-4 h-4 text-softBlue"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  Document Image
-                </label>
-                <div className="relative group max-w-lg">
-                  <img
-                    src={memberData.id_proof.document_url}
-                    alt="ID Proof Document"
-                    className="w-full h-48 object-cover rounded-lg border border-softPink shadow-md cursor-pointer transition-transform duration-200 hover:scale-105"
-                    loading="lazy"
-                    onClick={() => setModalOpen(true)}
-                  />
-                  <div className="absolute top-2 right-2 flex gap-2 opacity-80 group-hover:opacity-100">
-                    <button
-                      className="bg-softBlue text-white px-3 py-1 rounded-full text-xs font-medium flex items-center shadow-md hover:bg-softBlue/90"
-                      aria-label="View full document"
-                      onClick={() => setModalOpen(true)}
-                    >
-                      <svg
-                        className="w-4 h-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+
+                  <div className="relative group max-w-lg">
+                    {documentUrl ? (
+                      <img
+                        src={documentUrl}
+                        alt="Document Preview"
+                        className="w-full h-64 object-cover rounded-lg shadow-lg"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <input
+                          type="file"
+                          id="document-upload"
+                          onChange={handleFileChangeDocument}
+                          className="hidden"
+                          accept="image/jpeg,image/png"
+                          disabled={uploading}
                         />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M2.458 12A9.001 9.001 0 0012 3c4.972 0 9.001 4.03 9.001 9s-4.029 9-9.001 9c-4.972 0-9-4.03-9-9zM18 12h.01"
-                        />
-                      </svg>
-                      View Full
-                    </button>
-                    <a
-                      href={memberData.id_proof.document_url}
-                      download
-                      className="bg-softPink text-white px-3 py-1 rounded-full text-xs font-medium flex items-center shadow-md hover:bg-softPink/90"
-                      aria-label="Download document"
-                    >
-                      <svg
-                        className="w-4 h-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"
-                        />
-                      </svg>
-                      Download
-                    </a>
-                  </div>
-                  {/* Modal/Lightbox */}
-                  {modalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
-                      <div className="bg-white rounded-xl p-4 max-w-2xl w-full relative shadow-2xl">
-                        <button
-                          className="absolute top-2 right-2 bg-gray-200 hover:bg-gray-300 rounded-full p-2"
-                          onClick={() => setModalOpen(false)}
-                          aria-label="Close"
+                        <label
+                          htmlFor="document-upload"
+                          className="cursor-pointer w-full max-w-md"
                         >
-                          <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
-                        <img
-                          src={memberData.id_proof.document_url}
-                          alt="ID Proof Document Full"
-                          className="w-full h-[60vh] object-contain rounded-lg"
-                        />
+                          <div className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg bg-white shadow hover:shadow-lg transition-shadow flex flex-col items-center justify-center">
+                            {uploading ? (
+                              <div className="text-center">
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                                <p className="text-blue-600 font-medium">
+                                  Uploading...
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="text-center">
+                                <svg
+                                  className="w-12 h-12 text-gray-400 mb-2 mx-auto"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                  />
+                                </svg>
+                                <p className="text-gray-600 font-medium">
+                                  Upload Document
+                                </p>
+                                <p className="text-gray-400 text-sm mt-1">
+                                  Click to select file
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </label>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
     );
   }
