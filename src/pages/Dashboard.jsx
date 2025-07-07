@@ -51,7 +51,6 @@ export default function Dashboard() {
           onClick={handleTotalMembersClick}
         />
       </div>
-
       {/* Lazy-loaded Chart */}
       <div ref={ref} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
         <Suspense fallback={<EarningsChartSkeleton />}>
@@ -62,7 +61,6 @@ export default function Dashboard() {
           )}
         </Suspense>
       </div>
-
       {/* Bottom Card */}
       <div className=" grid grid-cols-2 gap-3 mt-6 px-2 sm:px-4 max-w-4xl">
         <StatCard
