@@ -58,7 +58,7 @@ const SignIn = () => {
 
   return (
     <div
-      className="relative flex min-h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-white-50 justify-center overflow-x-hidden overflow-y-hidden "
+      className="relative flex h-[100dvh] flex-col bg-gradient-to-br from-blue-50 via-white to-white-50 justify-center overflow-x-hidden overflow-y-hidden "
       style={{ fontFamily: 'Lexend, "Noto Sans", sans-serif' }}
     >
       {/* Background gradients */}
