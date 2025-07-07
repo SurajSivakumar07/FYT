@@ -11,6 +11,7 @@ export const usePostRenew = () => {
     onSuccess: () => {
       const gym_id = sessionStorage.getItem("gym_id");
       queryClient.invalidateQueries(["members", gym_id]);
+      queryClient.invalidateQueries(["memberprofile"]);
       toast.success("Member renewed successfully");
     },
     onError: (error) => {

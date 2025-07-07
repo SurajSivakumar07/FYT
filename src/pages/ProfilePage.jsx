@@ -13,6 +13,7 @@ import EditMemberModal from "../components/members/profile/EditMemberModal";
 import { useEditMemberProfile } from "../hooks/useEditMemberProfile";
 import RenewModal from "../components/renew/RenewModal";
 import { usePostRenew } from "../hooks/useRenewPost";
+import PaymentBalanceModal from "../components/payment/PaymentBalanceModal";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -21,6 +22,8 @@ const ProfilePage = () => {
   const [isRenewOpen, setRenewOpen] = useState(false);
   const [errorEditing, SetError] = useState(false);
   const [errorEditingMess, SetErrorMes] = useState(false);
+
+  const [isBalanceOpen, setBalanceopen] = useState(false);
 
   const gym_id = 1; // Consider making this dynamic
   const { userId } = useParams();
@@ -373,7 +376,7 @@ const ProfilePage = () => {
             {memberData?.transactions[0]?.balance > 0 && (
               <button
                 className="bg-gradient-to-r from-orange-400 to-orange-600 text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:from-orange-500 hover:to-orange-700 transition-all duration-200 flex items-center gap-2 mt-2"
-                onClick={() => setIsOpen(true)}
+                onClick={() => setBalanceopen(true)}
               >
                 <span>
                   Update Balance
@@ -459,6 +462,12 @@ const ProfilePage = () => {
         onClose={() => setRenewOpen(false)}
         onSave={renewSaveHandler}
         memberId={memberData?.member?.member_id}
+      />
+      <PaymentBalanceModal
+        isOpen={isBalanceOpen}
+        onClose={() => setBalanceopen(false)}
+        memberId={memberData?.member?.member_id}
+        balanceAmt={memberData?.transactions[0]?.balance}
       />
     </div>
   );
