@@ -26,9 +26,9 @@ export default function Dashboard() {
     navigate("/members?status=pending_balance");
 
   return (
-    <div className="flex flex-col items-center px-3 py-2 bg-gradient-to-br from-blue-50 via-white to-purple-100 min-h-screen w-full overflow-x-hidden">
+    <div className="flex flex-col items-center px-2 sm:px-3 py-1 sm:py-2 bg-gradient-to-br from-blue-50 via-white to-purple-100 min-h-[calc(100vh-140px)] w-full overflow-x-hidden">
       {/* Cards */}
-      <div className="grid grid-cols-2 gap-3 w-full max-w-md sm:max-w-lg md:max-w-2xl">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full max-w-md sm:max-w-lg md:max-w-2xl mb-3 sm:mb-4">
         <StatCard
           title="Active members"
           value={data ? data.active_members : "-"}
@@ -53,7 +53,7 @@ export default function Dashboard() {
       </div>
 
       {/* Lazy-loaded Chart */}
-      <div ref={ref} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
+      <div ref={ref} className="w-full px-1 sm:px-2 max-w-4xl mb-3 sm:mb-4">
         <Suspense fallback={<EarningsChartSkeleton />}>
           {inView ? (
             <EarningsChart earnings={data ? data.earnings : "-"} />
@@ -64,7 +64,7 @@ export default function Dashboard() {
       </div>
 
       {/* Bottom Card */}
-      <div className=" grid grid-cols-2 gap-3 mt-6 px-2 sm:px-4 max-w-4xl">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 px-1 sm:px-2 max-w-4xl w-full">
         <StatCard
           title="Pending Balance"
           value={data ? data.pending_balance_members : "-"}
