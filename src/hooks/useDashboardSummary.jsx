@@ -10,12 +10,11 @@ export const useDashboardSummary = (gym_id) => {
       const res = await axios.get(`${url}/dashboard/summary`, {
         params: { gym_id },
       });
+      console.log(res);
 
       return res.data;
     },
     enabled: !!gym_id,
     staleTime: 1000 * 60,
-
-    // ✅ only fetch if gym_id is truthy
   });
 };

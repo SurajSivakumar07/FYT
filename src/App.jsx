@@ -4,7 +4,8 @@ import BottomNav from "./components/Navigation/BottomNav";
 import Navbar from "./components/DashboardCards/Navbar";
 import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./routes/ProtectedRoute";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // Lazy load components for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Members = lazy(() => import("./pages/Members"));
@@ -72,6 +73,8 @@ export default function App() {
   return (
     <RouteErrorBoundary>
       {!hideTabBar && <Navbar />}
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <main className="min-h-screen bg-gray-50">
         <Suspense fallback={<PageLoader />}>
           <Routes>
