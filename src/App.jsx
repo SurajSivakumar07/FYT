@@ -76,7 +76,7 @@ export default function App() {
       {!hideTabBar && <Navbar />}
       <ToastContainer position="top-right" autoClose={3000} />
 
-      <main className="min-h-screen bg-gray-50">
+      <main className={`${hideTabBar ? 'min-h-screen' : 'min-h-[calc(100vh-60px)] pb-20'} bg-gray-50`}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* Public route */}

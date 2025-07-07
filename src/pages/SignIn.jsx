@@ -58,7 +58,7 @@ const SignIn = () => {
 
   return (
     <div
-      className="relative flex min-h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-white-50 justify-center overflow-x-hidden overflow-y-hidden "
+      className="relative flex h-screen flex-col bg-gradient-to-br from-blue-50 via-white to-white-50 justify-center overflow-hidden"
       style={{ fontFamily: 'Lexend, "Noto Sans", sans-serif' }}
     >
       {/* Background gradients */}
@@ -68,12 +68,12 @@ const SignIn = () => {
       </div>
 
       {/* Main form container */}
-      <div className="relative flex flex-col items-center w-full max-w-md mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="relative flex flex-col items-center w-full max-w-md mx-auto px-4 py-4">
         {/* Logo */}
-        <div className="w-full mb-8">
-          <div className="flex flex-col items-center justify-center  rounded-3xl min-h-[140px] sm:min-h-[160px]   relative overflow-hidden">
+        <div className="w-full mb-4 sm:mb-6">
+          <div className="flex flex-col items-center justify-center rounded-3xl min-h-[100px] sm:min-h-[120px] relative overflow-hidden">
             <div className="relative z-10 text-center">
-              <span className="text-black text-5xl sm:text-6xl font-black tracking-wider drop-shadow-lg">
+              <span className="text-black text-4xl sm:text-5xl font-black tracking-wider drop-shadow-lg">
                 FYTZ
               </span>
             </div>
@@ -81,8 +81,8 @@ const SignIn = () => {
         </div>
 
         {/* Sign In Form */}
-        <div className="w-full bg-white/80  rounded-3xl  p-6 sm:p-8 border border-white/20">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="w-full bg-white/80 rounded-3xl p-4 sm:p-6 border border-white/20">
+          <form className="space-y-4 sm:space-y-5" onSubmit={handleSubmit}>
             {/* Email */}
             <div className="space-y-2">
               <label className="text-slate-700 text-sm font-semibold tracking-wide">
@@ -92,7 +92,7 @@ const SignIn = () => {
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="w-full h-14 px-4 bg-slate-50/80 border-2 border-slate-200 rounded-2xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-base font-medium"
+                  className="w-full h-12 sm:h-14 px-4 bg-slate-50/80 border-2 border-slate-200 rounded-2xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-base font-medium"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -110,7 +110,7 @@ const SignIn = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  className="w-full h-14 px-4 pr-12 bg-slate-50/80 border-2 border-slate-200 rounded-2xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-base font-medium"
+                  className="w-full h-12 sm:h-14 px-4 pr-12 bg-slate-50/80 border-2 border-slate-200 rounded-2xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-base font-medium"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -128,7 +128,7 @@ const SignIn = () => {
             </div>
 
             {/* Forgot password */}
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-between pt-1">
               <button
                 type="button"
                 className="text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors duration-200"
@@ -141,10 +141,10 @@ const SignIn = () => {
             {/* Submit button */}
             <button
               type="submit"
-              className={`w-full h-14 rounded-2xl font-bold text-base transition-all duration-300 shadow-lg ${
+              className={`w-full h-12 sm:h-14 rounded-2xl font-bold text-base transition-all duration-300 shadow-lg ${
                 isSubmitting
                   ? "bg-slate-400 cursor-not-allowed text-black"
-                  : "  bg-white text-black hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                  : "bg-white text-black hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
               }`}
               disabled={isSubmitting}
             >
