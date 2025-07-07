@@ -26,7 +26,7 @@ export default function Dashboard() {
     navigate("/members?status=pending_balance");
 
   return (
-    <div className="flex flex-col items-center px-3 py-2 bg-gradient-to-br from-blue-50 via-white to-purple-100 min-h-screen w-full overflow-x-hidden">
+    <div className="flex flex-col items-center px-3 py-2 bg-gradient-to-br from-blue-50 via-white to-purple-100  w-full overflow-x-hidden">
       {/* Cards */}
       <div className="grid grid-cols-2 gap-3 w-full max-w-md sm:max-w-lg md:max-w-2xl">
         <StatCard
