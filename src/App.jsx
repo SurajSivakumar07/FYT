@@ -6,7 +6,7 @@ import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import PaymentBalanceModal from "./components/payment/PaymentBalanceModal";
+
 // Lazy load components for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Members = lazy(() => import("./pages/Members"));
@@ -18,8 +18,10 @@ const GymMemberDetails = lazy(() => import("./components/GymMemberDetails"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const Trainers = lazy(() => import("./pages/Trainers"));
 const Analysis = lazy(() => import("./pages/Analysis"));
+const Plans = lazy(() => import("./pages/Plans"));
+const Enquiries = lazy(() => import("./pages/Enquiries"));
 // Loading fallback component
-const PageLoader = () => (
+export const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
     <span className="ml-3 text-gray-600">Loading...</span>
@@ -154,11 +156,20 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
-              path="/balance"
+              path="view-plans"
               element={
                 <ProtectedRoute>
-                  <PaymentBalanceModal />
+                  <Plans />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/enquries"
+              element={
+                <ProtectedRoute>
+                  <Enquiries />
                 </ProtectedRoute>
               }
             />

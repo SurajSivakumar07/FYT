@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { usePostTrainer } from "../../hooks/usePostTrainer";
 import { CheckCircle } from "lucide-react";
+import { useGymId } from "../../hooks/useGymId";
 
 export default function AddTrainer() {
-  const gymId = 1;
+  const gymId = useGymId();
 
   const { mutate, isPending, isSuccess, isError, error } = usePostTrainer();
 
@@ -45,10 +46,10 @@ export default function AddTrainer() {
   };
 
   const handleReset = () => {
-    setPlanData({
-      planName: "",
-      duration: "",
-      price: "",
+    setTrainerData({
+      trainerName: "",
+      email: "",
+      phone: "",
     });
   };
 
@@ -165,7 +166,7 @@ export default function AddTrainer() {
                 onClick={handleSubmit}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
-                Add Trainer
+                {isPending ? "Adding.... " : "Add Trainer"}
               </button>
             </div>
           </div>

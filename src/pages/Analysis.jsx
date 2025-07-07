@@ -6,6 +6,7 @@ export default function Analysis() {
   return (
     <>
       <MemberTypeChart />
+      <EarningsChart />
     </>
   );
 }

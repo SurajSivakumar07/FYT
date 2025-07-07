@@ -3,17 +3,14 @@ import axios from "axios";
 
 const url = import.meta.env.VITE_API_URL;
 
-export const useDashboardSummary = (gym_id) => {
+export const useMemberTrend = (gym_id) => {
   return useQuery({
-    queryKey: ["dashboard-summary", gym_id],
+    queryKey: ["memebr_trend", gym_id],
     queryFn: async () => {
-      const res = await axios.get(`${url}/dashboard/summary`, {
-        params: { gym_id },
-      });
-
+      const res = await axios.get(`${url}/gyms/${gym_id}/member-trends`);
       return res.data;
     },
     enabled: !!gym_id,
-    staleTime: 1000 * 60,
+    staleTime: Infinity,
   });
 };

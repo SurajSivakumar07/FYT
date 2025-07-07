@@ -5,18 +5,25 @@ import EarningsChartSkeleton from "../components/skeleton/EarningsChartSkeleton"
 import { useDashboardSummary } from "../hooks/useDashboardSummary";
 
 import { useNavigate } from "react-router-dom";
+import MemberTypeChartSkeleton from "../components/skeleton/MemberTypeChartSkeleton";
+import { useGymId } from "../hooks/useGymId";
 
 const EarningsChart = React.lazy(() =>
   import("../components/DashboardCards/EarningsChart")
 );
+const MemberTypeChart = React.lazy(() =>
+  import("../components/analysis/MemberTypeChart")
+);
 export default function Dashboard() {
-  const gym_id = 1;
+  const gym_id = useGymId();
   const { data, isLoading } = useDashboardSummary(gym_id);
   const navigate = useNavigate();
 
-  const { ref, inView } = useInView({
+  const { ref: earningsRef, inView: earningsInView } = useInView({
     triggerOnce: true,
-    threshold: 0.1,
+  });
+  const { ref: memberTypeRef, inView: memberTypeInView } = useInView({
+    triggerOnce: true,
   });
 
   const handleActiveMembersClick = () => navigate("/members?status=active");
@@ -50,19 +57,6 @@ export default function Dashboard() {
           arrow
           onClick={handleTotalMembersClick}
         />
-      </div>
-      {/* Lazy-loaded Chart */}
-      <div ref={ref} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
-        <Suspense fallback={<EarningsChartSkeleton />}>
-          {inView ? (
-            <EarningsChart earnings={data ? data.earnings : "-"} />
-          ) : (
-            <EarningsChartSkeleton />
-          )}
-        </Suspense>
-      </div>
-      {/* Bottom Card */}
-      <div className=" grid grid-cols-2 gap-3 mt-6 px-2 sm:px-4 max-w-4xl">
         <StatCard
           title="Pending Balance"
           value={data ? data.pending_balance_members : "-"}
@@ -71,6 +65,24 @@ export default function Dashboard() {
           onClick={handlePendingMemberClick}
         />
       </div>
+
+      {/* Lazy-loaded Chart */}
+      <div ref={earningsRef} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
+        <Suspense fallback={<EarningsChartSkeleton />}>
+          {earningsInView ? (
+            <EarningsChart earnings={data ? data.earnings : "-"} />
+          ) : (
+            <EarningsChartSkeleton />
+          )}
+        </Suspense>
+      </div>
+      {/* Lazy-loaded Chart */}
+      <div ref={memberTypeRef} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
+        <Suspense fallback={<MemberTypeChartSkeleton />}>
+          {memberTypeInView ? <MemberTypeChart /> : <MemberTypeChartSkeleton />}
+        </Suspense>
+      </div>
+      {/* Bottom Card */}
     </div>
   );
 }

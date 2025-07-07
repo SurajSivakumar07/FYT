@@ -8,13 +8,13 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-
-const data = [
-  { month: "Jun", Regular: 10, SM: 3, PT: 2 },
-  { month: "Jul", Regular: 5, SM: 1, PT: 3 },
-];
+import { useMemberTrend } from "../../hooks/useMemberTrend";
+import { useGymId } from "../../hooks/useGymId";
 
 export default function MemberTypeChart() {
+  const gym_id = useGymId();
+  const { data = [], isLoading, error } = useMemberTrend(gym_id);
+
   return (
     <div className="bg-white rounded-xl shadow p-4 sm:p-6 w-full max-w-4xl mx-auto  ">
       <h2 className="text-base font-semibold text-gray-900 mb-2">

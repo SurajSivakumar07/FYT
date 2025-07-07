@@ -11,9 +11,10 @@ import {
 import { FaInfoCircle } from "react-icons/fa";
 import { useEarningsSummary } from "../../hooks/useEarningsChart";
 import EarningsChartSkeleton from "../skeleton/EarningsChartSkeleton";
+import { useGymId } from "../../hooks/useGymId";
 
 export default function EarningsChart({ earnings }) {
-  const gym_id = 1;
+  const gym_id = useGymId();
   const { data, isLoading, error } = useEarningsSummary(gym_id);
 
   if (isLoading) return <EarningsChartSkeleton />;

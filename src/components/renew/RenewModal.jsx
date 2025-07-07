@@ -14,9 +14,10 @@ import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
 import { Button } from "../ui/Button";
 import { toast } from "react-toastify";
+import { useGymId } from "../../hooks/useGymId";
 
 const RenewModal = ({ isOpen, onClose, memberId }) => {
-  const gymId = 1;
+  const gymId = useGymId();
   const { mutate: renewMember, isPending } = usePostRenew();
   const { data: plans = [], isLoading: plansLoading } = usePlans(gymId);
 

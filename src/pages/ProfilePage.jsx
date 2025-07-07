@@ -14,6 +14,8 @@ import { useEditMemberProfile } from "../hooks/useEditMemberProfile";
 import RenewModal from "../components/renew/RenewModal";
 import { usePostRenew } from "../hooks/useRenewPost";
 import PaymentBalanceModal from "../components/payment/PaymentBalanceModal";
+import { PageLoader } from "../App";
+import { useGymId } from "../hooks/useGymId";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -25,7 +27,7 @@ const ProfilePage = () => {
 
   const [isBalanceOpen, setBalanceopen] = useState(false);
 
-  const gym_id = 1; // Consider making this dynamic
+  const gym_id = useGymId();
   const { userId } = useParams();
   const queryClient = useQueryClient();
 
@@ -186,7 +188,7 @@ const ProfilePage = () => {
     }
   };
 
-  if (isLoading) return <div className="text-center mt-10">Loading...</div>;
+  if (isLoading) return PageLoader;
   if (error)
     return (
       <div className="text-center mt-10 text-red-500">

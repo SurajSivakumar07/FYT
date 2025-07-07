@@ -79,7 +79,7 @@ export default function Navbar() {
 
             {/* Action buttons */}
             <div className="flex flex-col gap-2 text-sm text-gray-700 text-left">
-              <button
+              {/* <button
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
                 onClick={() => {
                   setIsOpen(false);
@@ -87,15 +87,15 @@ export default function Navbar() {
                 }}
               >
                 📊 Analysis
-              </button>
+              </button> */}
               <button
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
                 onClick={() => {
                   setIsOpen(false);
-                  navigate("/settings");
+                  navigate("/enquries");
                 }}
               >
-                ⚙️ Setting
+                📊 Enquiry
               </button>
               <button
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"

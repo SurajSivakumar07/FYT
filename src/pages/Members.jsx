@@ -5,6 +5,7 @@ import { useMembers } from "../hooks/useMembers";
 import { useDebounce } from "../hooks/useDebounce";
 import VirtualizedMemberList from "../components/members/VirtualizedMemberList";
 import { useLocation } from "react-router-dom";
+import { useGymId } from "../hooks/useGymId";
 
 // Loading skeleton component
 const MemberListSkeleton = () => (
@@ -27,7 +28,7 @@ const MemberListSkeleton = () => (
 );
 
 export default function Members() {
-  const gym_id = 1;
+  const gym_id = useGymId();
   const location = useLocation();
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");

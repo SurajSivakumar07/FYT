@@ -15,9 +15,12 @@ import {
 import { usePlans } from "../../hooks/usePlans";
 import { useTrainers } from "../../hooks/useTrainers";
 import CustomDropdown from "./CustomDropdown";
+import { useGymId } from "../../hooks/useGymId";
 
 export default function AddMembers() {
-  const gymId = sessionStorage.getItem("gym_id") || 1;
+  const gymId = useGymId();
+  console.log(gymId);
+
   const url = import.meta.env.VITE_API_URL;
 
   const [memberData, setMemberData] = useState({

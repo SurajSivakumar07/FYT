@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useCreatePlan } from "../../hooks/useCreatePlan";
 
 import { CheckCircle } from "lucide-react";
+import { useGymId } from "../../hooks/useGymId";
 export default function AddPlans() {
   const { mutate, isPending, isSuccess, isError, error } = useCreatePlan();
-  const gymId = 1;
+  const gymId = useGymId();
   const [planData, setPlanData] = useState({
     planName: "",
     duration: "",
@@ -150,7 +151,7 @@ export default function AddPlans() {
                 onClick={handleSubmit}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
-                Create Plan
+                {isPending ? "Creating ..." : "Create Plan"}
               </button>
             </div>
           </div>

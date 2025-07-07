@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { CheckCircle } from "lucide-react";
 import { usePostEnquiry } from "../../hooks/usePostEnquiry";
+import { useGymId } from "../../hooks/useGymId";
 
 export default function EnquiryForm() {
-  const gym_id = 1;
+  const gym_id = useGymId();
 
   const [error, setError] = useState("");
   const [enquiry, setEnquiry] = useState({
@@ -155,7 +156,7 @@ export default function EnquiryForm() {
                   onClick={handleSubmit}
                   className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  Submit Enquiry
+                  {isPending ? "Adding ... " : "Submit Enquiry"}
                 </button>
               </div>
             </div>
