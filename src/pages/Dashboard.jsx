@@ -50,7 +50,7 @@ export default function Dashboard() {
           arrow
           onClick={handleExpiringSoonClick}
         />
-        <StatCard title="Earnings" value={data ? data.earnings : "-"} info />
+        {/* <StatCard title="Earnings" value={data ? data.earnings : "-"} info /> */}
         <StatCard
           title="Total members"
           value={data ? data.total_members : "-"}

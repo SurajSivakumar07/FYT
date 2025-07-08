@@ -25,6 +25,7 @@ const CustomDropdown = ({
       disabled={isLoading}
     >
       {value || placeholder}
+
       <svg
         className={`w-4 h-4 text-gray-400 transform transition-transform ${
           isOpen ? "rotate-180" : ""

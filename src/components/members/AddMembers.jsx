@@ -16,12 +16,15 @@ import { usePlans } from "../../hooks/usePlans";
 import { useTrainers } from "../../hooks/useTrainers";
 import CustomDropdown from "./CustomDropdown";
 import { useGymId } from "../../hooks/useGymId";
+import { useMemberId } from "../../hooks/useMemberId";
 
 export default function AddMembers() {
   const gymId = useGymId();
   console.log(gymId);
 
   const url = import.meta.env.VITE_API_URL;
+
+  const { data: memberID, isLoading: meberIdLoading } = useMemberId(gymId);
 
   const [memberData, setMemberData] = useState({
     gym_id: gymId,
@@ -157,7 +160,14 @@ export default function AddMembers() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  useEffect(() => {
+    if (memberID?.member_code) {
+      setMemberData((prev) => ({
+        ...prev,
+        member_id: memberID.member_code,
+      }));
+    }
+  }, [memberID]);
   const handleStartDateChange = (e) => {
     const startDate = e.target.value;
     let endDate = "";
@@ -723,7 +733,7 @@ export default function AddMembers() {
                   id="trainer_id"
                   value={
                     trainers.find(
-                      (trainer) => trainer.id === memberData.trainer_id
+                      (trainer) => trainer.id == memberData.trainer_id
                     )?.name || ""
                   }
                   onChange={(trainerId) => {

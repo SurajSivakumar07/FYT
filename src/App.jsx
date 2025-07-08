@@ -75,10 +75,14 @@ export default function App() {
 
   return (
     <RouteErrorBoundary>
+      {/* Push content below the fixed navbar */}
+
       {!hideTabBar && <Navbar />}
+
       <ToastContainer position="top-right" autoClose={3000} />
 
-      <main className="m bg-gray-50">
+      {/* <main className="pt-13 pr-2 overflow-y-scroll scrollbar-hide h-[calc(100vh-64px)]"> */}
+      <main className="pt-13 pr-2 overflow-y-scroll overflow-x-hidden scrollbar-hide h-[calc(100vh-64px)]">
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* Public route */}

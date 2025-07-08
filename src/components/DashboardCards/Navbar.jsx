@@ -27,8 +27,9 @@ export default function Navbar() {
   }, [isOpen]);
   return (
     <>
-      <div className="w-full bg-white shadow-sm px-4 sm:px-6 py-3 flex items-center justify-between">
-        {/* Left: Logo + Title */}
+      {/* <div className="w-full bg-white shadow-sm px-4 sm:px-6 py-3 flex items-center justify-between"> */}
+      {/* Left: Logo + Title */}
+      <div className="fixed top-0 left-0 w-full bg-white shadow-sm px-4 sm:px-6 py-3 flex items-center justify-between z-50">
         <div className="flex items-center gap-3">
           <img
             src={gymLogo}
