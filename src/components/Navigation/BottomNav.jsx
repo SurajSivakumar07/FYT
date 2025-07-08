@@ -1,12 +1,14 @@
-import { Home, Plus, User, X } from "lucide-react";
+import { Home, Plus, User, X, ChevronDown } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import { Button } from "../ui/Button";
 
 export default function BottomNav() {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef();
   const navigate = useNavigate();
 
+  const [isNavigationOpen, setNavigationOpen] = useState(false);
   // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -91,24 +93,39 @@ export default function BottomNav() {
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-        <div className="flex items-center gap-10 bg-white/80 backdrop-blur-md border border-gray-200 shadow-xl rounded-full px-8 py-3">
-          <NavLink to="/" className="group">
-            <Home className="w-6 h-6 text-gray-500 group-hover:text-black transition-colors" />
-          </NavLink>
+      <>
+        {isNavigationOpen && (
+          <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+            <div className="flex items-center gap-10 bg-white/80 backdrop-blur-md border border-gray-200 shadow-xl rounded-full px-8 py-3">
+              <NavLink to="/" className="group">
+                <Home className="w-6 h-6 text-gray-500 group-hover:text-black transition-colors" />
+              </NavLink>
 
-          <button
-            onClick={() => setIsOpen((prev) => !prev)}
-            className="bg-black text-white p-3 rounded-full shadow-lg flex items-center justify-center -mt-8 border-4 border-white"
-          >
-            <Plus className="w-6 h-6" />
-          </button>
+              <button
+                onClick={() => setNavigationOpen((prev) => !prev)}
+                className="bg-black text-white p-3 rounded-full shadow-lg flex items-center justify-center -mt-8 border-4 border-white transition-transform"
+              >
+                <Plus className="w-6 h-6" />
+              </button>
 
-          <NavLink to="/members?status=all" className="group">
-            <User className="w-6 h-6 text-gray-500 group-hover:text-black transition-colors" />
-          </NavLink>
-        </div>
-      </nav>
+              <NavLink to="/members?status=all" className="group">
+                <User className="w-6 h-6 text-gray-500 group-hover:text-black transition-colors" />
+              </NavLink>
+            </div>
+          </nav>
+        )}
+
+        <button
+          onClick={() => setNavigationOpen((prev) => !prev)}
+          className="fixed bottom-6 right-6 z-50 bg-white border border-gray-300 shadow-md p-4 rounded-full transition-transform duration-300 hover:rotate-90"
+        >
+          <ChevronDown
+            className={`w-6 h-6 text-gray-800 transition-transform duration-300 ${
+              isNavigationOpen ? "rotate-180" : "rotate-0"
+            }`}
+          />
+        </button>
+      </>
     </>
   );
 }
