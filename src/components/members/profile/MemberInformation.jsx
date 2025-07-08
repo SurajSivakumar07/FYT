@@ -135,9 +135,7 @@ const MemberInformation = React.memo(
           return;
         }
 
-        const filePath = `photosdocument/${
-          memberData?.member_id
-        }-${Date.now()}.jpg`;
+        const filePath = `photosdocument/${memberData?.member_id}-${gym_id}.jpg`;
 
         const { error: uploadError } = await supabase.storage
           .from("members-document")

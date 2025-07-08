@@ -36,7 +36,7 @@ export default function EarningsChart({ earnings }) {
             Earnings <FaInfoCircle className="text-gray-400 text-sm" />
           </h2>
           <div className="text-2xl sm:text-3xl font-bold text-gray-900">
-            ${earnings}
+            ₹ {earnings}
           </div>
         </div>
 

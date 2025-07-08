@@ -8,7 +8,7 @@ import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { supabase } from "../services/supabase/supabase";
-import { useMeberProfile } from "../hooks/useMemberProfile";
+import { useMemberProfile } from "../hooks/useMemberProfile";
 import EditMemberModal from "../components/members/profile/EditMemberModal";
 import { useEditMemberProfile } from "../hooks/useEditMemberProfile";
 import RenewModal from "../components/renew/RenewModal";
@@ -37,7 +37,7 @@ const ProfilePage = () => {
     data: memberData = {},
     isLoading,
     error,
-  } = useMeberProfile(gym_id, userId);
+  } = useMemberProfile(gym_id, userId);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -141,9 +141,7 @@ const ProfilePage = () => {
         return;
       }
 
-      const filePath = `photos/${
-        memberData.member.member_id
-      }-${Date.now()}.jpg`;
+      const filePath = `photos/${memberData.member.member_id}-${gym_id}.jpg`;
 
       const { error: uploadError } = await supabase.storage
         .from("member-photos")
@@ -156,6 +154,8 @@ const ProfilePage = () => {
       const { data: urlData, error: urlError } = supabase.storage
         .from("member-photos")
         .getPublicUrl(filePath);
+
+      console.log("Uploaded path:", filePath);
 
       if (urlError) throw urlError;
 
@@ -188,7 +188,7 @@ const ProfilePage = () => {
     }
   };
 
-  if (isLoading) return PageLoader;
+  if (isLoading) return <PageLoader />;
   if (error)
     return (
       <div className="text-center mt-10 text-red-500">
@@ -198,6 +198,19 @@ const ProfilePage = () => {
 
   const member = memberData.member;
 
+  //file path
+  const token = sessionStorage.getItem("access_token");
+
+  const bucketName = "member-photos";
+  // const projectUrl = "https://ntcczmjpcmfmtmpwqzvu.supabase.co";
+  const filePath = "photos/wer01-1.jpg";
+
+  const deleteHandler = async () => {
+    const res = await supabase.storage
+      .from("member-photos")
+      .remove(["photos/test.jpg"]);
+    console.log(res);
+  };
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 bg-white min-h-screen">
       <div className="relative rounded-2xl overflow-hidden mb-6 min-h-[120px]">
@@ -259,6 +272,13 @@ const ProfilePage = () => {
               )}
             </div>
             <div>
+              <button
+                className="bg-black text-white border"
+                onClick={deleteHandler}
+              >
+                delete
+              </button>
+
               <h1 className="text-4xl font-extrabold text-black drop-shadow-sm mb-1">
                 {member?.name}
               </h1>
