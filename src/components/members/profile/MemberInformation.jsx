@@ -98,10 +98,10 @@ const MemberInformation = React.memo(
       });
     };
     const url = import.meta.env.VITE_API_URL;
-
+    const gym_id = useGymId();
     const handleFileChangeDocument = async (e) => {
       console.log("inside the button of the document url url");
-      const gym_id = useGymId();
+      // const gym_id = useGymId();
       const file = e.target.files[0];
       if (!file || !memberData?.member_id || !gym_id) {
         alert("Missing file or member/gym ID");
