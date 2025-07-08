@@ -262,7 +262,7 @@ const ProfilePage = () => {
                 </span>
               ) : (
                 <span className="inline-flex items-center px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold shadow-sm">
-                  <svg
+                  {/* <svg
                     className="w-4 h-4 mr-1"
                     fill="none"
                     stroke="currentColor"
@@ -274,7 +274,7 @@ const ProfilePage = () => {
                       strokeWidth="2"
                       d="M12 8v4l3 3"
                     />
-                  </svg>
+                  </svg> */}
                   Balance: ₹{memberData?.transactions[0]?.balance}
                 </span>
               )}
