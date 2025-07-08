@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { useGymId } from "../../../hooks/useGymId";
 
 const Attendance = ({ id }) => {
   const [markedDates, setMarkedDates] = useState({});
@@ -11,7 +12,7 @@ const Attendance = ({ id }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [totalAttendance, setTotalAttendace] = useState([]);
   const API_BASE_URL = import.meta.env.VITE_API_URL;
-  const gym_id = 1;
+  const gym_id = useGymId();
   const formatDateForBackend = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");

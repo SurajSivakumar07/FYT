@@ -3,6 +3,7 @@ import { supabase } from "../../../services/supabase/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useGymId } from "../../../hooks/useGymId";
 const MemberInformation = React.memo(
   ({ memberData, showMembership, showIdProof }) => {
     const formattedDob = useMemo(() => {
@@ -100,7 +101,7 @@ const MemberInformation = React.memo(
 
     const handleFileChangeDocument = async (e) => {
       console.log("inside the button of the document url url");
-      const gym_id = 1;
+      const gym_id = useGymId();
       const file = e.target.files[0];
       if (!file || !memberData?.member_id || !gym_id) {
         alert("Missing file or member/gym ID");
