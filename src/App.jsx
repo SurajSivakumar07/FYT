@@ -82,7 +82,7 @@ export default function App() {
       <ToastContainer position="top-right" autoClose={3000} />
 
       {/* <main className="pt-13 pr-2 overflow-y-scroll scrollbar-hide h-[calc(100vh-64px)]"> */}
-      <main className="pt-13 pr-2 overflow-y-scroll overflow-x-hidden scrollbar-hide h-[calc(100vh-64px)]">
+      <main className="pt-13 overflow-y-scroll overflow-x-hidden w-screen scrollbar-hide h-[calc(100vh-64px)]">
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* Public route */}
