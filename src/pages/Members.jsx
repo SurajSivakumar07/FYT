@@ -183,7 +183,7 @@ export default function Members() {
       {isLoading ? (
         <MemberListSkeleton />
       ) : (
-        <div className="h-[calc(100vh-220px)] overflow-y-auto scrollbar-hide">
+        <div className="h-[calc(100vh-220px)]   scrollbar-hide">
           <VirtualizedMemberList members={filteredMembers} />
         </div>
       )}
