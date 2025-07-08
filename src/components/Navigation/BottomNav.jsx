@@ -102,7 +102,7 @@ export default function BottomNav() {
               </NavLink>
 
               <button
-                onClick={() => setNavigationOpen((prev) => !prev)}
+                onClick={() => setIsOpen(true)}
                 className="bg-black text-white p-3 rounded-full shadow-lg flex items-center justify-center -mt-8 border-4 border-white transition-transform"
               >
                 <Plus className="w-6 h-6" />

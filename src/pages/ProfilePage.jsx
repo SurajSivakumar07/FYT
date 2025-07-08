@@ -203,68 +203,20 @@ const ProfilePage = () => {
       <div className="relative rounded-2xl overflow-hidden mb-6 min-h-[120px]">
         <div className="absolute inset-0 bg-gradient-to-r from-softBlue via-softPink to-blue-100 opacity-60"></div>
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
-          <div className="flex items-center gap-6">
-            <div className="relative group">
-              {member?.photo_url && member.photo_url.trim() !== "" ? (
-                // Show uploaded photo
-                <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 shadow">
-                  <img
-                    src={member.photo_url}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                // Show upload area
-                <>
-                  <input
-                    type="file"
-                    id="profile-photo-upload"
-                    onChange={handleFileChange}
-                    className="hidden"
-                    accept="image/jpeg,image/png"
-                    disabled={uploading}
-                  />
-                  <label
-                    htmlFor="profile-photo-upload"
-                    className="cursor-pointer"
-                  >
-                    <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-center">
-                      {uploading ? (
-                        <div className="text-center">
-                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-1"></div>
-                          <p className="text-xs text-blue-600">Uploading...</p>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <svg
-                            className="w-8 h-8 text-gray-400 mb-1 mx-auto"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                            />
-                          </svg>
-                          <p className="text-xs text-gray-600">Upload Photo</p>
-                        </div>
-                      )}
-                    </div>
-                  </label>
-                </>
-              )}
-            </div>
-            <div>
-              <h1 className="text-4xl font-extrabold text-black drop-shadow-sm mb-1">
-                {member?.name}
-              </h1>
-              <p className="text-softBlue text-base font-medium mb-2">
-                Member ID: {userId}
-              </p>
+          <div className="text-center sm:text-left">
+            {/* Member Name */}
+            <h1 className="text-4xl font-extrabold text-black drop-shadow-sm mb-1">
+              {member?.name}
+            </h1>
+
+            {/* Member ID */}
+            <p className="text-base font-medium text-gray-500 mb-2">
+              Member ID: {userId}
+            </p>
+
+            {/* Status and Payment Info Badges */}
+            <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2">
+              {/* Status Badge */}
               <span
                 className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm ${
                   member?.status === "active"
@@ -278,13 +230,7 @@ const ProfilePage = () => {
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  />
+                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -294,9 +240,11 @@ const ProfilePage = () => {
                 </svg>
                 {member?.status === "active" ? "Active" : "Expired"}
               </span>
+
+              {/* Payment Badge */}
               {memberData?.transactions[0]?.balance == null ||
               memberData?.transactions[0]?.balance === 0 ? (
-                <span className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold shadow-sm mt-2 ml-2">
+                <span className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold shadow-sm">
                   <svg
                     className="w-4 h-4 mr-1"
                     fill="none"
@@ -313,7 +261,7 @@ const ProfilePage = () => {
                   Fully Paid
                 </span>
               ) : (
-                <span className="inline-flex items-center px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold shadow-sm mt-2 ml-2">
+                <span className="inline-flex items-center px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold shadow-sm">
                   <svg
                     className="w-4 h-4 mr-1"
                     fill="none"
@@ -332,6 +280,7 @@ const ProfilePage = () => {
               )}
             </div>
           </div>
+
           <div className="flex flex-col items-end gap-2 mt-4 sm:mt-0">
             <button
               className="bg-black text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:bg-softBlue/90 transition-all duration-200 flex items-center gap-2"
