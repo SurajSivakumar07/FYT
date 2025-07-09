@@ -1,126 +1,377 @@
 import React, { useMemo, useState } from "react";
-// Replace with your actual hook
-import { PageLoader } from "../App";
-import { useEnquiry } from "../hooks/useEnquiry";
+import {
+  Search,
+  Phone,
+  Calendar,
+  MessageSquare,
+  Users,
+  Filter,
+  ChevronDown,
+} from "lucide-react";
+
 import { useGymId } from "../hooks/useGymId";
+import { useEnquiry } from "../hooks/useEnquiry";
+import { useUpdateEnquiryStatus } from "../hooks/useMembers";
+
+// Mock data for demonstration
 
 function Enquiries() {
+  // Using mock data instead of hooks that aren't available
   const gym_id = useGymId();
   const { data: enquiries = [], isLoading } = useEnquiry(gym_id);
+  // const [isLoading, setIsLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
 
   const filteredEnquiries = useMemo(() => {
     return enquiries.filter((e) => {
       const name = e?.name?.toLowerCase?.() || "";
       const phone = e?.phone_number?.toLowerCase?.() || "";
       const message = e?.message?.toLowerCase?.() || "";
+      const followDate = e?.enquiry_date
+        ? new Date(e.enquiry_date)
+            .toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
+            .toLowerCase()
+        : "";
       const search = searchTerm.toLowerCase();
-      return (
+
+      const matchesSearch =
         name.includes(search) ||
         phone.includes(search) ||
-        message.includes(search)
-      );
-    });
-  }, [enquiries, searchTerm]);
+        message.includes(search) ||
+        followDate.includes(search);
 
-  if (isLoading) return <PageLoader />;
+      const matchesStatus = statusFilter === "all" || e.status === statusFilter;
+      const matchesPriority =
+        priorityFilter === "all" || e.priority === priorityFilter;
+
+      return matchesSearch && matchesStatus && matchesPriority;
+    });
+  }, [enquiries, searchTerm, statusFilter, priorityFilter]);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "new":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "contacted":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "joined":
+        return "bg-purple-100 text-purple-800 border-purple-200";
+      case "closed":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "medium":
+        return "bg-orange-100 text-orange-800";
+      case "low":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const isDueToday = (dateStr) => {
+    const today = new Date();
+    const date = new Date(dateStr);
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
+  const { mutate: updateEnquiryStatus } = useUpdateEnquiryStatus();
+
+  const handleStatusUpdate = (id, newStatus) => {
+    updateEnquiryStatus({ enquiryId: id, status: newStatus, gym_id: gym_id });
+  };
+  if (isLoading)
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-100 p-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Enquiries</h1>
-          <p className="text-gray-600 text-lg">Manage customer enquiries</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <MessageSquare className="h-8 w-8 text-blue-600" />
+                <h1 className="text-2xl font-bold text-gray-900">Enquiries</h1>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-500">
+                {filteredEnquiries.length} of {enquiries.length} enquiries
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Stats + Search */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-black">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <Users className="h-8 w-8 text-blue-600" />
+              </div>
+              <div className="ml-4">
+                <div className="text-2xl font-bold text-gray-900">
                   {enquiries.length}
                 </div>
-                <div className="text-gray-600 text-sm">Total Enquiries</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-black">
-                  {filteredEnquiries.length}
+                <div className="text-sm font-medium text-gray-500">
+                  Total Enquiries
                 </div>
-                <div className="text-gray-600 text-sm">Showing</div>
               </div>
             </div>
+          </div>
 
-            <div className="relative flex-1 md:w-64">
-              <input
-                type="text"
-                placeholder="Search enquiries..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
-              <svg
-                className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <div className="h-3 w-3 bg-green-600 rounded-full"></div>
+                </div>
+              </div>
+              <div className="ml-4">
+                <div className="text-2xl font-bold text-gray-900">
+                  {enquiries.filter((e) => e.status === "new").length}
+                </div>
+                <div className="text-sm font-medium text-gray-500">New</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <div className="h-3 w-3 bg-blue-600 rounded-full"></div>
+                </div>
+              </div>
+              <div className="ml-4">
+                <div className="text-2xl font-bold text-gray-900">
+                  {enquiries.filter((e) => e.status === "contacted").length}
+                </div>
+                <div className="text-sm font-medium text-gray-500">
+                  Contacted
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <Calendar className="h-8 w-8 text-orange-600" />
+              </div>
+              <div className="ml-4">
+                <div className="text-2xl font-bold text-gray-900">
+                  {
+                    enquiries.filter(
+                      (e) => e.enquiry_date && isDueToday(e.enquiry_date)
+                    ).length
+                  }
+                </div>
+                <div className="text-sm font-medium text-gray-500">
+                  Due Today
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Enquiries Grid */}
-        {filteredEnquiries.length === 0 ? (
-          <div className="text-center py-12 text-gray-600">
-            {searchTerm
-              ? "No matching enquiries found."
-              : "No enquiries available."}
+        {/* Search and Filters */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search by name, phone, message, or date..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <div className="relative">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                >
+                  <option value="all">All Status</option>
+                  <option value="new">New</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="pending">Pending</option>
+                  <option value="joined">Joined</option>
+                  <option value="closed">Closed</option>
+                </select>
+                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={priorityFilter}
+                  onChange={(e) => setPriorityFilter(e.target.value)}
+                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                >
+                  <option value="all">All Priority</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEnquiries.map((e) => (
+        </div>
+
+        {/* Enquiries List */}
+        <div className="space-y-6">
+          {filteredEnquiries.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+              <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No enquiries found
+              </h3>
+              <p className="text-gray-500">
+                Try adjusting your search or filter criteria.
+              </p>
+            </div>
+          ) : (
+            filteredEnquiries.map((e) => (
               <div
                 key={e.id}
-                className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition"
+                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
               >
-                <div className="flex justify-between items-center mb-4">
-                  <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-yellow-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8 10h.01M12 14h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="flex-shrink-0">
+                        <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-blue-600 font-semibold text-lg">
+                            {e.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {e.name}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+                              e.status
+                            )}`}
+                          >
+                            {e.status}
+                          </span>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
+                              e.priority
+                            )}`}
+                          >
+                            {e.priority} priority
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Phone className="h-4 w-4 text-gray-400" />
+                        <a
+                          href={`tel:${e.phone_number}`}
+                          className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                        >
+                          {e.phone_number}
+                        </a>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm text-gray-600">
+                        <MessageSquare className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <p className="italic">"{e.message}"</p>
+                      </div>
+                      {e.enquiry_date && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          <span
+                            className={
+                              isDueToday(e.enquiry_date)
+                                ? "text-red-600 font-medium"
+                                : ""
+                            }
+                          >
+                            Follow-up:{" "}
+                            {new Date(e.enquiry_date).toLocaleDateString(
+                              "en-IN",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <span className="text-xs text-gray-500">ID: {e.id}</span>
+
+                  <div className="flex items-center gap-3 lg:ml-6">
+                    <select
+                      value={e.status}
+                      onChange={(event) =>
+                        handleStatusUpdate(e.id, event.target.value)
+                      }
+                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="new">New</option>
+                      <option value="contacted">Contacted</option>
+                      <option value="pending">Pending</option>
+                      <option value="joined">Joined</option>
+                      <option value="closed">Closed</option>
+                    </select>
+
+                    <button
+                      onClick={() =>
+                        window.open(`tel:${e.phone_number}`, "_self")
+                      }
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                    >
+                      <Phone className="h-4 w-4 mr-2" />
+                      Call
+                    </button>
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {e.name}
-                </h3>
-                <p className="text-indigo-600 mb-2">{e.phone_number}</p>
-                <p className="text-sm text-gray-700 mb-2 italic">
-                  “{e.message}”
-                </p>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

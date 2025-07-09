@@ -1,5 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { toast } from "react-toastify"; // Ensure you import toast
+import { UpdateEnquiryApi } from "../services/apis/Enquiry/UpdateEnquiry";
 
 const url = import.meta.env.VITE_API_URL;
 
@@ -24,5 +26,21 @@ export const useMembers = (gym_id) => {
       return failureCount < 3;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+  });
+};
+
+export const useUpdateEnquiryStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: UpdateEnquiryApi,
+    onSuccess: () => {
+      toast.success("Status updated successfully");
+      queryClient.invalidateQueries(["enquiries"]);
+    },
+    onError: (error) => {
+      console.error("Status update failed:", error);
+      toast.error("Failed to update status");
+    },
   });
 };

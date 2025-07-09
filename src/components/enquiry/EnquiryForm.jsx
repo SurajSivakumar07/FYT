@@ -12,6 +12,9 @@ export default function EnquiryForm() {
     name: "",
     phone_number: "",
     message: "",
+    follow_up_date: "",
+    priority: "low",
+    status: "new",
   });
 
   const {
@@ -31,29 +34,39 @@ export default function EnquiryForm() {
   };
 
   const handleSubmit = () => {
-    if (!enquiry.name || !enquiry.phone_number || !enquiry.message) {
+    if (
+      !enquiry.name ||
+      !enquiry.phone_number ||
+      !enquiry.message ||
+      !enquiry.follow_up_date
+    ) {
       setError({ message: "All fields are required." });
       return;
     }
-    console.log(enquiry);
+
+    // Convert to actual Date object
+    const followUpDate = new Date(enquiry.follow_up_date);
 
     const payload = {
       gym_id: enquiry.gym_id,
       name: enquiry.name,
       phone_number: enquiry.phone_number,
       message: enquiry.message,
+      follow_up_date: followUpDate,
+      priority: enquiry.priority,
+      status: enquiry.status,
     };
 
     mutate(payload, {
       onSuccess: () => {
-        console.log("data has been submitted");
-        console.log(enquiry); // You can replace this with an actual API call
-
         setEnquiry({
           gym_id: gym_id,
           name: "",
           phone_number: "",
           message: "",
+          follow_up_date: "",
+          priority: "Medium",
+          status: "pending",
         });
       },
       onError: (err) => {
@@ -148,6 +161,35 @@ export default function EnquiryForm() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 hover:bg-white"
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  Follow-Up Date
+                </label>
+                <input
+                  type="date"
+                  name="follow_up_date"
+                  value={enquiry.follow_up_date}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 hover:bg-white"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  Priority
+                </label>
+                <select
+                  name="priority"
+                  value={enquiry.priority}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 hover:bg-white"
+                  required
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
               </div>
 
               <div className="flex gap-4 pt-4">

@@ -333,7 +333,7 @@ const ProfilePage = () => {
       <div className="relative rounded-2xl mb-6 min-h-[120px]">
         <div className="absolute inset-0 bg-gradient-to-r from-softBlue via-softPink to-blue-100 opacity-60"></div>
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
-          <div className="flex flex-wrap items-start gap-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-center sm:text-left">
             {/* Profile Photo Section */}
             <div className="relative group shrink-0">
               {member?.photo_url && member.photo_url.trim() !== "" ? (
@@ -398,7 +398,7 @@ const ProfilePage = () => {
               </p>
 
               {/* Status and Balance Badges */}
-              <div className="flex flex-wrap gap-2 mb-2">
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-2">
                 <span
                   className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm ${
                     member?.status === "active"
