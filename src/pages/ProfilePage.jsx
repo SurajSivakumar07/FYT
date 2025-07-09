@@ -333,9 +333,9 @@ const ProfilePage = () => {
       <div className="relative rounded-2xl mb-6 min-h-[120px]">
         <div className="absolute inset-0 bg-gradient-to-r from-softBlue via-softPink to-blue-100 opacity-60"></div>
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-start gap-6">
             {/* Profile Photo Section */}
-            <div className="relative group">
+            <div className="relative group shrink-0">
               {member?.photo_url && member.photo_url.trim() !== "" ? (
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl">
                   <img
@@ -389,8 +389,8 @@ const ProfilePage = () => {
             </div>
 
             {/* Member Info */}
-            <div>
-              <h1 className="text-4xl font-extrabold text-black drop-shadow-sm mb-1">
+            <div className="min-w-[200px] flex-1">
+              <h1 className="text-4xl font-extrabold text-black drop-shadow-sm mb-1 break-words">
                 {member?.name}
               </h1>
               <p className="text-softBlue text-base font-medium mb-2">
@@ -407,13 +407,9 @@ const ProfilePage = () => {
                   }`}
                 >
                   {member?.status === "active" ? (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                    </>
+                    <CheckCircle className="w-4 h-4 mr-1" />
                   ) : (
-                    <>
-                      <AlertCircle className="w-4 h-4 mr-1" />
-                    </>
+                    <AlertCircle className="w-4 h-4 mr-1" />
                   )}
                   {member?.status === "active" ? "Active" : "Expired"}
                 </span>
