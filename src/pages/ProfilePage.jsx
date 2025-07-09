@@ -950,12 +950,7 @@ const ProfilePage = () => {
                   className="flex items-center gap-3 cursor-pointer p-3 rounded-xl hover:bg-white/20 backdrop-blur-sm transition-all duration-200 group border border-white/20"
                   onClick={() => setShowActions(!showActions)}
                 >
-                  <div className="relative">
-                    <div className="w-10 h-10 rounded-full border-2 border-dotted border-gray-700 flex items-center justify-center group-hover:border-gray-900 transition-colors">
-                      <Plus className="w-4 h-4 text-gray-700" />
-                    </div>
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                  </div>
+                  <div className="relative">Edit</div>
                   <div className="hidden sm:block text-right">
                     <div className="text-sm font-semibold text-gray-900">
                       {member?.name}

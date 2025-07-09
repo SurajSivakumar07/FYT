@@ -120,6 +120,7 @@ const RenewModal = ({ isOpen, onClose, memberId }) => {
               <Input
                 type="date"
                 name="start_date"
+                placeholder="Select the date"
                 value={formData.start_date}
                 onChange={handleChange}
               />

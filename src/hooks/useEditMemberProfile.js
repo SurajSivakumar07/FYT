@@ -16,7 +16,6 @@ export const useEditMemberProfile = () => {
       queryClient.invalidateQueries(["members", gym_id]);
       queryClient.invalidateQueries(["memberprofile"]);
       toast.success("Edit sucess");
-      alert("Updated successfully");
     },
 
     onError: (error) => {
