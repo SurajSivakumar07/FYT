@@ -20,6 +20,8 @@ const SignIn = () => {
     setIsSubmitting(true);
 
     try {
+      console.time("TotalSignInTime");
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
@@ -27,6 +29,7 @@ const SignIn = () => {
 
       if (error) {
         alert(error.message);
+        console.timeEnd("TotalSignInTime");
         return;
       }
 
@@ -34,19 +37,28 @@ const SignIn = () => {
       const accessToken = data?.session?.access_token;
 
       sessionStorage.setItem("access_token", accessToken);
+      console.time("FetchGymId"); // Start timing gym ID fetch
 
       try {
-        const response = await axios.post(`${url}/get-gym-id`, {
-          uuid: userId,
-        });
+        const { data, error } = await supabase
+          .from("user_profiles")
+          .select("gym_id")
+          .eq("id", userId)
+          .single();
 
-        const result = response.data;
-        sessionStorage.setItem("gym_id", result.gym_id);
+        if (error) {
+          throw error;
+        }
+        console.timeEnd("Ending");
+        sessionStorage.setItem("gym_id", data.gym_id);
 
+        console.timeEnd("FetchGymId"); // End gym ID fetch timing
+        console.timeEnd("TotalSignInTime"); // End total timing
         setLoading(false);
-        navigate("/", { state: result });
+        navigate("/", { state: data });
       } catch (error) {
         console.error("Failed to fetch gym ID:", error);
+        alert(error);
         setLoading(false);
       }
     } catch (error) {

@@ -6,10 +6,4 @@ const accessToken = sessionStorage.getItem("access_token"); // or from supabase.
 console.log("Token:", sessionStorage.getItem("access_token"));
 
 // export const supabase = createClient(supabaseUrl, supabaseKey);
-export const supabase = createClient(supabaseUrl, supabaseKey, {
-  global: {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  },
-});
+export const supabase = createClient(supabaseUrl, supabaseKey);
