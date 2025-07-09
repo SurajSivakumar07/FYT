@@ -12,6 +12,7 @@ export default function AddTrainer() {
     trainerName: "",
     email: "",
     phone: "",
+    specialty: "",
   });
 
   const handleInputChange = (e) => {
@@ -29,6 +30,7 @@ export default function AddTrainer() {
       name: trainerData.trainerName,
       phone: trainerData.phone,
       email: trainerData.email,
+      specialty: trainerData.specialty,
     };
 
     mutate(
@@ -50,9 +52,9 @@ export default function AddTrainer() {
       trainerName: "",
       email: "",
       phone: "",
+      specialty: "",
     });
   };
-
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6 relative overflow-hidden overscroll-y-none
@@ -142,6 +144,20 @@ export default function AddTrainer() {
                 value={trainerData.phone}
                 onChange={handleInputChange}
                 placeholder="e.g., +1 (555) 123-4567"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 hover:bg-white"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                Specialty
+              </label>
+              <input
+                type="text"
+                name="specialty"
+                value={trainerData.specialty}
+                onChange={handleInputChange}
+                placeholder="e.g., Weight Training, Yoga"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 hover:bg-white"
                 required
               />
