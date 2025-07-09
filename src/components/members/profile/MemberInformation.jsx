@@ -314,7 +314,7 @@ const MemberInformation = React.memo(
               <div>
                 <label
                   className="text-xs text-gray-500 uppercase flex items-center gap-1"
-                  title="Type of membership: PT = Personal Training, GT = Group Training, etc."
+                  title="Blood group is important for emergency situations."
                 >
                   <svg
                     className="w-4 h-4 text-softBlue"
@@ -326,15 +326,16 @@ const MemberInformation = React.memo(
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth="2"
-                      d="M5 13l4 4L19 7"
+                      d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 0v4m0 8v4m4-4h4m-8 0H4"
                     />
                   </svg>
-                  Member Type
+                  Occupation
                 </label>
-                <p className="font-medium text-black mt-2 capitalize">
-                  {memberData.type}
+                <p className="font-medium text-black mt-2">
+                  {memberData.occupation}
                 </p>
               </div>
+
               <div className="sm:col-span-2">
                 <label className="text-xs text-gray-500 uppercase flex items-center gap-1">
                   <svg

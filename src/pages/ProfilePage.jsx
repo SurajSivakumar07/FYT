@@ -1206,11 +1206,21 @@ const ProfilePage = () => {
       </div>
 
       {/* Modals */}
+      {/* <EditMemberModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        memberData={memberData.member}
+        onSave={handleSave}
+      /> */}
       <EditMemberModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         memberData={memberData.member}
         onSave={handleSave}
+        oldTrainer={{
+          id: memberData.trainer?.id,
+          name: memberData.trainer?.name, // or derive it from trainers list
+        }}
       />
       <RenewModal
         isOpen={isRenewOpen}

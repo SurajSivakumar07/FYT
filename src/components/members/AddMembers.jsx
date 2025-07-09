@@ -35,6 +35,7 @@ export default function AddMembers() {
     dob: "",
     gender: "",
     blood_group: "",
+    occupation: "",
     address: "",
     membership_plan_id: null,
     start_date: "",
@@ -99,6 +100,7 @@ export default function AddMembers() {
       { key: "dob", label: "Date of Birth" },
       { key: "gender", label: "Gender" },
       { key: "blood_group", label: "Blood Group" },
+      { key: "occupation", label: "occupation" },
       { key: "address", label: "Address" },
       { key: "membership_plan_id", label: "Membership Plan" },
       { key: "start_date", label: "Start Date" },
@@ -287,6 +289,7 @@ export default function AddMembers() {
         gender: "",
         blood_group: "",
         address: "",
+        occupation: "",
         membership_plan_id: null,
         start_date: "",
         end_date: "",
@@ -527,6 +530,35 @@ export default function AddMembers() {
                   <p className="text-red-500 text-sm flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
                     {errors.gender}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="occupation"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Occupation
+                </label>
+                <select
+                  id="occupation"
+                  name="occupation"
+                  value={memberData.occupation}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-blue-400 border-b border-gray-200"
+                  required
+                  aria-required="true"
+                  aria-invalid={!!errors.occupation}
+                >
+                  <option value="">Select Occupation</option>
+                  <option value="student">Student</option>
+                  <option value="salaried">Salaried</option>
+                  <option value="other">Other</option>
+                </select>
+                {errors.occupation && (
+                  <p className="text-red-500 text-sm flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.occupation}
                   </p>
                 )}
               </div>
