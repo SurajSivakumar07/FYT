@@ -315,6 +315,18 @@ const ProfilePage = () => {
     },
   ];
 
+  const handlePhotoDelete = async () => {
+    const { data, error } = await supabase.storage
+      .from("member") // your bucket name
+      .remove(["photos/sdf2-1.jpg"]);
+
+    if (error) {
+      console.error("Delete failed:", error.message);
+    } else {
+      console.log("File deleted:", data);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 bg-white min-h-screen">
       {/* Header Section */}
@@ -395,9 +407,13 @@ const ProfilePage = () => {
                   }`}
                 >
                   {member?.status === "active" ? (
-                    <CheckCircle className="w-4 h-4 mr-1" />
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                    </>
                   ) : (
-                    <AlertCircle className="w-4 h-4 mr-1" />
+                    <>
+                      <AlertCircle className="w-4 h-4 mr-1" />
+                    </>
                   )}
                   {member?.status === "active" ? "Active" : "Expired"}
                 </span>
