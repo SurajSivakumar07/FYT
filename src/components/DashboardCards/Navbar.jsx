@@ -39,10 +39,10 @@ export default function Navbar() {
           <div
             className="text-sm sm:text-base font-medium text-gray-900 flex items-center gap-1"
             onClick={() => {
-              navigation("/");
+              navigate("/");
             }}
           >
-            FitnessZone
+            {/* FitnessZone */} DEMOGYMNAME
           </div>
         </div>
 

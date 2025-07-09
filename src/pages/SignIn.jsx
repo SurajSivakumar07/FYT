@@ -72,7 +72,7 @@ const SignIn = () => {
               <div className="flex flex-col items-center justify-center rounded-3xl py-8 sm:py-12 relative overflow-hidden">
                 <div className="relative z-10 text-center">
                   <span className="text-black text-4xl sm:text-5xl md:text-6xl font-black tracking-wider drop-shadow-lg">
-                    FYTZ
+                    {/* FYTZ */}DEMO
                   </span>
                 </div>
               </div>
