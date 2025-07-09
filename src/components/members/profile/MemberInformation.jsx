@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useGymId } from "../../../hooks/useGymId";
 const MemberInformation = React.memo(
-  ({ memberData, showMembership, showIdProof }) => {
+  ({ memberData, showMembership, showIdProof, showTranscation }) => {
     const formattedDob = useMemo(() => {
       return new Date(memberData.dob).toLocaleDateString("en-IN", {
         year: "numeric",
@@ -180,7 +180,7 @@ const MemberInformation = React.memo(
     return (
       <div className="bg-white rounded-2xl p-8 shadow-lg space-y-8">
         {/* Personal Info Section */}
-        {!showMembership && !showIdProof && (
+        {!showMembership && !showIdProof && !showTranscation && (
           <>
             <h2 className="text-2xl font-bold mb-6 flex items-center text-black gap-2">
               <svg
@@ -491,7 +491,64 @@ const MemberInformation = React.memo(
             </div>
           </>
         )}
+        {showTranscation && (
+          <>
+            <h2 className="">
+              <svg
+                className="w-6 h-6 text-softBlue"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M3 10h18M7 15h10M9 6h6"
+                />
+              </svg>
+              Transaction Details
+            </h2>
 
+            <div className=" ">
+              {memberData?.transactions?.map((trans, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200"
+                >
+                  <p className="text-xs text-gray-500 uppercase mb-1">
+                    Amount Paid
+                  </p>
+                  <p className="font-medium text-black mb-2">
+                    ₹{trans.amount_paid}
+                  </p>
+
+                  <p className="text-xs text-gray-500 uppercase mb-1">
+                    Transaction Type
+                  </p>
+                  <p className="font-medium text-black mb-2">
+                    {trans.transaction_type}
+                  </p>
+
+                  <p className="text-xs text-gray-500 uppercase mb-1">
+                    Payment Date
+                  </p>
+                  <p className="font-medium text-black mb-2">
+                    {new Date(trans.payment_date).toLocaleDateString("en-IN")}
+                  </p>
+
+                  <p className="text-xs text-gray-500 uppercase mb-1">Status</p>
+                  <p className="font-medium text-black mb-2">{trans.status}</p>
+
+                  <p className="text-xs text-gray-500 uppercase mb-1">
+                    Balance
+                  </p>
+                  <p className="font-medium text-black">₹{trans.balance}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
         <div className="p-6">
           {showIdProof && (
             <>
