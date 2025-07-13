@@ -664,7 +664,7 @@ const ProfilePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <WhatsAppNotification />
+              <WhatsAppNotification memberData={memberData} />
             </motion.div>
           )}
           {activeTab === "attendance" && (

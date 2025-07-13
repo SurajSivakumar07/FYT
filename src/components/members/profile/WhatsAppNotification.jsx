@@ -1,6 +1,50 @@
 import React from "react";
+import { usePostInvoice } from "../../../hooks/whatsapp/usePostInvoice";
+import { useGymId } from "../../../hooks/useGymId";
 
-const WhatsAppNotification = () => {
+const WhatsAppNotification = ({ memberData }) => {
+  const { mutate, isPending, isSucess } = usePostInvoice();
+  const gym_id = useGymId();
+  const invoiceHandler = () => {
+    const txn = memberData?.transactions?.[memberData.transactions.length - 1];
+    const member = memberData?.member;
+
+    console.log({
+      member_name: member?.name || "Unknown",
+      address: member?.address || "Not provided",
+      payment_mode: txn?.transaction_type || "Cash",
+      payment_date: txn?.payment_date || new Date().toISOString().split("T")[0],
+      amount: (txn?.amount_paid ?? 0) + (txn?.balance ?? 0),
+      amount_paid: txn?.amount_paid ?? 0,
+      balance: txn?.balance ?? 0,
+      start_date: member?.start_date || txn?.payment_date,
+      end_date: member?.end_date || txn?.payment_date,
+      membership_type: "3 months",
+      member_phonenumber: "91" + (member?.phone_number || "0000000000"),
+      photo_url: member?.photo_url || "Not Available",
+      document_url: member?.document_url || "Not Available",
+    });
+    mutate({
+      data: {
+        member_name: member?.name || "Unknown",
+        address: member?.address || "Not provided",
+        payment_mode: txn?.transaction_type || "Cash",
+        payment_date:
+          txn?.payment_date || new Date().toISOString().split("T")[0],
+        amount: (txn?.amount_paid ?? 0) + (txn?.balance ?? 0),
+        amount_paid: txn?.amount_paid ?? 0,
+        balance: txn?.balance ?? 0,
+        start_date: member?.start_date || txn?.payment_date,
+        end_date: member?.end_date || txn?.payment_date,
+        membership_type: "3 months",
+        member_phonenumber: "91" + (member?.phone_number || "0000000000"),
+        photo_url: member?.photo_url || "Not Available",
+        document_url: member?.document_url || "Not Available",
+      },
+      gym_id: gym_id,
+    });
+  };
+
   return (
     <div className="bg-white-100 rounded-2xl p-6 shadow-md text-black">
       <h2 className="text-xl font-semibold mb-4 text-black">Quick Actions</h2>
@@ -8,6 +52,7 @@ const WhatsAppNotification = () => {
         <button
           className="w-full  bg-black  text-white py-2.5 px-4 rounded-lg hover:opacity-90 flex items-center justify-center transition-all duration-200 shadow-md"
           aria-label="Send invoice via WhatsApp"
+          onClick={invoiceHandler}
         >
           {/* <svg
             className="w-4 h-4 mr-2"
