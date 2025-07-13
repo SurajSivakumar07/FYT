@@ -12,6 +12,7 @@ import {
 import { useGymId } from "../hooks/useGymId";
 import { useEnquiry } from "../hooks/useEnquiry";
 import { useUpdateEnquiryStatus } from "../hooks/useMembers";
+import EnquiryEditModal from "../components/enquiry/EnquiryEditModal";
 
 // Mock data for demonstration
 
@@ -24,6 +25,8 @@ function Enquiries() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedEnquiry, setSelectedEnquiry] = useState(null);
 
   const filteredEnquiries = useMemo(() => {
     return enquiries.filter((e) => {
@@ -265,66 +268,42 @@ function Enquiries() {
             filteredEnquiries.map((e) => (
               <div
                 key={e.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 hover:shadow-md transition-shadow"
               >
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="flex-shrink-0">
-                        <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 font-semibold text-lg">
-                            {e.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {e.name}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-                              e.status
-                            )}`}
-                          >
-                            {e.status}
-                          </span>
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
-                              e.priority
-                            )}`}
-                          >
-                            {e.priority} priority
-                          </span>
-                        </div>
-                      </div>
+                <div className="flex flex-row items-start justify-between gap-4 flex-wrap">
+                  {/* Left: Avatar + Info */}
+                  <div className="flex items-start gap-4 flex-1 min-w-[200px]">
+                    <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm uppercase shadow-sm">
+                      {e.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
                     </div>
-
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex flex-col gap-1 text-sm text-gray-700">
+                      <div className="font-semibold text-base text-gray-900">
+                        {e.name}
+                      </div>
+                      <div className="flex items-center gap-1">
                         <Phone className="h-4 w-4 text-gray-400" />
                         <a
                           href={`tel:${e.phone_number}`}
-                          className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                          className="text-blue-600 hover:text-blue-800 transition"
                         >
                           {e.phone_number}
                         </a>
                       </div>
-                      <div className="flex items-start gap-2 text-sm text-gray-600">
-                        <MessageSquare className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                        <p className="italic">"{e.message}"</p>
+                      <div className="flex items-start gap-1">
+                        <MessageSquare className="h-4 w-4 text-gray-400 mt-0.5" />
+                        <span className="italic">"{e.message}"</span>
                       </div>
                       {e.enquiry_date && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
                           <Calendar className="h-4 w-4 text-gray-400" />
                           <span
                             className={
                               isDueToday(e.enquiry_date)
-                                ? "text-red-600 font-medium"
-                                : ""
+                                ? "text-red-600 font-semibold"
+                                : "text-gray-700"
                             }
                           >
                             Follow-up:{" "}
@@ -339,16 +318,33 @@ function Enquiries() {
                           </span>
                         </div>
                       )}
+                      <div className="flex items-center gap-2 mt-1">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+                            e.status
+                          )}`}
+                        >
+                          {e.status}
+                        </span>
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
+                            e.priority
+                          )}`}
+                        >
+                          {e.priority} priority
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 lg:ml-6">
+                  {/* Right: Actions */}
+                  <div className="flex flex-row flex-wrap items-center gap-2 min-w-[220px]">
                     <select
                       value={e.status}
                       onChange={(event) =>
                         handleStatusUpdate(e.id, event.target.value)
                       }
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-700 focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="new">New</option>
                       <option value="contacted">Contacted</option>
@@ -361,10 +357,20 @@ function Enquiries() {
                       onClick={() =>
                         window.open(`tel:${e.phone_number}`, "_self")
                       }
-                      className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                      className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition"
                     >
-                      <Phone className="h-4 w-4 mr-2" />
+                      <Phone className="h-4 w-4 mr-1" />
                       Call
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setSelectedEnquiry(e);
+                        setEditModalOpen(true);
+                      }}
+                      className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition"
+                    >
+                      Edit
                     </button>
                   </div>
                 </div>
@@ -373,6 +379,14 @@ function Enquiries() {
           )}
         </div>
       </div>
+      <EnquiryEditModal
+        open={editModalOpen}
+        enquiry={selectedEnquiry}
+        onClose={() => {
+          setEditModalOpen(false);
+          setSelectedEnquiry(null);
+        }}
+      />
     </div>
   );
 }
