@@ -3,7 +3,7 @@ import { usePostInvoice } from "../../../hooks/whatsapp/usePostInvoice";
 import { useGymId } from "../../../hooks/useGymId";
 
 const WhatsAppNotification = ({ memberData }) => {
-  const { mutate, isPending, isSucess } = usePostInvoice();
+  const { mutate, isPending, isSuccess } = usePostInvoice();
   const gym_id = useGymId();
   const invoiceHandler = () => {
     const txn = memberData?.transactions?.[memberData.transactions.length - 1];
@@ -50,24 +50,12 @@ const WhatsAppNotification = ({ memberData }) => {
       <h2 className="text-xl font-semibold mb-4 text-black">Quick Actions</h2>
       <div className="space-y-3">
         <button
-          className="w-full  bg-black  text-white py-2.5 px-4 rounded-lg hover:opacity-90 flex items-center justify-center transition-all duration-200 shadow-md"
+          className="w-full bg-black text-white py-2.5 px-4 rounded-lg hover:opacity-90 flex items-center justify-center transition-all duration-200 shadow-md disabled:opacity-60"
           aria-label="Send invoice via WhatsApp"
           onClick={invoiceHandler}
+          disabled={isPending}
         >
-          {/* <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M8 12h.01M12 14h.01M16 12h.01M9 16h6"
-            ></path>
-          </svg> */}
-          Send Invoice via WhatsApp
+          {isPending ? "Sending..." : "Send Invoice via WhatsApp"}
         </button>
         <button
           className="w-full bg-gradient-to-r from-softPink to-softBlue text-black py-2.5 px-4 rounded-lg hover:opacity-90 flex items-center justify-center transition-all duration-200 shadow-md"
