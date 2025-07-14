@@ -140,15 +140,17 @@ const SignIn = () => {
             </div>
 
             {/* Forgot password */}
-            {/* <div className="flex items-center justify-between pt-2">
-            <button
-              type="button"
-              className="text-green-400 hover:text-green-300 text-sm font-semibold transition-colors duration-200"
-              onClick={() => console.log("Forgot password clicked")}
-            >
-              Forgot password?
-            </button>
-          </div> */}
+            <div className="flex items-center justify-between pt-2">
+              <button
+                type="button"
+                className="text-black text-sm font-semibold transition-colors duration-200"
+                onClick={() =>
+                  (window.location.href = "https://fytzi.in/forgot-password")
+                }
+              >
+                Forgot password?
+              </button>
+            </div>
 
             {/* Submit button */}
             <button

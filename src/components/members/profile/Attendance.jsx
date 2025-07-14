@@ -80,7 +80,7 @@ const Attendance = ({ id }) => {
     });
 
     if (futureDates.length > 0) {
-      alert("You cannot select a date greater than today.");
+      alert("Please select a date that is today or earlier.");
       return;
     }
 
