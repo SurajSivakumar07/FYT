@@ -70,6 +70,20 @@ const Attendance = ({ id }) => {
       return;
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Ensure we're comparing only the date part
+
+    const futureDates = [...selectedDates].filter((dateStr) => {
+      const date = new Date(dateStr);
+      date.setHours(0, 0, 0, 0);
+      return date > today;
+    });
+
+    if (futureDates.length > 0) {
+      alert("You cannot select a date greater than today.");
+      return;
+    }
+
     setIsSaving(true);
     setError("");
     const now = new Date();
