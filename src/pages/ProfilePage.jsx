@@ -59,20 +59,6 @@ const ProfilePage = () => {
   const { mutate: deleteMember, isLoading: deletMeberLoading } =
     useDeleteMember(navigate);
 
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this member?")) {
-      deleteMember(member.member_id, {
-        onSuccess: () => {
-          toast.success("Deleted");
-          queryClient.invalidateQueries(["members", gym_id]);
-
-          queryClient.invalidateQueries(["members", gym_id]);
-          navigate("/members?status=all");
-        },
-      });
-    }
-  };
-
   const {
     data: memberData = {},
     isLoading,
@@ -93,6 +79,32 @@ const ProfilePage = () => {
       memberId: memberData?.member?.member_id,
       updatedData,
     });
+  };
+  const handleDeleteProfilePhoto = async () => {
+    const { data, error } = await supabase.storage
+      .from("member-photos")
+      .remove([`photos/${memberData?.member?.member_id}-${gym_id}.jpg`]);
+
+    if (data) {
+      console.log(data);
+
+      const { data: dbResult, error: dbError } = await supabase
+        .from("members")
+        .update({ photo_url: null })
+        .eq("member_id", memberData?.member?.member_id);
+      if (dbError) {
+        console.error("❌ DB update failed:", dbError.message);
+      } else {
+        console.log("✅ Cleared photo_url in DB:", dbResult);
+      }
+      queryClient.invalidateQueries(["members", gym_id]);
+      queryClient.invalidateQueries(["memberprofile"]);
+      toast.success("sucess");
+    }
+    if (error) {
+      console.log(error);
+      toast.error("failed", error);
+    }
   };
 
   const resizeImage = (file, maxWidth, maxHeight, quality = 0.7) => {
@@ -228,13 +240,6 @@ const ProfilePage = () => {
     }
   };
 
-  const deleteHandler = async () => {
-    const res = await supabase.storage
-      .from("member-photos")
-      .remove(["photos/test.jpg"]);
-    console.log(res);
-  };
-
   if (isLoading) return <PageLoader />;
   if (error)
     return (
@@ -315,18 +320,6 @@ const ProfilePage = () => {
     },
   ];
 
-  const handlePhotoDelete = async () => {
-    const { data, error } = await supabase.storage
-      .from("member") // your bucket name
-      .remove(["photos/sdf2-1.jpg"]);
-
-    if (error) {
-      console.error("Delete failed:", error.message);
-    } else {
-      console.log("File deleted:", data);
-    }
-  };
-
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 bg-white min-h-screen">
       {/* Header Section */}
@@ -335,13 +328,23 @@ const ProfilePage = () => {
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-center sm:text-left">
             {/* Profile Photo Section */}
+
             <div className="relative group shrink-0">
               {member?.photo_url && member.photo_url.trim() !== "" ? (
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl cursor-pointer relative">
                   <img
                     src={member.photo_url}
                     alt="Profile"
                     className="w-full h-full object-cover"
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Are you sure you want to delete this photo?"
+                        )
+                      ) {
+                        handleDeleteProfilePhoto();
+                      }
+                    }}
                   />
                 </div>
               ) : (
@@ -387,7 +390,6 @@ const ProfilePage = () => {
                 </>
               )}
             </div>
-
             {/* Member Info */}
             <div className="min-w-[200px] flex-1">
               <h1 className="text-4xl font-extrabold text-black drop-shadow-sm mb-1 break-words">

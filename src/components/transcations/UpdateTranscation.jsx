@@ -36,7 +36,7 @@ export default function UpdateTranscation({ isOpen, onClose, memberId }) {
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent>
-          <DialogHeader>Renew Membership</DialogHeader>
+          <DialogHeader>Update Transcation</DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             <Input

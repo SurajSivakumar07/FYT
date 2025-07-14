@@ -8,6 +8,7 @@ const WhatsAppNotification = ({ memberData }) => {
   const invoiceHandler = () => {
     const txn = memberData?.transactions?.[memberData.transactions.length - 1];
     const member = memberData?.member;
+    const plan = memberData?.plan;
 
     console.log({
       member_name: member?.name || "Unknown",
@@ -19,10 +20,9 @@ const WhatsAppNotification = ({ memberData }) => {
       balance: txn?.balance ?? 0,
       start_date: member?.start_date || txn?.payment_date,
       end_date: member?.end_date || txn?.payment_date,
-      membership_type: "3 months",
+      membership_type: plan?.name,
       member_phonenumber: "91" + (member?.phone_number || "0000000000"),
-      photo_url: member?.photo_url || "Not Available",
-      document_url: member?.document_url || "Not Available",
+      duration: plan?.duration_days,
     });
     mutate({
       data: {
@@ -38,8 +38,7 @@ const WhatsAppNotification = ({ memberData }) => {
         end_date: member?.end_date || txn?.payment_date,
         membership_type: "3 months",
         member_phonenumber: "91" + (member?.phone_number || "0000000000"),
-        photo_url: member?.photo_url || "Not Available",
-        document_url: member?.document_url || "Not Available",
+        duration: plan?.duration_days,
       },
       gym_id: gym_id,
     });

@@ -33,7 +33,8 @@ export default function Members() {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [monthRange, setMonthRange] = useState([]);
-  const { data: members = [], isLoading, error } = useMembers(gym_id);
+  // const { data: members = [], isLoading, error, refetch } = useMembers(gym_id);
+  const { data: members = [], isLoading, error, refetch } = useMembers(gym_id);
 
   const [search, setSearch] = useState("");
   const [type, setType] = useState("");
@@ -112,6 +113,12 @@ export default function Members() {
       setStatusFilter("all");
     }
   }, [location.search]);
+
+  useEffect(() => {
+    if (gym_id) {
+      refetch(); // ✅ now works
+    }
+  }, [gym_id]);
 
   // Error state
   if (error) {

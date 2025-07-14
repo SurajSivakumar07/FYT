@@ -3,6 +3,8 @@ import { supabase } from "../../../services/supabase/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify"; // Ensure you import toast
+
 import { useGymId } from "../../../hooks/useGymId";
 const MemberInformation = React.memo(
   ({ memberData, showMembership, showIdProof, showTranscation }) => {
@@ -177,6 +179,32 @@ const MemberInformation = React.memo(
       }
     };
 
+    const handleDeleteDocument = async () => {
+      const { data, error } = await supabase.storage
+        .from("members-document")
+        .remove([`photosdocument/${memberData.member_id}-${gym_id}.jpg`]);
+
+      if (data) {
+        console.log(data);
+
+        const { data: dbResult, error: dbError } = await supabase
+          .from("members")
+          .update({ document_url: null })
+          .eq("member_id", memberData.member_id);
+        if (dbError) {
+          console.error("❌ DB update failed:", dbError.message);
+        } else {
+          console.log("✅ Cleared photo_url in DB:", dbResult);
+        }
+        queryClient.invalidateQueries(["members", gym_id]);
+        queryClient.invalidateQueries(["memberprofile"]);
+        toast.success("sucess");
+      }
+      if (error) {
+        console.log(error);
+        toast.error("failed", error);
+      }
+    };
     return (
       <div className="bg-white rounded-2xl p-8 shadow-lg space-y-8">
         {/* Personal Info Section */}
@@ -592,11 +620,27 @@ const MemberInformation = React.memo(
 
                   <div className="relative group max-w-lg">
                     {documentUrl ? (
-                      <img
-                        src={documentUrl}
-                        alt="Document Preview"
-                        className="w-full h-64 object-cover rounded-lg shadow-lg"
-                      />
+                      <>
+                        <img
+                          src={documentUrl}
+                          alt="Document Preview"
+                          className="w-full h-64 object-cover rounded-lg shadow-lg"
+                        />
+                        <button
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                "Are you sure you want to delete this document?"
+                              )
+                            ) {
+                              handleDeleteDocument();
+                            }
+                          }}
+                          className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"
+                        >
+                          Delete
+                        </button>
+                      </>
                     ) : (
                       <div className="flex flex-col items-center">
                         <input
