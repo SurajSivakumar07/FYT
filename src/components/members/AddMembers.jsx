@@ -255,7 +255,6 @@ export default function AddMembers() {
 
     const payload = {
       ...memberData,
-      gym_id: parseInt(memberData.gym_id),
       membership_plan_id: parseInt(memberData.membership_plan_id),
       trainer_id: memberData.trainer_id
         ? parseInt(memberData.trainer_id)
@@ -265,7 +264,7 @@ export default function AddMembers() {
       end_date: convertToISODate(memberData.end_date),
       transaction: {
         ...memberData.transaction,
-        gym_id: parseInt(memberData.gym_id),
+        gym_id: memberData.gym_id,
         member_id: memberData.member_id,
         amount_paid: parseFloat(memberData.transaction.amount_paid) || 0,
         balance: parseInt(memberData.transaction.balance) || 0,
@@ -311,6 +310,10 @@ export default function AddMembers() {
       setErrors({});
     } catch (err) {
       console.error("Error submitting member:", err);
+
+      if (err.response?.data) {
+        console.error("Backend response:", err.response.data); // 👈 Check this!
+      }
       if (err.response?.status === 405) {
         setSubmissionError(
           "Method Not Allowed. Verify the endpoint supports POST."

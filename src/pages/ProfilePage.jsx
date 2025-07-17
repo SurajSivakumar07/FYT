@@ -83,7 +83,7 @@ const ProfilePage = () => {
   const handleDeleteProfilePhoto = async () => {
     const { data, error } = await supabase.storage
       .from("member-photos")
-      .remove([`photos/${memberData?.member?.member_id}-${gym_id}.jpg`]);
+      .remove([`photos/${memberData?.member?.member_id}.jpg`]);
 
     if (data) {
       console.log(data);
@@ -193,7 +193,7 @@ const ProfilePage = () => {
         return;
       }
 
-      const filePath = `photos/${memberData.member.member_id}-${gym_id}.jpg`;
+      const filePath = `photos/${memberData.member.member_id}.jpg`;
 
       const { error: uploadError } = await supabase.storage
         .from("member-photos")

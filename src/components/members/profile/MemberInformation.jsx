@@ -137,7 +137,7 @@ const MemberInformation = React.memo(
           return;
         }
 
-        const filePath = `photosdocument/${memberData?.member_id}-${gym_id}.jpg`;
+        const filePath = `photosdocument/${memberData?.member_id}.jpg`;
 
         const { error: uploadError } = await supabase.storage
           .from("members-document")
@@ -182,7 +182,7 @@ const MemberInformation = React.memo(
     const handleDeleteDocument = async () => {
       const { data, error } = await supabase.storage
         .from("members-document")
-        .remove([`photosdocument/${memberData.member_id}-${gym_id}.jpg`]);
+        .remove([`photosdocument/${memberData.member_id}.jpg`]);
 
       if (data) {
         console.log(data);

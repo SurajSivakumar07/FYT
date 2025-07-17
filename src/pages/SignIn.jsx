@@ -4,69 +4,107 @@ import { supabase } from "../services/supabase/supabase";
 import axios from "axios";
 
 // Replace this with your backend URL
-const url = import.meta.env.VITE_API_URL;
 
 const SignIn = () => {
+  const url = import.meta.env.VITE_API_URL;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setLoading(true);
 
     try {
-      console.time("TotalSignInTime");
+      const res = await axios.post(
+        `${url}/login`,
+        { email, password },
+        { withCredentials: true } // Required to accept cookies!
+      );
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+      console.log(res);
 
-      if (error) {
-        alert(error.message);
-        console.timeEnd("TotalSignInTime");
-        return;
-      }
+      const encryptedGymId = getCookie("gym_id"); // From document.cookie
+      // const decryptedGymId = decrypt(encryptedGymId);
 
-      const userId = data?.user?.id;
-      const accessToken = data?.session?.access_token;
+      sessionStorage.setItem("gym_id", encryptedGymId);
+      console.log("gym_id cookie:", encryptedGymId);
+      console.log("Navigating to /");
+      window.location.href = "/";
 
-      sessionStorage.setItem("access_token", accessToken);
-      console.time("FetchGymId"); // Start timing gym ID fetch
-
-      try {
-        const { data, error } = await supabase
-          .from("user_profiles")
-          .select("gym_id")
-          .eq("id", userId)
-          .single();
-
-        if (error) {
-          throw error;
-        }
-        console.timeEnd("Ending");
-        sessionStorage.setItem("gym_id", data.gym_id);
-
-        console.timeEnd("FetchGymId"); // End gym ID fetch timing
-        console.timeEnd("TotalSignInTime"); // End total timing
-        setLoading(false);
-        navigate("/", { state: data });
-      } catch (error) {
-        console.error("Failed to fetch gym ID:", error);
-        alert(error);
-        setLoading(false);
-      }
+      console.log("Navigation done");
     } catch (error) {
-      console.error("Sign in failed:", error);
+      console.error("Login error:", error);
+      alert("Login failed. Please check credentials.");
     } finally {
       setIsSubmitting(false);
+      setLoading(false);
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+
+  //   try {
+  //     console.time("TotalSignInTime");
+
+  //     const { data, error } = await supabase.auth.signInWithPassword({
+  //       email: email,
+  //       password: password,
+  //     });
+
+  //     if (error) {
+  //       alert(error.message);
+  //       console.timeEnd("TotalSignInTime");
+  //       return;
+  //     }
+
+  //     const userId = data?.user?.id;
+  //     const accessToken = data?.session?.access_token;
+
+  //     sessionStorage.setItem("access_token", accessToken);
+  //     console.time("FetchGymId"); // Start timing gym ID fetch
+
+  //     try {
+  //       const { data, error } = await supabase
+  //         .from("user_profiles")
+  //         .select("gym_id")
+  //         .eq("id", userId)
+  //         .single();
+
+  //       if (error) {
+  //         throw error;
+  //       }
+  //       console.timeEnd("Ending");
+  //       sessionStorage.setItem("gym_id", data.gym_id);
+
+  //       console.timeEnd("FetchGymId"); // End gym ID fetch timing
+  //       console.timeEnd("TotalSignInTime"); // End total timing
+  //       setLoading(false);
+  //       navigate("/", { state: data });
+  //     } catch (error) {
+  //       console.error("Failed to fetch gym ID:", error);
+  //       alert(error);
+  //       setLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("Sign in failed:", error);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
 
   return (
     <div

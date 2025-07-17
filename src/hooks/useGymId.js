@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { decrypt } from "../services/fernet/decrypt";
 export const useGymId = () => {
   const [gymId, setGymId] = useState(() => sessionStorage.getItem("gym_id"));
 

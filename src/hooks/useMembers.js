@@ -53,6 +53,7 @@ export const useMembers = (gym_id) => {
     queryFn: async () => {
       const res = await axios.get(`${url}/gyms/${gym_id}/members`, {
         timeout: 10000,
+        withCredentials: true, // 👈 so cookies are sent
       });
       return res.data;
     },
