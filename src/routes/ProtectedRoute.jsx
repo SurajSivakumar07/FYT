@@ -20,4 +20,4 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-export default ProtectedRoute; // ✅ THIS IS IMPORTANT
+export default ProtectedRoute;

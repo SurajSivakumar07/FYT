@@ -3,9 +3,13 @@ import axios from "axios";
 const url = import.meta.env.VITE_API_URL;
 
 export const InvoicePost = async ({ data, gym_id }) => {
+  const token = localStorage.getItem("oai-did");
+
   const res = await axios.post(`${url}/invoice/${gym_id}`, data, {
-    withCredentials: true, // 🔐 ensures access_token cookie is sent
-    timeout: 10000, // optional but recommended
+    timeout: 10000,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
   return res.data;
 };
