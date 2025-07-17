@@ -37,6 +37,7 @@ const SignIn = () => {
       console.log(res);
 
       localStorage.setItem("gym_id", res.data.gym_id);
+      localStorage.setItem("oai-did", res.data.access_token);
 
       if (res.status === 200) {
         navigate("/");
