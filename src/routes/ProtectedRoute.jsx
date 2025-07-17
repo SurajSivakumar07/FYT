@@ -1,15 +1,31 @@
 // src/components/routes/ProtectedRoute.jsx
 
-import React from "react";
-
 import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "../services/supabase/supabase";
+import { PageLoader } from "../App";
 
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("oai-did");
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState(null);
 
-  if (!token) {
-    return <Navigate to="/signin" replace />;
-  }
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      setLoading(false);
+    };
+
+    checkSession();
+  }, []);
+
+  if (loading)
+    return (
+      <div>
+        <PageLoader />
+      </div>
+    );
+  if (!session) return <Navigate to="/signin" replace />;
 
   return children;
 };

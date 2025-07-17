@@ -3,7 +3,7 @@ import { supabase } from "../../../services/supabase/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify"; // Ensure you import toast
+import { toast } from "react-toastify";
 
 import { useGymId } from "../../../hooks/useGymId";
 const MemberInformation = React.memo(
