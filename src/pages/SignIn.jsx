@@ -16,9 +16,12 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(";").shift();
+    const cookies = document.cookie.split("; ");
+    for (let c of cookies) {
+      const [key, val] = c.split("=");
+      if (key === name) return decodeURIComponent(val);
+    }
+    return null;
   }
 
   const handleSubmit = async (e) => {
@@ -37,13 +40,16 @@ const SignIn = () => {
 
       const encryptedGymId = getCookie("gym_id"); // From document.cookie
       // const decryptedGymId = decrypt(encryptedGymId);
+      console.log();
 
       sessionStorage.setItem("gym_id", encryptedGymId);
       console.log("gym_id cookie:", encryptedGymId);
       console.log("Navigating to /");
-      window.location.href = "/";
-
-      console.log("Navigation done");
+      if (res.status === 200) {
+        // navigate("/");
+      } else {
+        alert("Unexpected response status");
+      }
     } catch (error) {
       console.error("Login error:", error);
       alert("Login failed. Please check credentials.");

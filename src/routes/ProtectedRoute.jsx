@@ -5,9 +5,12 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
+  const cookies = document.cookie.split("; ");
+  for (let c of cookies) {
+    const [key, val] = c.split("=");
+    if (key === name) return decodeURIComponent(val);
+  }
+  return null;
 }
 
 const ProtectedRoute = ({ children }) => {

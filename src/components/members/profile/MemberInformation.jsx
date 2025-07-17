@@ -186,7 +186,6 @@ const MemberInformation = React.memo(
 
       if (data) {
         console.log(data);
-
         const { data: dbResult, error: dbError } = await supabase
           .from("members")
           .update({ document_url: null })
