@@ -3,7 +3,7 @@ import { FaBell, FaQuestionCircle, FaChevronDown } from "react-icons/fa";
 import profile from "../../assets/profile.jpg";
 import gymLogo from "../../assets/gym_logo.jpg";
 import { useNavigate, NavLink } from "react-router-dom";
-
+import { User, UserRound, Users } from "lucide-react";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef();
@@ -53,11 +53,7 @@ export default function Navbar() {
             setIsOpen(true);
           }}
         >
-          <img
-            src={profile} // Replace with your avatar path
-            alt="user"
-            className="h-8 w-8 rounded-full object-cover"
-          />
+          <User />
         </div>
       </div>
       <div>
