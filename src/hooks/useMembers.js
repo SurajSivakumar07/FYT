@@ -4,6 +4,9 @@ import { toast } from "react-toastify"; // Ensure you import toast
 import { UpdateEnquiryApi } from "../services/apis/Enquiry/UpdateEnquiry";
 import { useAccessToken } from "./useAccessToken";
 
+import { useNavigate } from "react-router-dom";
+
+import { useState } from "react";
 const url = import.meta.env.VITE_API_URL;
 
 export const useUpdateEnquiryStatus = () => {
@@ -24,17 +27,29 @@ export const useUpdateEnquiryStatus = () => {
 
 export const useMembers = (gym_id) => {
   const accessToken = useAccessToken();
+  const navigate = useNavigate();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["members", gym_id],
     queryFn: async () => {
-      const res = await axios.get(`${url}/gyms/${gym_id}/members`, {
-        timeout: 10000,
-        headers: {
-          Authorization: `Bearer ${accessToken}`, // 👈 Attach token here
-        },
-      });
-      return res.data;
+      try {
+        const res = await axios.get(`${url}/gyms/${gym_id}/members`, {
+          timeout: 10000,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        return res.data;
+      } catch (error) {
+        if (error?.response?.status === 401) {
+          setIsRedirecting(true);
+          setTimeout(() => {
+            navigate("/signin");
+          }, 1000); // ⏱️ optional small delay to show animation
+        }
+        throw error;
+      }
     },
     enabled: !!gym_id,
     staleTime: 1000 * 60 * 5,
@@ -45,8 +60,42 @@ export const useMembers = (gym_id) => {
       if (error?.response?.status >= 400 && error?.response?.status < 500) {
         return false;
       }
-      return failureCount < 3;
+      return failureCount < 2;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
+
+  return {
+    ...query,
+    isRedirecting,
+  };
 };
+
+// export const useMembers = (gym_id) => {
+//   const accessToken = useAccessToken();
+
+//   return useQuery({
+//     queryKey: ["members", gym_id],
+//     queryFn: async () => {
+//       const res = await axios.get(`${url}/gyms/${gym_id}/members`, {
+//         timeout: 10000,
+//         headers: {
+//           Authorization: `Bearer ${accessToken}`, // 👈 Attach token here
+//         },
+//       });
+//       return res.data;
+//     },
+//     enabled: !!gym_id,
+//     staleTime: 1000 * 60 * 5,
+//     gcTime: 1000 * 60 * 30,
+//     refetchOnMount: "always",
+//     refetchOnWindowFocus: true,
+//     retry: (failureCount, error) => {
+//       if (error?.response?.status >= 400 && error?.response?.status < 500) {
+//         return false;
+//       }
+//       return failureCount < 3;
+//     },
+//     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+//   });
+// };
