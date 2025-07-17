@@ -16,11 +16,9 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   function getCookie(name) {
-    const cookies = document.cookie.split("; ");
-    for (let c of cookies) {
-      const [key, val] = c.split("=");
-      if (key === name) return decodeURIComponent(val);
-    }
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
     return null;
   }
 
@@ -42,11 +40,15 @@ const SignIn = () => {
       // const decryptedGymId = decrypt(encryptedGymId);
       console.log();
 
+      console.log("All cookies:", document.cookie);
+      console.log("Gym ID cookie:", getCookie("gym_id"));
+      console.log("Access token cookie:", getCookie("access_token"));
+
       sessionStorage.setItem("gym_id", encryptedGymId);
       console.log("gym_id cookie:", encryptedGymId);
       console.log("Navigating to /");
       if (res.status === 200) {
-        // navigate("/");
+        navigate("/");
       } else {
         alert("Unexpected response status");
       }
