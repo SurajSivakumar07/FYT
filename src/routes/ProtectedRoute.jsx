@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children }) => {
   if (!token) {
     return <Navigate to="/signin" replace />;
   }
-  sessionStorage.setItem("gym_id", getCookie("gym_id"));
+
   return children;
 };
 

@@ -36,17 +36,8 @@ const SignIn = () => {
 
       console.log(res);
 
-      const encryptedGymId = getCookie("gym_id"); // From document.cookie
-      // const decryptedGymId = decrypt(encryptedGymId);
-      console.log();
+      localStorage.setItem("gym_id", res.data.gym_id);
 
-      console.log("All cookies:", document.cookie);
-      console.log("Gym ID cookie:", getCookie("gym_id"));
-      console.log("Access token cookie:", getCookie("access_token"));
-
-      sessionStorage.setItem("gym_id", encryptedGymId);
-      console.log("gym_id cookie:", encryptedGymId);
-      console.log("Navigating to /");
       if (res.status === 200) {
         navigate("/");
       } else {
