@@ -120,7 +120,8 @@ export default function Navbar() {
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
                 onClick={() => {
                   setIsOpen(false);
-                  navigate("/log-out");
+                  localStorage.clear();
+                  navigate("/signin");
                 }}
               >
                 🚪 Log out
