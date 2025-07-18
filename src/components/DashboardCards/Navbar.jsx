@@ -5,7 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../services/supabase/supabase";
-
+import {
+  BarChart3,
+  UserSearch,
+  Dumbbell,
+  ListOrdered,
+  FileClock,
+  LogOut,
+} from "lucide-react";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef();
@@ -80,15 +87,8 @@ export default function Navbar() {
 
             {/* Action buttons */}
             <div className="flex flex-col gap-2 text-sm text-gray-700 text-left">
-              {/* <button
-                className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate("/view-analysis");
-                }}
-              >
-                📊 Analysis
-              </button> */}
+              {/* Analysis - Uncomment if needed */}
+
               <button
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
                 onClick={() => {
@@ -96,8 +96,10 @@ export default function Navbar() {
                   navigate("/enquries");
                 }}
               >
-                📊 Enquiry
+                <UserSearch size={18} />
+                Enquiry
               </button>
+
               <button
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
                 onClick={() => {
@@ -105,8 +107,10 @@ export default function Navbar() {
                   navigate("/view-trainer");
                 }}
               >
-                🏋️ Trainers
+                <Dumbbell size={18} />
+                Trainers
               </button>
+
               <button
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
                 onClick={() => {
@@ -114,20 +118,33 @@ export default function Navbar() {
                   navigate("/view-plans");
                 }}
               >
-                📋 Plans
+                <ListOrdered size={18} />
+                Plans
               </button>
+
+              <button
+                className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/logs");
+                }}
+              >
+                <FileClock size={18} />
+                Logs
+              </button>
+
               <button
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
                 onClick={async () => {
                   setIsOpen(false);
                   await supabase.auth.signOut();
-                  // 2. Clear all queries and mutations
                   queryClient.clear();
                   localStorage.clear();
                   navigate("/signin");
                 }}
               >
-                🚪 Log out
+                <LogOut size={18} />
+                Log out
               </button>
             </div>
           </div>

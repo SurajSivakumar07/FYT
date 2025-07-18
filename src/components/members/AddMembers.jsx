@@ -20,7 +20,6 @@ import { useMemberId } from "../../hooks/useMemberId";
 
 export default function AddMembers() {
   const gymId = useGymId();
-  console.log(gymId);
 
   const url = import.meta.env.VITE_API_URL;
 

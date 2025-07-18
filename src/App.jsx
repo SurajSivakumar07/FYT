@@ -6,6 +6,7 @@ import SignIn from "./pages/SignIn";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DeliveryLogs from "./components/webhooks/DeliveryLogs";
 
 // Lazy load components for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -166,6 +167,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Plans />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="logs"
+              element={
+                <ProtectedRoute>
+                  <DeliveryLogs />
                 </ProtectedRoute>
               }
             />
