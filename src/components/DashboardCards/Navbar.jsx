@@ -1,13 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaBell, FaQuestionCircle, FaChevronDown } from "react-icons/fa";
-import profile from "../../assets/profile.jpg";
+
 import gymLogo from "../../assets/gym_logo.jpg";
-import { useNavigate, NavLink } from "react-router-dom";
-import { User, UserRound, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { User } from "lucide-react";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "../../services/supabase/supabase";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef();
   const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
 
   // Close on outside click
   useEffect(() => {
@@ -114,8 +118,11 @@ export default function Navbar() {
               </button>
               <button
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
-                onClick={() => {
+                onClick={async () => {
                   setIsOpen(false);
+                  await supabase.auth.signOut();
+                  // 2. Clear all queries and mutations
+                  queryClient.clear();
                   localStorage.clear();
                   navigate("/signin");
                 }}

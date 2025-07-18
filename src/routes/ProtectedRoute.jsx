@@ -14,6 +14,7 @@ const ProtectedRoute = ({ children }) => {
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
       setLoading(false);
+      console.log(data);
     };
 
     checkSession();
