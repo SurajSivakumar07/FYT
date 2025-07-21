@@ -17,6 +17,7 @@ const MemberTypeChart = React.lazy(() =>
 export default function Dashboard() {
   const gym_id = useGymId();
   const { data, isLoading } = useDashboardSummary(gym_id);
+
   const navigate = useNavigate();
 
   const { ref: earningsRef, inView: earningsInView } = useInView({

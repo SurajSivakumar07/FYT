@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 
-import gymLogo from "../../assets/gym_logo.jpg";
+import gymLogo from "../../assets/gym_logo.png";
 import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";

@@ -22,84 +22,79 @@ const SignIn = () => {
     return null;
   }
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setIsSubmitting(true);
-  //   setLoading(true);
-
-  //   try {
-  //     const res = await axios.post(
-  //       `${url}/login`,
-  //       { email, password },
-  //       { withCredentials: true } // Required to accept cookies!
-  //     );
-
-  //     console.log(res);
-
-  //     localStorage.setItem("gym_id", res.data.gym_id);
-  //     localStorage.setItem("oai-did", res.data.access_token);
-
-  //     if (res.status === 200) {
-  //       navigate("/");
-  //     } else {
-  //       alert("Unexpected response status");
-  //     }
-  //   } catch (error) {
-  //     console.error("Login error:", error);
-  //     alert("Login failed. Please check credentials.");
-  //   } finally {
-  //     setIsSubmitting(false);
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setLoading(true);
 
     try {
-      console.time("TotalSignInTime");
+      const res = await axios.post(
+        `${url}/login`,
+        { email, password },
+        { withCredentials: true } // Required to accept cookies!
+      );
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+      console.log(res);
 
-      if (error) {
-        alert(error.message);
-        console.timeEnd("TotalSignInTime");
-        return;
-      }
+      localStorage.setItem("gym_id", res.data.gym_id);
 
-      const userId = data?.user?.id;
-      const accessToken = data?.session?.access_token;
-
-      localStorage.setItem("oai-did", accessToken);
-
-      try {
-        const response = await axios.post(`${url}/get-gym-id`, {
-          uuid: userId,
-        });
-
-        const encryptedGymId = response.data.gym_id;
-        localStorage.setItem("gym_id", encryptedGymId);
-
-        if (error) {
-          throw error;
-        }
-        setLoading(false);
-        navigate("/", { state: data });
-      } catch (error) {
-        console.error("Failed to fetch gym ID:", error);
-        alert(error);
-        setLoading(false);
-      }
+      navigate("/");
     } catch (error) {
-      console.error("Sign in failed:", error);
+      console.error("Login error:", error);
+      alert("Login failed. Please check credentials.");
     } finally {
       setIsSubmitting(false);
+      setLoading(false);
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+
+  //   try {
+  //     console.time("TotalSignInTime");
+
+  //     const { data, error } = await supabase.auth.signInWithPassword({
+  //       email: email,
+  //       password: password,
+  //     });
+
+  //     if (error) {
+  //       alert(error.message);
+  //       console.timeEnd("TotalSignInTime");
+  //       return;
+  //     }
+
+  //     const userId = data?.user?.id;
+  //     const accessToken = data?.session?.access_token;
+
+  //     localStorage.setItem("oai-did", accessToken);
+
+  //     try {
+  //       const response = await axios.post(`${url}/get-gym-id`, {
+  //         uuid: userId,
+  //       });
+
+  //       const encryptedGymId = response.data.gym_id;
+  //       localStorage.setItem("gym_id", encryptedGymId);
+
+  //       if (error) {
+  //         throw error;
+  //       }
+  //       setLoading(false);
+  //       navigate("/", { state: data });
+  //     } catch (error) {
+  //       console.error("Failed to fetch gym ID:", error);
+  //       alert(error);
+  //       setLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("Sign in failed:", error);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
 
   return (
     <div
