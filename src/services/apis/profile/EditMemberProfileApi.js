@@ -6,9 +6,7 @@ export const EditMemberProfileApi = async ({ memberId, updatedData }) => {
   const token = localStorage.getItem("oai-did");
 
   const res = await axios.put(`${url}/members/${memberId}`, updatedData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
     timeout: 10000,
   });
 

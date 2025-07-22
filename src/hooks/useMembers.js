@@ -36,9 +36,7 @@ export const useMembers = (gym_id) => {
       try {
         const res = await axios.get(`${url}/gyms/${gym_id}/members`, {
           timeout: 10000,
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          withCredentials: true,
         });
         return res.data;
       } catch (error) {

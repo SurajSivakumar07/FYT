@@ -6,9 +6,7 @@ export const InvoicePost = async ({ data, gym_id }) => {
   const token = localStorage.getItem("oai-did");
 
   const res = await axios.post(`${url}/invoice/${gym_id}`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
   return res.data;
 };

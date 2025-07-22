@@ -7,9 +7,7 @@ export const postRenewMeberApi = async ({ member_id, data }) => {
 
   const res = await axios.post(`${url}/members/${member_id}/renew`, data, {
     timeout: 10000,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    withCredentials: true,
   });
   return res.data;
 };
