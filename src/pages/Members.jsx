@@ -6,8 +6,12 @@ import { useDebounce } from "../hooks/useDebounce";
 import VirtualizedMemberList from "../components/members/VirtualizedMemberList";
 import { useLocation } from "react-router-dom";
 import { useGymId } from "../hooks/useGymId";
+import ProfilePage from "./ProfilePage";
+import { lazyWithPreload } from "../utlis/lazywithPrelaod";
 
 // Loading skeleton component
+const MemberProfile = lazyWithPreload(() => import("./ProfilePage"));
+
 const MemberListSkeleton = () => (
   <div className="space-y-4">
     {Array.from({ length: 5 }).map((_, index) => (
@@ -119,6 +123,10 @@ export default function Members() {
       refetch(); // ✅ now works
     }
   }, [gym_id]);
+
+  useEffect(() => {
+    MemberProfile.preload();
+  }, []);
 
   // Error state
   if (error) {

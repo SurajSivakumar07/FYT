@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import BottomNav from "./components/Navigation/BottomNav";
 import Navbar from "./components/DashboardCards/Navbar";
@@ -7,20 +7,25 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DeliveryLogs from "./components/webhooks/DeliveryLogs";
+import { lazyWithPreload } from "./utlis/lazywithPrelaod";
 
 // Lazy load components for code splitting
+
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Members = lazy(() => import("./pages/Members"));
+// const Members = lazy(() => import("./pages/Members"));
 const AddMembers = lazy(() => import("./components/members/AddMembers"));
 const AddPlans = lazy(() => import("./components/plans/AddPlans"));
 const AddTrainer = lazy(() => import("./components/trainers/AddTrainer"));
 const EnquiryForm = lazy(() => import("./components/enquiry/EnquiryForm"));
-const GymMemberDetails = lazy(() => import("./components/GymMemberDetails"));
-const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+// const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const Members = lazyWithPreload(() => import("./pages/Members"));
+const ProfilePage = lazyWithPreload(() => import("./pages/ProfilePage"));
+
 const Trainers = lazy(() => import("./pages/Trainers"));
 const Analysis = lazy(() => import("./pages/Analysis"));
 const Plans = lazy(() => import("./pages/Plans"));
 const Enquiries = lazy(() => import("./pages/Enquiries"));
+
 // Loading fallback component
 export const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -73,7 +78,9 @@ class RouteErrorBoundary extends React.Component {
 export default function App() {
   const location = useLocation();
   const hideTabBar = location.pathname === "/signin";
-
+  useEffect(() => {
+    Members.preload();
+  }, []);
   return (
     <RouteErrorBoundary>
       {/* Push content below the fixed navbar */}

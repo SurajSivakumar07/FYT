@@ -46,7 +46,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="Expiring in 10 days"
-          value={data ? data.expiring_soon : "-"}
+          value={isLoading ? "..." : data?.expiring_soon}
           color="text-red-500"
           arrow
           onClick={handleExpiringSoonClick}
@@ -78,6 +78,10 @@ export default function Dashboard() {
         </Suspense>
       </div>
       {/* Lazy-loaded Chart */}
+
+      {/* <h2 className="text-base font-semibold text-gray-900 mb-2">
+        Member Types Joined
+      </h2> */}
       <div ref={memberTypeRef} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
         <Suspense fallback={<MemberTypeChartSkeleton />}>
           {memberTypeInView ? <MemberTypeChart /> : <MemberTypeChartSkeleton />}
