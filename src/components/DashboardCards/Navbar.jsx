@@ -24,10 +24,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     setIsOpen(false);
     const sessionId = localStorage.getItem("session_id");
-    if (!sessionId) {
-      console.error("No session ID found in sessionStorage");
-      return;
-    }
+
     try {
       await logoutSession(sessionId);
       await supabase.auth.signOut();
