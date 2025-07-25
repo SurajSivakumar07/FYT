@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase/supabase";
 import axios from "axios";
+import { getBrowser, getDeviceType, getOS } from "../utlis/user_information";
 
 // Replace this with your backend URL
 
@@ -21,7 +22,6 @@ const SignIn = () => {
     if (parts.length === 2) return parts.pop().split(";").shift();
     return null;
   }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -31,14 +31,35 @@ const SignIn = () => {
       const res = await axios.post(
         `${url}/login`,
         { email, password },
-        { withCredentials: true } // Required to accept cookies!
+        { withCredentials: true }
       );
-
-      console.log(res);
 
       localStorage.setItem("gym_id", res.data.gym_id);
 
-      navigate("/");
+      const os = getOS();
+      const browser = getBrowser();
+      const device_type = getDeviceType();
+
+      // Run both session tracking and navigation in parallel
+      const user_data = await Promise.all([
+        axios.post(
+          `${url}/track-session`,
+          {
+            os: getOS(),
+            browser: getBrowser(),
+            device_type: getDeviceType(),
+            location: null,
+          },
+          { withCredentials: true }
+        ),
+        new Promise((resolve) => {
+          navigate("/");
+          resolve();
+        }),
+      ]);
+      const session_id = user_data[0].data.session_id;
+
+      localStorage.setItem("session_id", session_id);
     } catch (error) {
       console.error("Login error:", error);
       alert("Login failed. Please check credentials.");
@@ -47,6 +68,32 @@ const SignIn = () => {
       setLoading(false);
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+  //   setLoading(true);
+
+  //   try {
+  //     const res = await axios.post(
+  //       `${url}/login`,
+  //       { email, password },
+  //       { withCredentials: true } // Required to accept cookies!
+  //     );
+
+  //     console.log(res);
+
+  //     localStorage.setItem("gym_id", res.data.gym_id);
+
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     alert("Login failed. Please check credentials.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //     setLoading(false);
+  //   }
+  // };
 
   // const handleSubmit = async (e) => {
   //   e.preventDefault();

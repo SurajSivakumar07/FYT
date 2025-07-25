@@ -13,12 +13,32 @@ import {
   FileClock,
   LogOut,
 } from "lucide-react";
+import { useLogoutSession } from "../../hooks/logout/useLogout";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef();
   const navigate = useNavigate();
 
   const queryClient = useQueryClient();
+  const { mutateAsync: logoutSession, isLoading } = useLogoutSession();
+  const handleLogout = async () => {
+    setIsOpen(false);
+    const sessionId = localStorage.getItem("session_id");
+    if (!sessionId) {
+      console.error("No session ID found in sessionStorage");
+      return;
+    }
+    try {
+      await logoutSession(sessionId);
+      await supabase.auth.signOut();
+      queryClient.clear();
+      localStorage.clear();
+      navigate("/signin");
+    } catch (err) {
+      console.error("Logout flow failed:", err);
+      // Errors already handled by the hook
+    }
+  };
 
   // Close on outside click
   useEffect(() => {
@@ -135,16 +155,11 @@ export default function Navbar() {
 
               <button
                 className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
-                onClick={async () => {
-                  setIsOpen(false);
-                  await supabase.auth.signOut();
-                  queryClient.clear();
-                  localStorage.clear();
-                  navigate("/signin");
-                }}
+                onClick={handleLogout}
+                disabled={isLoading}
               >
                 <LogOut size={18} />
-                Log out
+                {isLoading ? "Logging out..." : "Log out"}
               </button>
             </div>
           </div>

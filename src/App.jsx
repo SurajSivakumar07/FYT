@@ -8,23 +8,35 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DeliveryLogs from "./components/webhooks/DeliveryLogs";
 import { lazyWithPreload } from "./utlis/lazywithPrelaod";
+import useSessionTracking from "./hooks/session_tracking/useSectionTracking";
 
 // Lazy load components for code splitting
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 // const Members = lazy(() => import("./pages/Members"));
-const AddMembers = lazy(() => import("./components/members/AddMembers"));
+// const AddMembers = lazy(() => import("./components/members/AddMembers"));
 const AddPlans = lazy(() => import("./components/plans/AddPlans"));
 const AddTrainer = lazy(() => import("./components/trainers/AddTrainer"));
-const EnquiryForm = lazy(() => import("./components/enquiry/EnquiryForm"));
+// const EnquiryForm = lazy(() => import("./components/enquiry/EnquiryForm"));
 // const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const Members = lazyWithPreload(() => import("./pages/Members"));
 const ProfilePage = lazyWithPreload(() => import("./pages/ProfilePage"));
 
-const Trainers = lazy(() => import("./pages/Trainers"));
+// const Trainers = lazy(() => import("./pages/Trainers"));
 const Analysis = lazy(() => import("./pages/Analysis"));
-const Plans = lazy(() => import("./pages/Plans"));
-const Enquiries = lazy(() => import("./pages/Enquiries"));
+// const Plans = lazy(() => import("./pages/Plans"));
+// const Enquiries = lazy(() => import("./pages/Enquiries"));
+
+const Trainers = lazyWithPreload(() => import("./pages/Trainers"));
+const Plans = lazyWithPreload(() => import("./pages/Plans"));
+const Enquiries = lazyWithPreload(() => import("./pages/Enquiries"));
+const AddMembers = lazyWithPreload(() =>
+  import("./components/members/AddMembers")
+);
+
+const EnquiryForm = lazyWithPreload(() =>
+  import("./components/enquiry/EnquiryForm")
+);
 
 // Loading fallback component
 export const PageLoader = () => (
@@ -78,8 +90,25 @@ class RouteErrorBoundary extends React.Component {
 export default function App() {
   const location = useLocation();
   const hideTabBar = location.pathname === "/signin";
+  useSessionTracking();
   useEffect(() => {
     Members.preload();
+
+    const preloadOtherPages = () => {
+      ProfilePage.preload();
+      Trainers.preload(); // /view-trainer
+      Plans.preload(); // /view-plans
+      Enquiries.preload(); // /enquries
+      AddMembers.preload();
+      EnquiryForm.preload();
+      // optionally
+    };
+
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(preloadOtherPages);
+    } else {
+      setTimeout(preloadOtherPages, 4000); // safe fallback
+    }
   }, []);
   return (
     <RouteErrorBoundary>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase/supabase";
 import { PageLoader } from "../App";
 import axios from "axios";
+import { useLogoutSession } from "../hooks/logout/useLogout";
 // const ProtectedRoute = ({ children }) => {
 //   const [loading, setLoading] = useState(true);
 //   const [session, setSession] = useState(null);
@@ -37,6 +38,7 @@ const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const url = import.meta.env.VITE_API_URL;
+  const { mutateAsync: logoutSession, isLoading } = useLogoutSession();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -50,6 +52,19 @@ const ProtectedRoute = ({ children }) => {
         setAuthenticated(true);
       } catch (err) {
         setAuthenticated(false);
+        try {
+          const sessionId = localStorage.getItem("session_id");
+          if (!sessionId) {
+            console.error("No session ID found in sessionStorage");
+            return;
+          }
+          await logoutSession(sessionId);
+
+          localStorage.clear();
+        } catch (err) {
+          console.log(err);
+        }
+
         console.log(err);
       } finally {
         setLoading(false);
