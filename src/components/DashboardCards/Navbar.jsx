@@ -70,7 +70,7 @@ export default function Navbar() {
               navigate("/");
             }}
           >
-            {/* FitnessZone */} DEMOGYMNAME
+            FYTZI
           </div>
         </div>
 
