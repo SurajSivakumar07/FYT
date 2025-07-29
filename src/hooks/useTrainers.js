@@ -2,12 +2,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import axiosInstance from "../utlis/axiosInstance";
 const url = import.meta.env.VITE_API_URL;
 export const useTrainers = (gym_id) => {
   return useQuery({
     queryKey: ["trainer_details"],
     queryFn: async () => {
-      const res = await axios.get(`${url}/trainers/${gym_id}`);
+      const res = await axiosInstance.get(`/trainers/${gym_id}`);
       return res.data.trainers;
     },
     enabled: !!gym_id,

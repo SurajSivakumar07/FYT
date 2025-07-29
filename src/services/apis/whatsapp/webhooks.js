@@ -1,7 +1,6 @@
-import axios from "axios";
-const url = import.meta.env.VITE_API_URL;
+import axiosInstance from "../../../utlis/axiosInstance";
 
 export const WebHookApi = async (gymId) => {
-  const res = await axios.get(`${url}/gyms/${gymId}/delivery-logs`);
+  const res = await axiosInstance.get(`/gyms/${gymId}/delivery-logs`);
   return res.data.logs || [];
 };

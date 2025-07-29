@@ -36,10 +36,23 @@ const SignIn = () => {
 
       localStorage.setItem("gym_id", res.data.gym_id);
 
-      const os = getOS();
-      const browser = getBrowser();
-      const device_type = getDeviceType();
+      const getLocation = () =>
+        new Promise((resolve) => {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              resolve({
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude,
+              });
+            },
+            (err) => {
+              console.warn("Location error or permission denied:", err);
+              resolve(null);
+            }
+          );
+        });
 
+      const location = await getLocation();
       // Run both session tracking and navigation in parallel
       const user_data = await Promise.all([
         axios.post(

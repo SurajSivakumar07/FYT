@@ -7,6 +7,7 @@ import { useAccessToken } from "./useAccessToken";
 import { useNavigate } from "react-router-dom";
 
 import { useState } from "react";
+import axiosInstance from "../utlis/axiosInstance";
 const url = import.meta.env.VITE_API_URL;
 
 export const useUpdateEnquiryStatus = () => {
@@ -34,7 +35,7 @@ export const useMembers = (gym_id) => {
     queryKey: ["members", gym_id],
     queryFn: async () => {
       try {
-        const res = await axios.get(`${url}/gyms/${gym_id}/members`, {
+        const res = await axiosInstance.get(`/gyms/${gym_id}/members`, {
           timeout: 10000,
           withCredentials: true,
         });
@@ -68,32 +69,3 @@ export const useMembers = (gym_id) => {
     isRedirecting,
   };
 };
-
-// export const useMembers = (gym_id) => {
-//   const accessToken = useAccessToken();
-
-//   return useQuery({
-//     queryKey: ["members", gym_id],
-//     queryFn: async () => {
-//       const res = await axios.get(`${url}/gyms/${gym_id}/members`, {
-//         timeout: 10000,
-//         headers: {
-//           Authorization: `Bearer ${accessToken}`, // 👈 Attach token here
-//         },
-//       });
-//       return res.data;
-//     },
-//     enabled: !!gym_id,
-//     staleTime: 1000 * 60 * 5,
-//     gcTime: 1000 * 60 * 30,
-//     refetchOnMount: "always",
-//     refetchOnWindowFocus: true,
-//     retry: (failureCount, error) => {
-//       if (error?.response?.status >= 400 && error?.response?.status < 500) {
-//         return false;
-//       }
-//       return failureCount < 3;
-//     },
-//     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-//   });
-// };
