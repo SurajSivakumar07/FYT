@@ -523,6 +523,16 @@ const SettingsPage = () => {
             </div>
           </div>
         )}
+
+        {/* Toggle Edit Mode Button for Demo */}
+        <div className="mt-8 flex justify-center">
+          {/* <button
+            onClick={() => setEditMode(!editMode)}
+            className="px-6 py-3 bg-gray-800 text-white border border-gray-600 hover:bg-gray-700 transition-colors"
+          >
+            {editMode ? "Cancel Edit" : "Edit Settings"}
+          </button> */}
+        </div>
       </div>
     </div>
   );

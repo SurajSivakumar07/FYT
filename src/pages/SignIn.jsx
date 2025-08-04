@@ -89,13 +89,13 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-5">
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at 1px 1px, black 1px, transparent 0)`,
             backgroundSize: "24px 24px",
           }}
         ></div>
@@ -103,20 +103,20 @@ const SignIn = () => {
 
       {/* Elegant geometric shapes */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-px h-32 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
-        <div className="absolute top-40 right-16 w-32 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-        <div className="absolute bottom-32 left-1/4 w-px h-24 bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
-        <div className="absolute bottom-20 right-1/3 w-24 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        <div className="absolute top-20 left-10 w-px h-32 bg-gradient-to-b from-transparent via-black/20 to-transparent"></div>
+        <div className="absolute top-40 right-16 w-32 h-px bg-gradient-to-r from-transparent via-black/20 to-transparent"></div>
+        <div className="absolute bottom-32 left-1/4 w-px h-24 bg-gradient-to-b from-transparent via-black/10 to-transparent"></div>
+        <div className="absolute bottom-20 right-1/3 w-24 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent"></div>
       </div>
 
-      <div className="relative z-10 flex items-center justify-center p-4 grow">
+      <div className="relative z-10 flex items-center justify-center p-4 min-h-screen">
         <div className="w-full max-w-md">
           {/* Minimalist logo section */}
           <div className="text-center mb-12">
             <div className="relative inline-block">
-              <h1 className="text-5xl font-light tracking-[0.2em] text-white mb-3 relative">
+              <h1 className="text-5xl font-light tracking-[0.2em] text-black mb-3 relative">
                 FYTZI
-                <div className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-transparent via-white to-transparent"></div>
+                <div className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-transparent via-black to-transparent"></div>
               </h1>
             </div>
           </div>
@@ -124,33 +124,33 @@ const SignIn = () => {
           {/* Main form with subtle elegance */}
           <div className="relative">
             {/* Subtle border glow */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/5 to-white/10 p-px">
-              <div className="w-full h-full bg-black rounded-2xl"></div>
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-black/5 to-black/10 p-px">
+              <div className="w-full h-full bg-white rounded-2xl"></div>
             </div>
 
-            <div className="relative bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+            <div className="relative bg-gradient-to-br from-gray-100/50 to-white/50 backdrop-blur-sm rounded-2xl p-8 border border-black/10">
               <div className="space-y-8">
                 {/* Refined welcome text */}
                 <div className="text-center mb-8">
-                  <h2 className="text-xl font-light text-white mb-2 tracking-wide">
+                  <h2 className="text-xl font-light text-black mb-2 tracking-wide">
                     Welcome Back
                   </h2>
-                  <div className="w-8 h-px bg-white/30 mx-auto"></div>
+                  <div className="w-8 h-px bg-black/30 mx-auto"></div>
                 </div>
 
                 {/* Email field */}
                 <div className="space-y-3">
-                  <label className="text-gray-300 text-xs font-medium tracking-widest uppercase flex items-center gap-2">
+                  <label className="text-gray-700 text-xs font-medium tracking-widest uppercase flex items-center gap-2">
                     Email
                   </label>
                   <div className="relative group">
                     <input
                       type="email"
                       placeholder="Enter your email address"
-                      className={`w-full h-12 px-4 bg-transparent border-b-2 text-white placeholder:text-gray-500 focus:outline-none transition-all duration-500 text-sm font-light tracking-wide ${
+                      className={`w-full h-12 px-4 bg-transparent border-b-2 text-black placeholder:text-gray-500 focus:outline-none transition-all duration-500 text-sm font-light tracking-wide ${
                         focusedField === "email"
-                          ? "border-white shadow-sm"
-                          : "border-gray-700 hover:border-gray-600"
+                          ? "border-black shadow-sm"
+                          : "border-gray-300 hover:border-gray-400"
                       }`}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -162,8 +162,8 @@ const SignIn = () => {
                     <Mail
                       className={`absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
                         focusedField === "email"
-                          ? "text-white"
-                          : "text-gray-600"
+                          ? "text-black"
+                          : "text-gray-400"
                       }`}
                     />
                   </div>
@@ -171,17 +171,17 @@ const SignIn = () => {
 
                 {/* Password field */}
                 <div className="space-y-3">
-                  <label className="text-gray-300 text-xs font-medium tracking-widest uppercase flex items-center gap-2">
+                  <label className="text-gray-700 text-xs font-medium tracking-widest uppercase flex items-center gap-2">
                     Password
                   </label>
                   <div className="relative group">
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
-                      className={`w-full h-12 px-4 pr-16 bg-transparent border-b-2 text-white placeholder:text-gray-500 focus:outline-none transition-all duration-500 text-sm font-light tracking-wide ${
+                      className={`w-full h-12 px-4 pr-16 bg-transparent border-b-2 text-black placeholder:text-gray-500 focus:outline-none transition-all duration-500 text-sm font-light tracking-wide ${
                         focusedField === "password"
-                          ? "border-white shadow-sm"
-                          : "border-gray-700 hover:border-gray-600"
+                          ? "border-black shadow-sm"
+                          : "border-gray-300 hover:border-gray-400"
                       }`}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -193,7 +193,7 @@ const SignIn = () => {
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
                       <button
                         type="button"
-                        className="text-gray-600 hover:text-white transition-colors duration-300 p-1"
+                        className="text-gray-400 hover:text-black transition-colors duration-300 p-1"
                         onClick={() => setShowPassword(!showPassword)}
                         aria-label={
                           showPassword ? "Hide password" : "Show password"
@@ -208,8 +208,8 @@ const SignIn = () => {
                       <Lock
                         className={`w-4 h-4 transition-colors duration-300 ${
                           focusedField === "password"
-                            ? "text-white"
-                            : "text-gray-600"
+                            ? "text-black"
+                            : "text-gray-400"
                         }`}
                       />
                     </div>
@@ -220,7 +220,7 @@ const SignIn = () => {
                 <div className="flex justify-end pt-2">
                   <button
                     type="button"
-                    className="text-gray-400 text-xs font-light hover:text-white transition-colors duration-300 tracking-wide uppercase"
+                    className="text-gray-600 text-xs font-light hover:text-black transition-colors duration-300 tracking-wide uppercase"
                     onClick={() =>
                       (window.location.href =
                         "https://fytzi.in/forgot-password")
@@ -236,15 +236,15 @@ const SignIn = () => {
                   onClick={handleSubmit}
                   className={`w-full h-12 rounded-none border-2 font-light text-sm tracking-widest uppercase transition-all duration-500 relative overflow-hidden group ${
                     isSubmitting
-                      ? "border-gray-600 bg-gray-800 text-gray-400 cursor-not-allowed"
-                      : "border-white text-white hover:bg-white hover:text-black active:scale-[0.98]"
+                      ? "border-gray-400 bg-gray-200 text-gray-600 cursor-not-allowed"
+                      : "border-black text-black hover:bg-black hover:text-white active:scale-[0.98]"
                   }`}
                   disabled={isSubmitting}
                 >
                   <span className="relative flex items-center justify-center gap-3">
                     {isSubmitting ? (
                       <>
-                        <div className="w-4 h-4 border border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-4 h-4 border border-gray-600 border-t-transparent rounded-full animate-spin"></div>
                         Authenticating
                       </>
                     ) : (
@@ -261,10 +261,10 @@ const SignIn = () => {
 
           {/* Minimal footer */}
           <div className="text-center mt-12">
-            <div className="flex items-center justify-center gap-4 text-gray-600 text-xs font-light tracking-wider">
-              <div className="w-8 h-px bg-gray-700"></div>
+            <div className="flex items-center justify-center gap-4 text-gray-400 text-xs font-light tracking-wider">
+              <div className="w-8 h-px bg-gray-300"></div>
               <span>FYTZI © 2025</span>
-              <div className="w-8 h-px bg-gray-700"></div>
+              <div className="w-8 h-px bg-gray-300"></div>
             </div>
           </div>
         </div>
