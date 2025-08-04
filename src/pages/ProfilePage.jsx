@@ -6,7 +6,7 @@ import TrainerDetails from "../components/members/profile/TrainerDetails";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify"; // Ensure you import toast
+import { toast } from "react-toastify";
 
 import { supabase } from "../services/supabase/supabase";
 import { useMemberProfile } from "../hooks/useMemberProfile";
@@ -37,6 +37,9 @@ import {
   Trash,
 } from "lucide-react";
 import { useDeleteMember } from "../hooks/useDeleteMember";
+import { useRole } from "../hooks/role/useRole";
+import Locked from "../components/locked/Locked";
+import { useUserStore } from "../zustand/store";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -58,6 +61,10 @@ const ProfilePage = () => {
   const url = import.meta.env.VITE_API_URL;
   const { mutate: deleteMember, isLoading: deletMeberLoading } =
     useDeleteMember(navigate);
+
+  const user = useUserStore((state) => state.user);
+
+  const role = useRole();
 
   const {
     data: memberData = {},
@@ -630,7 +637,11 @@ const ProfilePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <MemberInformation memberData={member} />
+              {user?.role !== "trainer" ? (
+                <MemberInformation memberData={member} />
+              ) : (
+                <Locked />
+              )}
             </motion.div>
           )}
           {activeTab === "membership" && (
@@ -657,7 +668,11 @@ const ProfilePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <MemberInformation memberData={memberData} showTranscation />
+              {user?.role !== "trainer" ? (
+                <MemberInformation memberData={memberData} showTranscation />
+              ) : (
+                <Locked />
+              )}
             </motion.div>
           )}
           {activeTab === "actions" && (
@@ -698,12 +713,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Modals */}
-      {/* <EditMemberModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        memberData={memberData.member}
-        onSave={handleSave}
-      /> */}
+
       <EditMemberModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
@@ -711,7 +721,7 @@ const ProfilePage = () => {
         onSave={handleSave}
         oldTrainer={{
           id: memberData.trainer?.id,
-          name: memberData.trainer?.name, // or derive it from trainers list
+          name: memberData.trainer?.name,
         }}
       />
       <RenewModal

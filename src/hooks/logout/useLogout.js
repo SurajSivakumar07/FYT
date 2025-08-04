@@ -6,7 +6,7 @@ import { toast } from "react-toastify"; // or use your own toast method
 export const useLogoutSession = () => {
   return useMutation({
     mutationFn: async (session_id) => {
-      const res = await axiosInstance.post("/logout-session", { session_id });
+      const res = await axiosInstance.post("/logout", { session_id });
       return res.data;
     },
     onSuccess: (data) => {

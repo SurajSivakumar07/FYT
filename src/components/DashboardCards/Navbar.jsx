@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 
 import gymLogo from "../../assets/gym_logo.png";
 import { useNavigate } from "react-router-dom";
@@ -12,12 +12,16 @@ import {
   ListOrdered,
   FileClock,
   LogOut,
+  Settings,
 } from "lucide-react";
 import { useLogoutSession } from "../../hooks/logout/useLogout";
+import { useGymData } from "../../hooks/gyms/useGymData";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef();
   const navigate = useNavigate();
+
+  const { data: gym_data, isLoading: gym_data_loading, error } = useGymData();
 
   const queryClient = useQueryClient();
   const { mutateAsync: logoutSession, isLoading } = useLogoutSession();
@@ -53,6 +57,11 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    console.log("Gym Data:", gym_data);
+  });
+
   return (
     <>
       {/* <div className="w-full bg-white shadow-sm px-4 sm:px-6 py-3 flex items-center justify-between"> */}
@@ -60,7 +69,7 @@ export default function Navbar() {
       <div className="fixed top-0 left-0 w-full bg-white shadow-sm px-4 sm:px-6 py-3 flex items-center justify-between z-50">
         <div className="flex items-center gap-3">
           <img
-            src={gymLogo}
+            src={gym_data?.gym_photo}
             alt="logo"
             className="h-8 w-8 rounded-full object-cover"
           />
@@ -70,7 +79,7 @@ export default function Navbar() {
               navigate("/");
             }}
           >
-            FYTZI
+            {gym_data?.name}
           </div>
         </div>
 
@@ -148,6 +157,16 @@ export default function Navbar() {
               >
                 <FileClock size={18} />
                 Logs
+              </button>
+              <button
+                className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/settings");
+                }}
+              >
+                <Settings size={18} />
+                Settings
               </button>
 
               <button

@@ -1,5 +1,5 @@
 import StatCard from "../components/DashboardCards/StatCard";
-import React, { Suspense } from "react";
+import React, { Suspense, use, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import EarningsChartSkeleton from "../components/skeleton/EarningsChartSkeleton";
 import { useDashboardSummary } from "../hooks/useDashboardSummary";
@@ -7,6 +7,11 @@ import { useDashboardSummary } from "../hooks/useDashboardSummary";
 import { useNavigate } from "react-router-dom";
 import MemberTypeChartSkeleton from "../components/skeleton/MemberTypeChartSkeleton";
 import { useGymId } from "../hooks/useGymId";
+import { useRole } from "../hooks/role/useRole";
+import { Ear } from "lucide-react";
+import EarningsChartLocked from "../components/locked/EarningChatLocked";
+import MemberTypeChartLocked from "../components/locked/MemberTypeChartLocked";
+import { useUserStore } from "../zustand/store";
 
 const EarningsChart = React.lazy(() =>
   import("../components/DashboardCards/EarningsChart")
@@ -18,6 +23,9 @@ export default function Dashboard() {
   const gym_id = useGymId();
   const { data, isLoading } = useDashboardSummary(gym_id);
 
+  const user = useUserStore((state) => state.user);
+
+  const role = useRole();
   const navigate = useNavigate();
 
   const { ref: earningsRef, inView: earningsInView } = useInView({
@@ -70,8 +78,18 @@ export default function Dashboard() {
       {/* Lazy-loaded Chart */}
       <div ref={earningsRef} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
         <Suspense fallback={<EarningsChartSkeleton />}>
-          {earningsInView ? (
+          {/* {earningsInView ? (
             <EarningsChart earnings={data ? data.earnings : "-"} />
+          ) : (
+            <EarningsChartSkeleton />
+          )} */}
+
+          {memberTypeInView ? (
+            user?.role !== "trainer" ? (
+              <EarningsChart earnings={data ? data.earnings : "-"} />
+            ) : (
+              <EarningsChartLocked />
+            )
           ) : (
             <EarningsChartSkeleton />
           )}
@@ -84,7 +102,16 @@ export default function Dashboard() {
       </h2> */}
       <div ref={memberTypeRef} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
         <Suspense fallback={<MemberTypeChartSkeleton />}>
-          {memberTypeInView ? <MemberTypeChart /> : <MemberTypeChartSkeleton />}
+          {/* {memberTypeInView ? <MemberTypeChart /> : <MemberTypeChartSkeleton />} */}
+          {memberTypeInView ? (
+            user?.role !== "trainer" ? (
+              <MemberTypeChart />
+            ) : (
+              <MemberTypeChartLocked />
+            )
+          ) : (
+            <MemberTypeChartSkeleton />
+          )}
         </Suspense>
       </div>
       {/* Bottom Card */}

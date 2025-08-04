@@ -9,6 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import DeliveryLogs from "./components/webhooks/DeliveryLogs";
 import { lazyWithPreload } from "./utlis/lazywithPrelaod";
 import useSessionTracking from "./hooks/session_tracking/useSectionTracking";
+import SettingsPage from "./pages/SettingsPage";
+import { useRole } from "./hooks/role/useRole";
 
 // Lazy load components for code splitting
 
@@ -197,7 +199,6 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="view-plans"
               element={
@@ -222,6 +223,24 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            /> */}
           </Routes>
         </Suspense>
       </main>
