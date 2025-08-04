@@ -1,7 +1,6 @@
-// hooks/useLogout.js
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../../utlis/axiosInstance";
-import { toast } from "react-toastify"; // or use your own toast method
+import { toast } from "react-toastify";
 
 export const useLogoutSession = () => {
   return useMutation({
@@ -10,7 +9,7 @@ export const useLogoutSession = () => {
       return res.data;
     },
     onSuccess: (data) => {
-      toast.success("Logout successful!"); // or console.log(data)
+      toast.success("Logout successful!");
     },
     onError: (error) => {
       console.error(error);

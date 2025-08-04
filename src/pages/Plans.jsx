@@ -76,7 +76,7 @@ function Plans() {
   if (isLoading) return <PageLoader />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 relative">
+    <div className="min-h-screen bg-gradient-to-br   p-4 relative">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

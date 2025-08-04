@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useLogoutSession } from "../../hooks/logout/useLogout";
 import { useGymData } from "../../hooks/gyms/useGymData";
-export default function Navbar() {
+const Navbar = React.memo(function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef();
   const navigate = useNavigate();
@@ -58,10 +58,6 @@ export default function Navbar() {
     };
   }, [isOpen]);
 
-  useEffect(() => {
-    console.log("Gym Data:", gym_data);
-  });
-
   return (
     <>
       {/* <div className="w-full bg-white shadow-sm px-4 sm:px-6 py-3 flex items-center justify-between"> */}
@@ -74,7 +70,7 @@ export default function Navbar() {
             className="h-8 w-8 rounded-full object-cover"
           />
           <div
-            className="text-sm sm:text-base font-medium text-gray-900 flex items-center gap-1"
+            className="text-base sm:text-lg font-semibold text-black flex items-center gap-2 cursor-pointer"
             onClick={() => {
               navigate("/");
             }}
@@ -85,7 +81,7 @@ export default function Navbar() {
 
         {/* Right: Icons */}
         <div
-          className="flex items-center gap-4"
+          className="flex items-center gap-4 cursor-pointer"
           onClick={() => {
             setIsOpen(true);
           }}
@@ -116,7 +112,7 @@ export default function Navbar() {
               {/* Analysis - Uncomment if needed */}
 
               <button
-                className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2"
+                className="hover:bg-gray-100 rounded-md px-3 py-2 flex items-center gap-2 "
                 onClick={() => {
                   setIsOpen(false);
                   navigate("/enquries");
@@ -183,4 +179,6 @@ export default function Navbar() {
       </div>
     </>
   );
-}
+});
+
+export default Navbar;

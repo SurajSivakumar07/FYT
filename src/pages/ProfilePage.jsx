@@ -740,6 +740,9 @@ const ProfilePage = () => {
         isOpen={isTranscatoinOpen}
         onClose={() => setTranscation(false)}
         memberId={memberData?.member?.member_id}
+        prevTranscation={
+          memberData?.transactions[memberData?.transactions.length - 1]
+        }
       />
     </div>
   );

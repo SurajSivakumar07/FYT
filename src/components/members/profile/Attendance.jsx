@@ -31,7 +31,7 @@ const Attendance = ({ id }) => {
           `${API_BASE_URL}/gyms/${gym_id}/members/${id}/attendance`
         );
         const data = await response.json();
-        console.log("Fetched attendance:", data);
+
         setTotalAttendace(data);
 
         const marked = {};

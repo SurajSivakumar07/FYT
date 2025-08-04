@@ -5,17 +5,20 @@ import axios from "axios";
 import { getBrowser, getDeviceType, getOS } from "../utlis/user_information";
 import { useUserStore } from "../zustand/store";
 
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
+
 // Replace this with your backend URL
 
 const SignIn = () => {
   const url = import.meta.env.VITE_API_URL;
 
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [focusedField, setFocusedField] = useState(null);
 
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -86,128 +89,183 @@ const SignIn = () => {
   };
 
   return (
-    <div
-      className="fixed inset-0 flex flex-col bg-gradient-to-br justify-center items-center overflow-hidden h-screen w-full bg-cover bg-center flex items-center justify-center"
-      style={{
-        fontFamily: 'Lexend, "Noto Sans", sans-serif',
-      }}
-    >
-      {/* Main form container */}
-      <div className="relative flex flex-col items-center w-full max-w-md mx-auto px-4 sm:px-6">
-        {/* Logo */}
-        <div className="w-full mb-6">
-          <div className="flex flex-col items-center justify-center rounded-3xl min-h-[120px] sm:min-h-[140px] relative overflow-hidden">
-            <div className="w-full mb-6 sm:mb-8">
-              <div className="flex flex-col items-center justify-center rounded-3xl py-8 sm:py-12 relative overflow-hidden">
-                <div className="relative z-10 text-center">
-                  <span className="text-black text-4xl sm:text-5xl md:text-6xl font-black tracking-wider drop-shadow-lg">
-                    FYTZI
-                  </span>
-                </div>
-              </div>
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+            backgroundSize: "24px 24px",
+          }}
+        ></div>
+      </div>
+
+      {/* Elegant geometric shapes */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-px h-32 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+        <div className="absolute top-40 right-16 w-32 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <div className="absolute bottom-32 left-1/4 w-px h-24 bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+        <div className="absolute bottom-20 right-1/3 w-24 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+      </div>
+
+      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div className="w-full max-w-md">
+          {/* Minimalist logo section */}
+          <div className="text-center mb-12">
+            <div className="relative inline-block">
+              <h1 className="text-5xl font-light tracking-[0.2em] text-white mb-3 relative">
+                FYTZI
+                <div className="absolute -bottom-1 left-0 w-full h-px bg-gradient-to-r from-transparent via-white to-transparent"></div>
+              </h1>
             </div>
           </div>
-        </div>
 
-        {/* Sign In Form */}
-        <div className="w-full bg-white/80 backdrop-blur-sm rounded-3xl p-6 sm:p-8 border border-white/20 shadow-xl">
-          <div className="space-y-6">
-            {/* Email */}
-            <div className="space-y-2">
-              <label className="text-black text-sm font-semibold tracking-wide">
-                Email Address
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full h-12 sm:h-14 px-4 bg-slate-50/80 border-2 border-slate-200 rounded-2xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-base font-medium"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
+          {/* Main form with subtle elegance */}
+          <div className="relative">
+            {/* Subtle border glow */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/5 to-white/10 p-px">
+              <div className="w-full h-full bg-black rounded-2xl"></div>
             </div>
 
-            {/* Password */}
-            <div className="space-y-2">
-              <label className="text-black  text-sm font-semibold tracking-wide">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  className="w-full h-12 sm:h-14 px-4 pr-12 bg-slate-50/80 border-2 border-slate-200 rounded-2xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 text-base font-medium"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isSubmitting}
-                />
+            <div className="relative bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+              <div className="space-y-8">
+                {/* Refined welcome text */}
+                <div className="text-center mb-8">
+                  <h2 className="text-xl font-light text-white mb-2 tracking-wide">
+                    Welcome Back
+                  </h2>
+                  <div className="w-8 h-px bg-white/30 mx-auto"></div>
+                </div>
+
+                {/* Email field */}
+                <div className="space-y-3">
+                  <label className="text-gray-300 text-xs font-medium tracking-widest uppercase flex items-center gap-2">
+                    Email
+                  </label>
+                  <div className="relative group">
+                    <input
+                      type="email"
+                      placeholder="Enter your email address"
+                      className={`w-full h-12 px-4 bg-transparent border-b-2 text-white placeholder:text-gray-500 focus:outline-none transition-all duration-500 text-sm font-light tracking-wide ${
+                        focusedField === "email"
+                          ? "border-white shadow-sm"
+                          : "border-gray-700 hover:border-gray-600"
+                      }`}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onFocus={() => setFocusedField("email")}
+                      onBlur={() => setFocusedField(null)}
+                      required
+                      disabled={isSubmitting}
+                    />
+                    <Mail
+                      className={`absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
+                        focusedField === "email"
+                          ? "text-white"
+                          : "text-gray-600"
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Password field */}
+                <div className="space-y-3">
+                  <label className="text-gray-300 text-xs font-medium tracking-widest uppercase flex items-center gap-2">
+                    Password
+                  </label>
+                  <div className="relative group">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      className={`w-full h-12 px-4 pr-16 bg-transparent border-b-2 text-white placeholder:text-gray-500 focus:outline-none transition-all duration-500 text-sm font-light tracking-wide ${
+                        focusedField === "password"
+                          ? "border-white shadow-sm"
+                          : "border-gray-700 hover:border-gray-600"
+                      }`}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      onFocus={() => setFocusedField("password")}
+                      onBlur={() => setFocusedField(null)}
+                      required
+                      disabled={isSubmitting}
+                    />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        className="text-gray-600 hover:text-white transition-colors duration-300 p-1"
+                        onClick={() => setShowPassword(!showPassword)}
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                      <Lock
+                        className={`w-4 h-4 transition-colors duration-300 ${
+                          focusedField === "password"
+                            ? "text-white"
+                            : "text-gray-600"
+                        }`}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Forgot password */}
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="button"
+                    className="text-gray-400 text-xs font-light hover:text-white transition-colors duration-300 tracking-wide uppercase"
+                    onClick={() =>
+                      (window.location.href =
+                        "https://fytzi.in/forgot-password")
+                    }
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+
+                {/* Submit button */}
                 <button
-                  type="button"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-300 transition-colors duration-200"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  type="submit"
+                  onClick={handleSubmit}
+                  className={`w-full h-12 rounded-none border-2 font-light text-sm tracking-widest uppercase transition-all duration-500 relative overflow-hidden group ${
+                    isSubmitting
+                      ? "border-gray-600 bg-gray-800 text-gray-400 cursor-not-allowed"
+                      : "border-white text-white hover:bg-white hover:text-black active:scale-[0.98]"
+                  }`}
+                  disabled={isSubmitting}
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  <span className="relative flex items-center justify-center gap-3">
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                        Authenticating
+                      </>
+                    ) : (
+                      <>
+                        Sign In
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </>
+                    )}
+                  </span>
                 </button>
               </div>
             </div>
+          </div>
 
-            {/* Forgot password */}
-            <div className="flex items-center justify-between pt-2">
-              <button
-                type="button"
-                className="text-black text-sm font-semibold transition-colors duration-200"
-                onClick={() =>
-                  (window.location.href = "https://fytzi.in/forgot-password")
-                }
-              >
-                Forgot password?
-              </button>
+          {/* Minimal footer */}
+          <div className="text-center mt-12">
+            <div className="flex items-center justify-center gap-4 text-gray-600 text-xs font-light tracking-wider">
+              <div className="w-8 h-px bg-gray-700"></div>
+              <span>FYTZI © 2025</span>
+              <div className="w-8 h-px bg-gray-700"></div>
             </div>
-
-            {/* Submit button */}
-            <button
-              type="submit"
-              className={`w-full h-14 rounded-2xl font-bold text-base transition-all duration-300 shadow-lg ${
-                isSubmitting
-                  ? "bg-gray-700 cursor-not-allowed text-gray-400"
-                  : "bg-gradient-to-r bg-black text-white hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
-              }`}
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <span className="flex items-center justify-center gap-3">
-                  <svg
-                    className="animate-spin h-5 w-5 text-gray-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    ></path>
-                  </svg>
-                  Signing in...
-                </span>
-              ) : (
-                "Sign In"
-              )}
-            </button>
           </div>
         </div>
       </div>
