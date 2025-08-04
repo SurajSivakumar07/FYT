@@ -109,7 +109,7 @@ const SignIn = () => {
         <div className="absolute bottom-20 right-1/3 w-24 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
       </div>
 
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+      <div className="relative z-10 flex items-center justify-center p-4 grow">
         <div className="w-full max-w-md">
           {/* Minimalist logo section */}
           <div className="text-center mb-12">
