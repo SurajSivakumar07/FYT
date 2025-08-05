@@ -309,7 +309,7 @@ const SettingsPage = () => {
               <div className="flex flex-col items-center space-y-6">
                 <div className="relative group">
                   <img
-                    src={gym_logo}
+                    src={data?.gym_photo}
                     alt="Gym Logo"
                     className="w-40 h-40 object-cover border border-gray-200 transition-all duration-300 group-hover:border-black"
                   />
