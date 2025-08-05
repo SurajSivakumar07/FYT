@@ -39,7 +39,7 @@ import {
 import { useDeleteMember } from "../hooks/useDeleteMember";
 import { useRole } from "../hooks/role/useRole";
 import Locked from "../components/locked/Locked";
-import { useUserStore } from "../zustand/store";
+import { useAccessStore, useUserStore } from "../zustand/store";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -64,7 +64,7 @@ const ProfilePage = () => {
 
   const user = useUserStore((state) => state.user);
 
-  const role = useRole();
+  const access = useAccessStore((state) => state.user);
 
   const {
     data: memberData = {},
@@ -603,7 +603,7 @@ const ProfilePage = () => {
             "membership",
             "id-proof",
             "actions",
-            "attendance",
+            ...(access.isattendance === "true" ? ["attendance"] : []),
             "transcation",
             ...(member?.type === "pt" ? ["trainer"] : []),
           ].map((tab) => (

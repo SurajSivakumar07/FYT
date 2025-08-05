@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../../utlis/axiosInstance";
 import { useGymId } from "../useGymId";
 import { useState } from "react";
+import { useAccessStore } from "../../zustand/store";
 
 export const useGymData = () => {
   const gymId = useGymId();
@@ -16,8 +17,9 @@ export const useGymData = () => {
       try {
         const res = await axiosInstance.get(`/gym_details/${gymId}`, {
           timeout: 10000,
-          withCredentials: true,
         });
+
+        useAccessStore.getState().setUser(res.data);
         return res.data;
       } catch (error) {
         if (error?.response?.status === 401) {
