@@ -1,5 +1,5 @@
 import StatCard from "../components/DashboardCards/StatCard";
-import React, { Suspense, use, useEffect } from "react";
+import React, { Suspense } from "react";
 import { useInView } from "react-intersection-observer";
 import EarningsChartSkeleton from "../components/skeleton/EarningsChartSkeleton";
 import { useDashboardSummary } from "../hooks/useDashboardSummary";
@@ -7,8 +7,7 @@ import { useDashboardSummary } from "../hooks/useDashboardSummary";
 import { useNavigate } from "react-router-dom";
 import MemberTypeChartSkeleton from "../components/skeleton/MemberTypeChartSkeleton";
 import { useGymId } from "../hooks/useGymId";
-import { useRole } from "../hooks/role/useRole";
-import { Ear } from "lucide-react";
+
 import EarningsChartLocked from "../components/locked/EarningChatLocked";
 import MemberTypeChartLocked from "../components/locked/MemberTypeChartLocked";
 import { useUserStore } from "../zustand/store";
@@ -25,7 +24,6 @@ export default function Dashboard() {
 
   const user = useUserStore((state) => state.user);
 
-  const role = useRole();
   const navigate = useNavigate();
 
   const { ref: earningsRef, inView: earningsInView } = useInView({
@@ -78,12 +76,6 @@ export default function Dashboard() {
       {/* Lazy-loaded Chart */}
       <div ref={earningsRef} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
         <Suspense fallback={<EarningsChartSkeleton />}>
-          {/* {earningsInView ? (
-            <EarningsChart earnings={data ? data.earnings : "-"} />
-          ) : (
-            <EarningsChartSkeleton />
-          )} */}
-
           {memberTypeInView ? (
             user?.role !== "trainer" ? (
               <EarningsChart earnings={data ? data.earnings : "-"} />
@@ -97,12 +89,8 @@ export default function Dashboard() {
       </div>
       {/* Lazy-loaded Chart */}
 
-      {/* <h2 className="text-base font-semibold text-gray-900 mb-2">
-        Member Types Joined
-      </h2> */}
       <div ref={memberTypeRef} className="w-full mt-6 px-2 sm:px-4 max-w-4xl">
         <Suspense fallback={<MemberTypeChartSkeleton />}>
-          {/* {memberTypeInView ? <MemberTypeChart /> : <MemberTypeChartSkeleton />} */}
           {memberTypeInView ? (
             user?.role !== "trainer" ? (
               <MemberTypeChart />

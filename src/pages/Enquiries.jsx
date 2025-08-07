@@ -5,7 +5,6 @@ import {
   Calendar,
   MessageSquare,
   Users,
-  Filter,
   ChevronDown,
 } from "lucide-react";
 
@@ -14,13 +13,9 @@ import { useEnquiry } from "../hooks/useEnquiry";
 import { useUpdateEnquiryStatus } from "../hooks/useMembers";
 import EnquiryEditModal from "../components/enquiry/EnquiryEditModal";
 
-// Mock data for demonstration
-
 function Enquiries() {
-  // Using mock data instead of hooks that aren't available
   const gym_id = useGymId();
   const { data: enquiries = [], isLoading } = useEnquiry(gym_id);
-  // const [isLoading, setIsLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");

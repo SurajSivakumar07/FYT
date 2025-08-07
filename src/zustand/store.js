@@ -10,8 +10,8 @@ export const useUserStore = create(
       clearUser: () => set({ user: null }),
     }),
     {
-      name: "user-storage", // key in localStorage
-      getStorage: () => localStorage, // or sessionStorage if you prefer
+      name: "user-storage",
+      getStorage: () => localStorage,
     }
   )
 );
@@ -24,8 +24,34 @@ export const useAccessStore = create(
       clearUser: () => set({ user: null }),
     }),
     {
-      name: "access-storage", // key in localStorage
-      getStorage: () => localStorage, // you can also use sessionStorage
+      name: "access-storage",
+      getStorage: () => localStorage,
     }
   )
 );
+
+export const useGymStore = create(
+  persist(
+    (set) => ({
+      gyms: [],
+      setGyms: (gyms) => set({ gyms }),
+      addGym: (gym) => set((state) => ({ gyms: [...state.gyms, gym] })), // add one gym
+      clearGyms: () => set({ gyms: [] }),
+    }),
+    {
+      name: "gym-array-store",
+    }
+  )
+);
+
+export const resetAllStores = () => {
+  // Clear Zustand state
+  useUserStore.getState().clearUser();
+  useAccessStore.getState().clearUser();
+  useGymStore.getState().clearGyms();
+
+  // Remove persisted localStorage keys
+  localStorage.removeItem("user-storage");
+  localStorage.removeItem("access-storage");
+  localStorage.removeItem("gym-array-store");
+};

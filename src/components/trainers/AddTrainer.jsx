@@ -26,6 +26,14 @@ export default function AddTrainer() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const { trainerName, email, phone, specialty } = trainerData;
+
+    // Basic validation
+    if (!trainerName || !email || !phone || !specialty) {
+      alert("Please fill in all the fields.");
+      return;
+    }
+
     const playload = {
       name: trainerData.trainerName,
       phone: trainerData.phone,

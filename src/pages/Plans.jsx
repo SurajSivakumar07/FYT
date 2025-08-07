@@ -1,13 +1,5 @@
 import React, { useMemo, useState } from "react";
-import {
-  Edit3,
-  Search,
-  Plus,
-  Calendar,
-  DollarSign,
-  Filter,
-  X,
-} from "lucide-react";
+import { Edit3, Search, Calendar, DollarSign, X } from "lucide-react";
 import { usePlans, useUpdatePlan } from "../hooks/usePlans";
 import { useGymId } from "../hooks/useGymId";
 import { PageLoader } from "../App";
@@ -15,7 +7,6 @@ import { PageLoader } from "../App";
 function Plans() {
   const gym_id = useGymId();
   const { data: plans = [], isLoading } = usePlans(gym_id);
-  // const { data: plans = [], isLoading } = usePlans(gym_id);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [editingPlan, setEditingPlan] = useState(null);
@@ -64,7 +55,7 @@ function Plans() {
       updatedData: payload,
     });
 
-    setShowEditModal(false); // optionally close modal after submit
+    setShowEditModal(false);
   };
 
   const handleCloseModal = () => {

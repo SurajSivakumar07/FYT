@@ -11,6 +11,9 @@ import { lazyWithPreload } from "./utlis/lazywithPrelaod";
 import useSessionTracking from "./hooks/session_tracking/useSectionTracking";
 import SettingsPage from "./pages/SettingsPage";
 import { useRole } from "./hooks/role/useRole";
+import DynamicAttendace from "./components/Attendance/DynamicAttendace";
+import SelectGymPage from "./components/selectGyms/SelectGymPage.";
+import { useGymStore } from "./zustand/store";
 
 // Lazy load components for code splitting
 
@@ -91,11 +94,12 @@ class RouteErrorBoundary extends React.Component {
 
 export default function App() {
   const location = useLocation();
-  const hideTabBar = location.pathname === "/signin";
-  useSessionTracking();
-  useEffect(() => {
-    Members.preload();
+  const hideTabBar =
+    location.pathname === "/signin" || location.pathname === "/select-gym";
 
+  const gyms = useGymStore((state) => state.gyms);
+
+  useEffect(() => {
     const preloadOtherPages = () => {
       ProfilePage.preload();
       Trainers.preload(); // /view-trainer
@@ -239,15 +243,16 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-
-            {/* <Route
-              path="/settings"
+            <Route
+              path="/select-gym"
               element={
                 <ProtectedRoute>
-                  <SettingsPage />
+                  <SelectGymPage />
                 </ProtectedRoute>
               }
-            /> */}
+            />
+
+            <Route path="attendance/:gymId" element={<DynamicAttendace />} />
           </Routes>
         </Suspense>
       </main>

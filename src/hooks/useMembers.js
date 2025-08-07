@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useState } from "react";
 import axiosInstance from "../utlis/axiosInstance";
+import { updateMemberPlanApi } from "../services/apis/MemberApi/UpdateMemeberPlan";
 const url = import.meta.env.VITE_API_URL;
 
 export const useUpdateEnquiryStatus = () => {
@@ -45,7 +46,7 @@ export const useMembers = (gym_id) => {
           setIsRedirecting(true);
           setTimeout(() => {
             navigate("/signin");
-          }, 1000); // ⏱️ optional small delay to show animation
+          }, 1000);
         }
         throw error;
       }
@@ -68,4 +69,24 @@ export const useMembers = (gym_id) => {
     ...query,
     isRedirecting,
   };
+};
+
+export const useUpdateMemberPlan = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ gym_id, member_id, data }) =>
+      updateMemberPlanApi(gym_id, member_id, data),
+
+    onSuccess: () => {
+      toast.success("Member plan updated successfully!");
+      queryClient.invalidateQueries(["memberprofile"]);
+    },
+
+    onError: (error) => {
+      const message =
+        error?.response?.data?.detail || error?.message || "Update failed";
+      toast.error(message);
+    },
+  });
 };

@@ -9,7 +9,7 @@ export default function PaymentBalanceModal({
   isOpen,
   onClose,
   memberId,
-  balanceAmt = 900,
+  balanceAmt,
 }) {
   const [balance, setBalance] = useState({
     amount_paid: 0,

@@ -26,6 +26,84 @@ const SignIn = () => {
     if (parts.length === 2) return parts.pop().split(";").shift();
     return null;
   }
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+  //   setLoading(true);
+
+  //   try {
+  //     const res = await axios.post(
+  //       `${url}/login`,
+  //       { email, password },
+  //       { withCredentials: true }
+  //     );
+
+  //     useUserStore.getState().setUser(res.data);
+
+  //     // Set gym_id in local/session storage if only one gym
+  //     if (res.data.role === "owner" && res.data.gyms?.length === 1) {
+  //       const gymId = res.data.gyms[0].gym_id;
+  //       localStorage.setItem("gym_id", gymId);
+  //       sessionStorage.setItem("gym_id", gymId);
+  //     }
+
+  //     // 1. Get location
+  //     const getLocation = () =>
+  //       new Promise((resolve) => {
+  //         navigator.geolocation.getCurrentPosition(
+  //           (pos) => {
+  //             resolve({
+  //               lat: pos.coords.latitude,
+  //               lon: pos.coords.longitude,
+  //             });
+  //           },
+  //           (err) => {
+  //             console.warn("Location error or permission denied:", err);
+  //             resolve(null);
+  //           }
+  //         );
+  //       });
+
+  //     const location = await getLocation();
+
+  //     // 2. Track session
+  //     const user_data = await Promise.all([
+  //       axios.post(
+  //         `${url}/track-session`,
+  //         {
+  //           os: getOS(),
+  //           browser: getBrowser(),
+  //           device_type: getDeviceType(),
+  //           location: null,
+  //         },
+  //         { withCredentials: true }
+  //       ),
+  //       new Promise((resolve) => {
+  //         navigate("/");
+  //         resolve();
+  //       }),
+  //     ]);
+
+  //     const session_id = user_data[0].data.session_id;
+
+  //     localStorage.setItem("session_id", session_id);
+
+  //     // 3. Navigate after location + session is done
+  //     if (res.data.role === "owner" && res.data.gyms?.length > 1) {
+  //       navigate("/select-gym", { state: { gyms: res.data.gyms } });
+  //     } else {
+  //       navigate("/");
+  //     }
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     alert("Login failed. Please check credentials.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -40,7 +118,7 @@ const SignIn = () => {
 
       useUserStore.getState().setUser(res.data);
 
-      localStorage.setItem("gym_id", res.data.gym_id);
+      // localStorage.setItem("gym_id", res.data.gym_id);
 
       const getLocation = () =>
         new Promise((resolve) => {
@@ -60,6 +138,9 @@ const SignIn = () => {
 
       const location = await getLocation();
       // Run both session tracking and navigation in parallel
+
+      console.log("the location is", location);
+
       const user_data = await Promise.all([
         axios.post(
           `${url}/track-session`,
@@ -72,13 +153,39 @@ const SignIn = () => {
           { withCredentials: true }
         ),
         new Promise((resolve) => {
-          navigate("/");
           resolve();
         }),
       ]);
+
+      console.log(user_data);
+
       const session_id = user_data[0].data.session_id;
 
       localStorage.setItem("session_id", session_id);
+      console.log(res);
+
+      if (res.data.role === "owner") {
+        if (res.data.gyms?.length === 1) {
+          const gymId = res.data.gyms[0].gym_id;
+          localStorage.setItem("gym_id", gymId);
+          sessionStorage.setItem("gym_id", gymId);
+          navigate("/");
+        } else if (res.data.gym_id) {
+          // Encrypted gym_id for single-gym owner
+          localStorage.setItem("gym_id", res.data.gym_id);
+          sessionStorage.setItem("gym_id", res.data.gym_id);
+          navigate("/");
+        } else {
+          // Multi-gym owner: show gym selection UI
+          console.log(res.data.gyms);
+
+          navigate("/select-gym", { state: { gyms: res.data.gyms } });
+        }
+      } else {
+        localStorage.setItem("gym_id", res.data.gym_id);
+        sessionStorage.setItem("gym_id", res.data.gym_id);
+        navigate("/");
+      }
     } catch (error) {
       console.error("Login error:", error);
       alert("Login failed. Please check credentials.");
@@ -87,7 +194,6 @@ const SignIn = () => {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Subtle background pattern */}

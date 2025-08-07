@@ -9,7 +9,7 @@ export default function StatCard({
 }) {
   return (
     <div
-      className="bg-white rounded-xl shadow p-4 sm:p-5 flex flex-col gap-2 w-43 transition-all hover:shadow-md cursor-pointer "
+      className="bg-white rounded-xl shadow p-4 sm:p-5 flex flex-col gap-2 w-44 sm:w-60 transition-all hover:shadow-md cursor-pointer"
       onClick={onClick}
     >
       <h4 className="text-sm font-medium text-gray-800">{title}</h4>

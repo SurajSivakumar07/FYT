@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 import { useGymId } from "../../../hooks/useGymId";
 const MemberInformation = React.memo(
-  ({ memberData, showMembership, showIdProof, showTranscation }) => {
+  ({ memberData, showMembership, showIdProof, showTranscation, planData }) => {
     const formattedDob = useMemo(() => {
       return new Date(memberData.dob).toLocaleDateString("en-IN", {
         year: "numeric",
@@ -434,8 +434,14 @@ const MemberInformation = React.memo(
                   Membership Plan
                 </label>
                 <p className="font-medium text-black mt-2">
-                  {memberData.membership_plan_id}
+                  {planData?.plan?.name}
                 </p>
+
+                {planData?.plan && (
+                  <div className="text-black mt-2">
+                    <p className="font-medium">Name: {planData.plan.name}</p>
+                  </div>
+                )}
               </div>
 
               <div>

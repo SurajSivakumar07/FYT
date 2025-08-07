@@ -1,11 +1,10 @@
 import React, { useMemo, useState } from "react";
-import { Edit3, Phone, Plus, Search, User, X, Save } from "lucide-react";
+import { Edit3, Phone, Search, User, X } from "lucide-react";
 import { PageLoader } from "../App";
 import { useTrainers, useUpdateTrainer } from "../hooks/useTrainers";
 import { useGymId } from "../hooks/useGymId";
 
 function Trainers() {
-  // Mock data for demonstration
   const gym_id = useGymId();
   const { mutate: updateTrainer, isPending: isUpdating } = useUpdateTrainer();
 
@@ -51,7 +50,6 @@ function Trainers() {
       return;
     }
 
-    // ✅ Trigger mutation
     updateTrainer({
       id: trainerId,
       data: {

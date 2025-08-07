@@ -6,7 +6,7 @@ import { useDebounce } from "../hooks/useDebounce";
 import VirtualizedMemberList from "../components/members/VirtualizedMemberList";
 import { useLocation } from "react-router-dom";
 import { useGymId } from "../hooks/useGymId";
-import ProfilePage from "./ProfilePage";
+
 import { lazyWithPreload } from "../utlis/lazywithPrelaod";
 
 // Loading skeleton component
@@ -37,7 +37,6 @@ export default function Members() {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [monthRange, setMonthRange] = useState([]);
-  // const { data: members = [], isLoading, error, refetch } = useMembers(gym_id);
   const { data: members = [], isLoading, error, refetch } = useMembers(gym_id);
 
   const [search, setSearch] = useState("");

@@ -4,6 +4,7 @@ import axiosInstance from "../../utlis/axiosInstance";
 import { useGymId } from "../useGymId";
 import { useState } from "react";
 import { useAccessStore } from "../../zustand/store";
+import { setGymApi } from "../../services/apis/gyms/gyms";
 
 export const useGymData = () => {
   const gymId = useGymId();
@@ -81,5 +82,22 @@ export const useDownloadMonthlyExcel = () => {
       return res.data;
     },
     enabled: false,
+  });
+};
+
+export const getGymName = async (gymId) => {
+  const response = await axiosInstance.get(`/gyms/${gymId}`);
+  return response.data;
+};
+
+export const useSetGym = () => {
+  return useMutation({
+    mutationFn: setGymApi,
+    onSuccess: (data) => {
+      console.log("✅ Gym set successfully:", data);
+    },
+    onError: (error) => {
+      console.error("❌ Error setting gym:", error);
+    },
   });
 };

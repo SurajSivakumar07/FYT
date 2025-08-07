@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect, use } from "react";
 
-import gymLogo from "../../assets/gym_logo.png";
 import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../services/supabase/supabase";
 import {
   BarChart3,
@@ -16,6 +15,8 @@ import {
 } from "lucide-react";
 import { useLogoutSession } from "../../hooks/logout/useLogout";
 import { useGymData } from "../../hooks/gyms/useGymData";
+import { useGymStore } from "../../zustand/store";
+import GymModalSwitcher from "../selectGyms/GymSwitcher";
 const Navbar = React.memo(function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const modalRef = useRef();
@@ -34,6 +35,7 @@ const Navbar = React.memo(function Navbar() {
       await supabase.auth.signOut();
       queryClient.clear();
       localStorage.clear();
+
       navigate("/signin");
     } catch (err) {
       console.error("Logout flow failed:", err);
@@ -58,6 +60,8 @@ const Navbar = React.memo(function Navbar() {
     };
   }, [isOpen]);
 
+  const multiple_gyms_list = useGymStore((state) => state.gyms);
+
   return (
     <>
       {/* <div className="w-full bg-white shadow-sm px-4 sm:px-6 py-3 flex items-center justify-between"> */}
@@ -76,6 +80,7 @@ const Navbar = React.memo(function Navbar() {
             }}
           >
             {gym_data?.name}
+            {multiple_gyms_list.length > 1 && <GymModalSwitcher />}
           </div>
         </div>
 

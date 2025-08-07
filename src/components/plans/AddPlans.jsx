@@ -167,46 +167,6 @@ export default function AddPlans() {
               </div>
             )
           )}
-
-          {/* Preview Card
-          {(planData.planName || planData.duration || planData.price) && (
-            <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200/50 backdrop-blur-sm">
-              <div className="flex items-center mb-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Live Preview
-                </h3>
-              </div>
-              <div className="bg-white/60 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-700">
-                    Plan Name:
-                  </span>
-                  <span className="text-sm text-gray-900 font-semibold">
-                    {planData.planName || "Not specified"}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-700">
-                    Duration:
-                  </span>
-                  <span className="text-sm text-gray-900 font-semibold">
-                    {planData.duration
-                      ? `${planData.duration} days`
-                      : "Not specified"}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-700">
-                    Price:
-                  </span>
-                  <span className="text-sm text-gray-900 font-semibold">
-                    {planData.price ? `${planData.price}` : "Not specified"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )} */}
         </div>
       </div>
     </div>

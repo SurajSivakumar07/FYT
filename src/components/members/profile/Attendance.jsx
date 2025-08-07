@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Check, X } from "lucide-react";
-import { useParams } from "react-router-dom";
+
 import { useGymId } from "../../../hooks/useGymId";
 
 const Attendance = ({ id }) => {

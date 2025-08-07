@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MemberInformation from "../components/members/profile/MemberInformation";
 import WhatsAppNotification from "../components/members/profile/WhatsAppNotification";
 import Attendance from "../components/members/profile/Attendance";
@@ -21,7 +21,6 @@ import UpdateTranscation from "../components/transcations/UpdateTranscation";
 
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  UserCircle,
   Edit3,
   RefreshCw,
   CreditCard,
@@ -33,13 +32,12 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
-  Plus,
-  Trash,
 } from "lucide-react";
 import { useDeleteMember } from "../hooks/useDeleteMember";
-import { useRole } from "../hooks/role/useRole";
+
 import Locked from "../components/locked/Locked";
 import { useAccessStore, useUserStore } from "../zustand/store";
+import MemberPlanUpdate from "../components/memberPlanUpdate/MemberPlanUpdate";
 
 const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("personal");
@@ -54,6 +52,7 @@ const ProfilePage = () => {
   const [isTranscatoinOpen, setTranscation] = useState(false);
   const [showActions, setShowActions] = useState(false);
 
+  const [isUpdateMemberPlanOpen, setUpdateMemberPlanOpen] = useState(false);
   const gym_id = useGymId();
   const { userId } = useParams();
   const queryClient = useQueryClient();
@@ -282,15 +281,6 @@ const ProfilePage = () => {
       },
       variant: "primary",
     },
-    // {
-    //   id: "delete",
-    //   lable: "Delete Member",
-    //   icon: Trash,
-    //   onClick: () => {
-    //     handleDelete();
-    //   },
-    //   variant: "primary",
-    // },
     {
       id: "transaction",
       label: "Update Transaction",
@@ -324,6 +314,16 @@ const ProfilePage = () => {
       variant: "balance",
       condition: memberData?.transactions[0]?.balance > 0,
       badge: `₹${memberData?.transactions[0]?.balance}`,
+    },
+    {
+      id: "updateplan",
+      label: "Update Plan",
+      icon: Edit3,
+      onClick: () => {
+        setUpdateMemberPlanOpen(true);
+        setShowActions(false);
+      },
+      variant: "primary",
     },
   ];
 
@@ -650,7 +650,11 @@ const ProfilePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <MemberInformation memberData={member} showMembership />
+              <MemberInformation
+                memberData={member}
+                showMembership
+                planData={memberData?.plan}
+              />
             </motion.div>
           )}
           {activeTab === "id-proof" && (
@@ -659,7 +663,11 @@ const ProfilePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <MemberInformation memberData={member} showIdProof />
+              <MemberInformation
+                memberData={member}
+                showIdProof
+                planData={memberData?.plan}
+              />
             </motion.div>
           )}
           {activeTab === "transcation" && (
@@ -669,7 +677,11 @@ const ProfilePage = () => {
               transition={{ duration: 0.3 }}
             >
               {user?.role !== "trainer" ? (
-                <MemberInformation memberData={memberData} showTranscation />
+                <MemberInformation
+                  memberData={memberData}
+                  showTranscation
+                  planData={memberData?.plan}
+                />
               ) : (
                 <Locked />
               )}
@@ -681,7 +693,10 @@ const ProfilePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <WhatsAppNotification memberData={memberData} />
+              <WhatsAppNotification
+                memberData={memberData}
+                planData={memberData?.plan}
+              />
             </motion.div>
           )}
           {activeTab === "attendance" && (
@@ -690,7 +705,7 @@ const ProfilePage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Attendance id={userId} />
+              <Attendance id={userId} planData={memberData?.plan} />
             </motion.div>
           )}
           {activeTab === "trainer" && member?.type === "pt" && (
@@ -734,13 +749,24 @@ const ProfilePage = () => {
         isOpen={isBalanceOpen}
         onClose={() => setBalanceopen(false)}
         memberId={memberData?.member?.member_id}
-        balanceAmt={memberData?.transactions[0]?.balance}
+        balanceAmt={
+          memberData?.transactions[memberData?.transactions.length - 1]?.balance
+        }
       />
       <UpdateTranscation
         isOpen={isTranscatoinOpen}
         onClose={() => setTranscation(false)}
         memberId={memberData?.member?.member_id}
         prevTranscation={
+          memberData?.transactions[memberData?.transactions.length - 1]
+        }
+      />
+      <MemberPlanUpdate
+        isOpen={isUpdateMemberPlanOpen}
+        onClose={() => setUpdateMemberPlanOpen(false)}
+        memberId={memberData?.member?.member_id}
+        gymId={gym_id}
+        transcationDetails={
           memberData?.transactions[memberData?.transactions.length - 1]
         }
       />
