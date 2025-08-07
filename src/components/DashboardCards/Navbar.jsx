@@ -32,7 +32,7 @@ const Navbar = React.memo(function Navbar() {
 
     try {
       if (sessionId) {
-        await logoutSession(sessionId || null);
+        await logoutSession(sessionId);
       }
     } catch (err) {
       console.error("Logout API failed:", err);

@@ -15,22 +15,15 @@ export default function SelectGymPage() {
   const navigate = useNavigate();
   const setGyms = useGymStore((state) => state.setGyms);
 
-  const url = import.meta.env.VITE_API_URL || "http://localhost:8000";
-  const gyms_data = useGymStore((state) => state.gyms);
-
-  useEffect(() => {
-    setGyms(gyms);
-    console.log("Received gyms:", gyms);
-    console.log("the gyms Data", gyms_data);
-  }, [gyms]);
-
   const handleSelect = async (gym_id) => {
     setIsSubmitting(true);
     try {
       localStorage.setItem("gym_id", gym_id);
 
       setSelectedGym(gyms);
+      setGyms(gyms);
 
+      setLoadingGym(gym_id);
       navigate("/", { state: { gyms: gyms } });
     } catch (err) {
       console.error("Failed to set gym:", err);
@@ -38,10 +31,6 @@ export default function SelectGymPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-  const handleBack = () => {
-    console.log("Would navigate back");
-    // navigate(-1);
   };
 
   return (

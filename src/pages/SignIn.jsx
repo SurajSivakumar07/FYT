@@ -139,8 +139,6 @@ const SignIn = () => {
       const location = await getLocation();
       // Run both session tracking and navigation in parallel
 
-      console.log("the location is", location);
-
       const user_data = await Promise.all([
         axios.post(
           `${url}/track-session`,
@@ -157,12 +155,9 @@ const SignIn = () => {
         }),
       ]);
 
-      console.log(user_data);
-
       const session_id = user_data[0].data.session_id;
 
       localStorage.setItem("session_id", session_id);
-      console.log(res);
 
       if (res.data.role === "owner") {
         if (res.data.gyms?.length === 1) {
@@ -177,8 +172,10 @@ const SignIn = () => {
           navigate("/");
         } else {
           // Multi-gym owner: show gym selection UI
-          console.log(res.data.gyms);
+          const gyms = res.data.gyms || [];
+          const defaultGymId = gyms[0]?.gym_id || "123";
 
+          localStorage.setItem("gym_id", defaultGymId);
           navigate("/select-gym", { state: { gyms: res.data.gyms } });
         }
       } else {

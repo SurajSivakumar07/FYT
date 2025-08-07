@@ -5,18 +5,23 @@ import { useEffect, useState } from "react";
 import { PageLoader } from "../App";
 import axios from "axios";
 import { useLogoutSession } from "../hooks/logout/useLogout";
+import { set } from "date-fns";
 
 const ProtectedRoute = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const url = import.meta.env.VITE_API_URL;
   const { mutateAsync: logoutSession, isLoading } = useLogoutSession();
-
+  const gym_id = localStorage.getItem("gym_id");
   useEffect(() => {
     const checkAuth = async () => {
       try {
         console.log("Checking authentication...");
+        if (!gym_id) {
+          setAuthenticated(false);
 
+          return;
+        }
         const res = await axios.get(`${url}/protected`, {
           withCredentials: true,
         });
