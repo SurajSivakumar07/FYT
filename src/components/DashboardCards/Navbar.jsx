@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useLogoutSession } from "../../hooks/logout/useLogout";
 import { useGymData } from "../../hooks/gyms/useGymData";
-import { useGymStore } from "../../zustand/store";
+import { resetAllStores, useGymStore } from "../../zustand/store";
 import GymModalSwitcher from "../selectGyms/GymSwitcher";
 const Navbar = React.memo(function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,15 +31,16 @@ const Navbar = React.memo(function Navbar() {
     const sessionId = localStorage.getItem("session_id");
 
     try {
-      await logoutSession(sessionId);
-      await supabase.auth.signOut();
+      if (sessionId) {
+        await logoutSession(sessionId || null);
+      }
+    } catch (err) {
+      console.error("Logout API failed:", err);
+    } finally {
       queryClient.clear();
       localStorage.clear();
-
+      resetAllStores();
       navigate("/signin");
-    } catch (err) {
-      console.error("Logout flow failed:", err);
-      // Errors already handled by the hook
     }
   };
 
