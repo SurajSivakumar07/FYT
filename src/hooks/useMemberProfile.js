@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import axiosInstance from "../utlis/axiosInstance";
-
-const url = import.meta.env.VITE_API_URL;
-
+import mapMemberProfile from "../utlis/dataMapper";
 export const useMemberProfile = (gym_id, id) => {
   return useQuery({
     queryKey: ["memberprofile", gym_id, id],
@@ -11,7 +8,11 @@ export const useMemberProfile = (gym_id, id) => {
       const res = await axiosInstance.get(
         `/gyms/${gym_id}/members/${id}/full-details`
       );
-      return res.data;
+
+      // Map the data to consistent format
+      const mappedData = mapMemberProfile(res.data);
+
+      return mappedData;
     },
     enabled: !!gym_id && !!id,
     staleTime: 0,

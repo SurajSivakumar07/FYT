@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axiosInstance from "../utlis/axiosInstance";
 import { updateMemberPlanApi } from "../services/apis/MemberApi/UpdateMemeberPlan";
+import decryptAESData from "../utlis/decryptData";
 const url = import.meta.env.VITE_API_URL;
 
 export const useUpdateEnquiryStatus = () => {
@@ -40,7 +41,23 @@ export const useMembers = (gym_id) => {
           timeout: 10000,
           withCredentials: true,
         });
-        return res.data;
+
+        const raw = res.data;
+
+        const data = res.data.map((item) => ({
+          id: item.ip,
+          member_id: item.md,
+          name: item.ne,
+          phone_number: decryptAESData(item.pn),
+          email: decryptAESData(item.el),
+          status: item.st,
+          type: item.tp,
+          start_date: item.sd,
+          end_date: item.ed,
+          balance: item.bl,
+        }));
+
+        return data;
       } catch (error) {
         if (error?.response?.status === 401) {
           setIsRedirecting(true);

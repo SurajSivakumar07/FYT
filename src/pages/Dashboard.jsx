@@ -45,14 +45,14 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 gap-3 w-full max-w-md sm:max-w-lg md:max-w-2xl">
         <StatCard
           title="Active members"
-          value={data ? data.active_members : "-"}
+          value={data ? data.activeMembers : "-"}
           color="text-blue-600"
           arrow
           onClick={handleActiveMembersClick}
         />
         <StatCard
           title="Expiring in 10 days"
-          value={isLoading ? "..." : data?.expiring_soon}
+          value={isLoading ? "..." : data?.expiringSoon}
           color="text-red-500"
           arrow
           onClick={handleExpiringSoonClick}
@@ -60,7 +60,7 @@ export default function Dashboard() {
         {/* <StatCard title="Earnings" value={data ? data.earnings : "-"} info /> */}
         <StatCard
           title="Total members"
-          value={data ? data.total_members : "-"}
+          value={data ? data.totalMembers : "-"}
           arrow
           onClick={handleTotalMembersClick}
         />

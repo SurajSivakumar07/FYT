@@ -415,7 +415,7 @@ const MemberInformation = React.memo(
               Membership Details
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
-              <div>
+              {/* <div>
                 <label className="text-xs text-gray-500 uppercase flex items-center gap-1">
                   <svg
                     className="w-4 h-4 text-softBlue"
@@ -442,7 +442,7 @@ const MemberInformation = React.memo(
                     <p className="font-medium">Name: {planData.plan.name}</p>
                   </div>
                 )}
-              </div>
+              </div> */}
 
               <div>
                 <label className="text-xs text-gray-500 uppercase flex items-center gap-1">

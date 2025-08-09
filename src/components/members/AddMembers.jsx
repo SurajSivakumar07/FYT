@@ -17,6 +17,7 @@ import { useTrainers } from "../../hooks/useTrainers";
 import CustomDropdown from "./CustomDropdown";
 import { useGymId } from "../../hooks/useGymId";
 import { useMemberId } from "../../hooks/useMemberId";
+import axiosInstance from "../../utlis/axiosInstance";
 
 export default function AddMembers() {
   const gymId = useGymId();
@@ -272,10 +273,9 @@ export default function AddMembers() {
       photo_url_1: memberData.photo_url_1,
       photo_url_2: memberData.photo_url_2,
     };
-    console.log(payload);
 
     try {
-      const response = await axios.post(`${url}/members`, payload);
+      const response = await axiosInstance.post(`/members`, payload);
       setSubmissionSuccess(true);
       setMemberData({
         gym_id: gymId,

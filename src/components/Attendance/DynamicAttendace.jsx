@@ -73,7 +73,9 @@ export default function DynamicAttendace() {
 
   return (
     <div className="p-6 max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">Attendance - Gym:</h2>
+      <h1 className="text-xl font-bold mb-4">
+        Attendance - Gym: <span className="text-blue-500">{gym?.name}</span>
+      </h1>
 
       {!editing && isStored ? (
         <div className="space-y-4">

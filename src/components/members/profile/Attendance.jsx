@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 
 import { useGymId } from "../../../hooks/useGymId";
+import axiosInstance from "../../../utlis/axiosInstance";
 
 const Attendance = ({ id }) => {
   const [markedDates, setMarkedDates] = useState({});
@@ -90,36 +91,63 @@ const Attendance = ({ id }) => {
     const time = formatTimeForBackend(now);
     const maxRetries = 3;
     const retryDelay = 1000;
-
     const attemptRequest = async (payload, retries) => {
       try {
-        const response = await fetch(`${API_BASE_URL}/attendance`, {
-          method: "POST",
+        const response = await axiosInstance.post(`/attendance`, payload, {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload),
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        return await response.json();
+        // axios automatically parses JSON, so response.data is already usable
+        return response.data;
       } catch (error) {
-        if (
-          retries > 0 &&
-          (error.name === "TypeError" || error.message.includes("fetch"))
-        ) {
+        // axios network errors show up as error.code === 'ERR_NETWORK'
+        const isNetworkError =
+          error.code === "ERR_NETWORK" ||
+          error.message.includes("Network Error");
+
+        if (retries > 0 && isNetworkError) {
           console.log(
             `Retrying... (${maxRetries - retries + 1}/${maxRetries})`
           );
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
           return attemptRequest(payload, retries - 1);
         }
+
         throw error;
       }
     };
+
+    // const attemptRequest = async (payload, retries) => {
+    //   try {
+    //     const response = await fetch(`${API_BASE_URL}/attendance`, {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify(payload),
+    //     });
+
+    //     if (!response.ok) {
+    //       throw new Error(`HTTP error! status: ${response.status}`);
+    //     }
+
+    //     return await response.json();
+    //   } catch (error) {
+    //     if (
+    //       retries > 0 &&
+    //       (error.name === "TypeError" || error.message.includes("fetch"))
+    //     ) {
+    //       console.log(
+    //         `Retrying... (${maxRetries - retries + 1}/${maxRetries})`
+    //       );
+    //       await new Promise((resolve) => setTimeout(resolve, retryDelay));
+    //       return attemptRequest(payload, retries - 1);
+    //     }
+    //     throw error;
+    //   }
+    // };
 
     try {
       for (const dateString of selectedDates) {

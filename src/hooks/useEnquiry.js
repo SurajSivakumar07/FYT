@@ -9,6 +9,10 @@ export const useEnquiry = (gym_id) => {
     queryKey: ["enquiries", gym_id],
     queryFn: async () => {
       const res = await axiosInstance.get(`/gyms/${gym_id}/enquiries`);
+      // const mappedEnquiries = mapEnquiryDataFlexible(res.data);
+
+      // console.log("Original obfuscated data:", res.data);
+      // console.log("Mapped data:", mappedEnquiries);
 
       return res.data;
     },

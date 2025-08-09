@@ -32,11 +32,11 @@ export default function GymModalSwitcher() {
     <>
       {/* Gym Info + Open Modal Icon */}
       <div
-        className="flex items-center gap-2 cursor-pointer text-base sm:text-lg font-semibold text-gray-700 hover:text-gray-900 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-100"
+        className="flex items-center gap-2 cursor-pointer text-base sm:text-lg font-semibold text-gray-700 hover:text-gray-900 transition-colors duration-200 p-2 rounded-lg hover:bg-gray-100 h-4"
         onClick={() => setIsOpen(true)}
       >
         <Repeat
-          size={20}
+          size={10}
           className="text-blue-600 hover:text-blue-700 transition-colors duration-200"
         />
         <span className="hidden sm:inline">Switch Gym</span>
@@ -63,9 +63,7 @@ export default function GymModalSwitcher() {
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <Building2 size={20} className="text-blue-600" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">
-                  Select a Gym
-                </h2>
+                <h2 className="text-l font-bold text-gray-900">Select a Gym</h2>
               </div>
 
               <button

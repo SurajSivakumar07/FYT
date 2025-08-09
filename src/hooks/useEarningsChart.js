@@ -9,7 +9,14 @@ export const useEarningsSummary = (gym_id) => {
       const res = await axiosInstance.get(`/dashboard/earnings`, {
         params: { gym_id },
       });
-      return res.data;
+
+      const raw = res.data;
+      const data = raw.map((item) => ({
+        month: item.m,
+        membership: item.ms,
+        payments: item.pm,
+      }));
+      return data;
     },
     enabled: !!gym_id,
     staleTime: 1000 * 60,

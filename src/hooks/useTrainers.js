@@ -3,13 +3,19 @@ import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axiosInstance from "../utlis/axiosInstance";
+import mapTrainerData from "../utlis/trainerMapper";
 const url = import.meta.env.VITE_API_URL;
+
 export const useTrainers = (gym_id) => {
   return useQuery({
-    queryKey: ["trainer_details"],
+    queryKey: ["trainer_details", gym_id], // Added gym_id to make it more specific
     queryFn: async () => {
       const res = await axiosInstance.get(`/trainers/${gym_id}`);
-      return res.data.trainers;
+
+      // Map the obfuscated data to readable format
+      const mappedTrainers = mapTrainerData(res.data.trainers);
+
+      return mappedTrainers;
     },
     enabled: !!gym_id,
     staleTime: Infinity,
