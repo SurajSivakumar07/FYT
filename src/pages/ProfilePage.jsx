@@ -604,7 +604,7 @@ const ProfilePage = () => {
             "id-proof",
             "actions",
             ...(access.isattendance === "true" ? ["attendance"] : []),
-            "transcation",
+            "transaction",
             ...(member?.type === "pt" ? ["trainer"] : []),
           ].map((tab) => (
             <button
@@ -670,7 +670,7 @@ const ProfilePage = () => {
               />
             </motion.div>
           )}
-          {activeTab === "transcation" && (
+          {activeTab === "transaction" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

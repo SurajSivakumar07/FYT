@@ -229,7 +229,7 @@ function Enquiries() {
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
-
+              {/* 
               <div className="relative">
                 <select
                   value={priorityFilter}
@@ -242,7 +242,7 @@ function Enquiries() {
                   <option value="low">Low</option>
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

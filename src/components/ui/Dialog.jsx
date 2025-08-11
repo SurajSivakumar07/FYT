@@ -47,7 +47,7 @@ export const Dialog = ({ open, onClose, children }) => {
         className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 relative transform transition-all duration-300 ease-in-out scale-100 opacity-100 data-[closed]:scale-95 data-[closed]:opacity-0 sm:max-w-md md:max-w-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
+        {/* <button
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors w-6 h-6 flex items-center justify-center"
           onClick={onClose}
           aria-label="Close dialog"
@@ -65,7 +65,7 @@ export const Dialog = ({ open, onClose, children }) => {
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
-        </button>
+        </button> */}
         {children}
       </div>
     </div>
