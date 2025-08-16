@@ -34,10 +34,11 @@ export default function Dashboard() {
   });
 
   const handleActiveMembersClick = () => navigate("/members?status=active");
-  const handleExpiringSoonClick = () => navigate("/members?status=expiring");
+  const handleExpiringSoonClick = () =>
+    navigate("/members?status=expiringsoon");
   const handleTotalMembersClick = () => navigate("/members?status=all");
   const handlePendingMemberClick = () =>
-    navigate("/members?status=pending_balance");
+    navigate("/members?status=pendingbalance");
 
   return (
     <div className="flex flex-col items-center px-3 py-2 bg-gradient-to-br from-blue-50 via-white to-purple-100  w-full overflow-x-hidden">
