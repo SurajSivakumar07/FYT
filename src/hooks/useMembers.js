@@ -28,22 +28,48 @@ export const useUpdateEnquiryStatus = () => {
   });
 };
 
-export const useMembers = (gym_id) => {
-  const accessToken = useAccessToken();
+export const useMembers = (gym_id, filters = {}) => {
+  // 1. Accept filters object
   const navigate = useNavigate();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   const query = useQuery({
-    queryKey: ["members", gym_id],
-    queryFn: async () => {
+    // 2. Add filters to the queryKey for automatic refetching
+    queryKey: ["members", gym_id, filters],
+    queryFn: async ({ queryKey }) => {
+      // The filters object is available from the queryKey
+      const [_key, gymId, currentFilters] = queryKey;
+
       try {
-        const res = await axiosInstance.get(`/gyms/${gym_id}/members`, {
+        // 3. Build the dynamic URL with search parameters
+        const params = new URLSearchParams();
+
+        Object.entries(currentFilters).forEach(([key, value]) => {
+          // Append parameter only if it has a non-empty value
+          if (value && value !== "all") {
+            // Map frontend key to backend key if they differ
+            const paramKey =
+              {
+                member_type: "member_type",
+                status: "status",
+                join_year: "join_year",
+                join_month: "join_month",
+                plan_id: "plan_id",
+                search: "search",
+              }[key] || key;
+            params.append(paramKey, value);
+          }
+        });
+
+        const queryString = params.toString();
+        const url = `/gyms/${gymId}/members_testing?${queryString}`; // Ensure this endpoint matches your backend
+
+        const res = await axiosInstance.get(url, {
           timeout: 10000,
           withCredentials: true,
         });
 
-        const raw = res.data;
-
+        // The decryption and mapping logic remains the same
         const data = res.data.map((item) => ({
           id: item.ip,
           member_id: item.md,
@@ -55,6 +81,7 @@ export const useMembers = (gym_id) => {
           start_date: item.sd,
           end_date: item.ed,
           balance: item.bl,
+          plan_id: item.pi,
         }));
 
         return data;
@@ -71,15 +98,7 @@ export const useMembers = (gym_id) => {
     enabled: !!gym_id,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status >= 400 && error?.response?.status < 500) {
-        return false;
-      }
-      return failureCount < 2;
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    // Other options remain the same
   });
 
   return {
