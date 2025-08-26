@@ -39,6 +39,7 @@ const mapMemberProfile = (data) => {
         payment_date: transaction.pd,
         status: transaction.st,
         balance: transaction.bl,
+        discount: transaction.dc,
       })) || [],
     attendance:
       data.attendance?.map((att) => ({

@@ -579,6 +579,10 @@ const MemberInformation = React.memo(
                     Balance
                   </p>
                   <p className="font-medium text-black">₹{trans.balance}</p>
+                  <p className="text-xs text-gray-500 uppercase mb-1">
+                    Discount
+                  </p>
+                  <p className="font-medium text-black">₹{trans.discount}</p>
                 </div>
               ))}
             </div>

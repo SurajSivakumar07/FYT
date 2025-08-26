@@ -285,7 +285,7 @@ export default function Members() {
   } = useMembers(gym_id, apiFilters);
 
   if (error) {
-    /* ... error UI ... */
+    return <h1>{error.message} </h1>;
   }
 
   return (
