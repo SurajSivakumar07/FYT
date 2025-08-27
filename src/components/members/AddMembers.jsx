@@ -2055,12 +2055,10 @@ import CustomDropdown from "./CustomDropdown";
 import { useGymId } from "../../hooks/useGymId";
 import { useMemberId } from "../../hooks/useMemberId";
 import axiosInstance from "../../utlis/axiosInstance";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function AddMembers() {
   const gymId = useGymId();
-  console.log(gymId);
-
-  const url = import.meta.env.VITE_API_URL;
 
   const { data: memberID, isLoading: meberIdLoading } = useMemberId(gymId);
 
@@ -2114,6 +2112,8 @@ export default function AddMembers() {
     endDate.setDate(joinDate.getDate() + parseInt(durationDays, 10));
     return endDate.toISOString().split("T")[0];
   };
+
+  const queryClient = useQueryClient();
 
   const calculateBalance = (planPrice, amountPaid, discount) => {
     const paid = parseFloat(amountPaid) || 0;
@@ -2354,6 +2354,8 @@ export default function AddMembers() {
 
     try {
       const response = await axiosInstance.post(`/members`, payload);
+      queryClient.invalidateQueries(["dashboard-summary", gymId]);
+
       setSubmissionSuccess(true);
       setMemberData({
         gym_id: gymId,

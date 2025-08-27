@@ -10,7 +10,6 @@ import { useState } from "react";
 import axiosInstance from "../utlis/axiosInstance";
 import { updateMemberPlanApi } from "../services/apis/MemberApi/UpdateMemeberPlan";
 import decryptAESData from "../utlis/decryptData";
-const url = import.meta.env.VITE_API_URL;
 
 export const useUpdateEnquiryStatus = () => {
   const queryClient = useQueryClient();
@@ -98,6 +97,8 @@ export const useMembers = (gym_id, filters = {}) => {
     enabled: !!gym_id,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
+    refetchOnMount: "always", // 🔥 ensures refetch when component remounts
+
     // Other options remain the same
   });
 
