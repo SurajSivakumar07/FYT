@@ -105,7 +105,7 @@ export default function AddMembers() {
       { key: "member_id", label: "Member ID" },
       { key: "name", label: "Full Name" },
       { key: "phone_number", label: "Phone Number" },
-      // { key: "dob", label: "Date of Birth" },
+      { key: "dob", label: "Date of Birth" },
       { key: "gender", label: "Gender" },
       // { key: "occupation", label: "Occupation" },
       { key: "address", label: "Address" },
