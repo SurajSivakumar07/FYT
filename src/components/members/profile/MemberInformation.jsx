@@ -272,7 +272,7 @@ const MemberInformation = React.memo(
                   </span>
                 </div>
               </div>
-              <div>
+              {/* <div>
                 <label className="text-xs text-gray-500 uppercase flex items-center gap-1">
                   <svg
                     className="w-4 h-4 text-softBlue"
@@ -292,7 +292,7 @@ const MemberInformation = React.memo(
                 <div className="flex items-center mt-2">
                   <span className="font-medium text-black">{formattedDob}</span>
                 </div>
-              </div>
+              </div> */}
               <div>
                 <label className="text-xs text-gray-500 uppercase flex items-center gap-1">
                   <svg

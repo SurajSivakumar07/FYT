@@ -81,6 +81,7 @@ export const useMembers = (gym_id, filters = {}) => {
           end_date: item.ed,
           balance: item.bl,
           plan_id: item.pi,
+          photo_url: item.ph,
         }));
 
         return data;
@@ -97,9 +98,7 @@ export const useMembers = (gym_id, filters = {}) => {
     enabled: !!gym_id,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
-    refetchOnMount: "always", // 🔥 ensures refetch when component remounts
-
-    // Other options remain the same
+    refetchOnMount: "always", // refetch when component remounts
   });
 
   return {

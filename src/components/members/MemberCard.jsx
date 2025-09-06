@@ -61,7 +61,7 @@ const MemberCard = memo(({ user, style }) => {
 
   const getInitialsColor = useCallback((name) => {
     if (!name) return "bg-gray-500";
-    const colors = ["bg-blue-500"];
+    const colors = ["bg-black"];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
   }, []);
@@ -108,11 +108,25 @@ const MemberCard = memo(({ user, style }) => {
           {/* Status Color Indicator */}
 
           {/* Profile Initials */}
-          <div
-            className={`w-12 h-12 ${initialsColor} rounded-full mr-4 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-1.5`}
-          >
-            {initials}
-          </div>
+
+          {user.photo_url ? (
+            <div
+              className={`w-12 h-12 ${initialsColor} rounded-full mr-4 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-1.5`}
+            >
+              <img
+                src={user.photo_url}
+                alt={user.name}
+                className="w-12 h-12 rounded-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            <div
+              className={`w-12 h-12 ${initialsColor} rounded-full mr-4 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 mt-1.5`}
+            >
+              {initials}
+            </div>
+          )}
 
           {/* Info Section */}
           <div className="flex-1 min-w-0">

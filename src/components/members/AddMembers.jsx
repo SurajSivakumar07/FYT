@@ -31,7 +31,7 @@ export default function AddMembers() {
     name: "",
     phone_number: "",
     email: "",
-    dob: "",
+    dob: null,
     gender: "",
     blood_group: "ND",
     occupation: "",
@@ -96,7 +96,7 @@ export default function AddMembers() {
       console.error("Invalid date input:", inputDate);
       return "";
     }
-    return date.toISOString().slice(0, 10); // "YYYY-MM-DD"
+    return date.toISOString().slice(0, 10);
   };
 
   const validateForm = () => {
@@ -105,7 +105,7 @@ export default function AddMembers() {
       { key: "member_id", label: "Member ID" },
       { key: "name", label: "Full Name" },
       { key: "phone_number", label: "Phone Number" },
-      { key: "dob", label: "Date of Birth" },
+      // { key: "dob", label: "Date of Birth" },
       { key: "gender", label: "Gender" },
       // { key: "occupation", label: "Occupation" },
       { key: "address", label: "Address" },
@@ -299,7 +299,7 @@ export default function AddMembers() {
       trainer_id: memberData.trainer_id
         ? parseInt(memberData.trainer_id)
         : null,
-      dob: convertToISODate(memberData.dob),
+      dob: memberData.dob ? convertToISODate(memberData.dob) : null,
       start_date: convertToISODate(memberData.start_date),
       end_date: convertToISODate(memberData.end_date),
       transaction: {
@@ -402,7 +402,7 @@ export default function AddMembers() {
                   htmlFor="member_id"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Member ID
+                  Member ID <span className="text-red-600"> *</span>
                 </label>
                 <input
                   id="member_id"
@@ -431,7 +431,7 @@ export default function AddMembers() {
                   htmlFor="name"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Full Name
+                  Full Name <span className="text-red-600"> *</span>
                 </label>
                 <input
                   id="name"
@@ -460,7 +460,7 @@ export default function AddMembers() {
                   htmlFor="phone_number"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Phone Number
+                  Phone Number <span className="text-red-600"> *</span>
                 </label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-3.5 w-4 h-4 text-gray-400" />
@@ -555,7 +555,7 @@ export default function AddMembers() {
                   htmlFor="gender"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Gender
+                  Gender <span className="text-red-600"> *</span>
                 </label>
                 <select
                   id="gender"
@@ -615,7 +615,7 @@ export default function AddMembers() {
                 htmlFor="address"
                 className="block text-sm font-medium text-gray-700"
               >
-                Address
+                Address <span className="text-red-600"> *</span>
               </label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
@@ -745,6 +745,7 @@ export default function AddMembers() {
                   className="block text-sm font-medium text-gray-700"
                 >
                   Start Date
+                  <span className="text-red-600"> *</span>
                 </label>
                 <input
                   id="start_date"
@@ -773,6 +774,7 @@ export default function AddMembers() {
                   className="block text-sm font-medium text-gray-700"
                 >
                   End Date
+                  <span className="text-red-600"> *</span>
                 </label>
                 <input
                   id="end_date"
@@ -801,6 +803,7 @@ export default function AddMembers() {
                   className="block text-sm font-medium text-gray-700"
                 >
                   Membership Type
+                  <span className="text-red-600"> *</span>
                 </label>
                 <select
                   id="type"
@@ -868,6 +871,7 @@ export default function AddMembers() {
                   className="block text-sm font-medium text-gray-700"
                 >
                   Total Amount
+                  <span className="text-red-600"> *</span>
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-3.5 text-gray-400 font-medium">
@@ -938,6 +942,7 @@ export default function AddMembers() {
                   className="block text-sm font-medium text-gray-700"
                 >
                   Amount Paid
+                  <span className="text-red-600"> *</span>
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-3.5 text-gray-400 font-medium">
@@ -996,6 +1001,7 @@ export default function AddMembers() {
                   className="block text-sm font-medium text-gray-700"
                 >
                   Payment Method
+                  <span className="text-red-600"> *</span>
                 </label>
                 <select
                   id="transaction_type"
@@ -1027,6 +1033,7 @@ export default function AddMembers() {
                   className="block text-sm font-medium text-gray-700"
                 >
                   Payment Date
+                  <span className="text-red-600"> *</span>
                 </label>
                 <input
                   id="payment_date"
