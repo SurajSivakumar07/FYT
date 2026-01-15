@@ -248,7 +248,7 @@ const SettingsPage = () => {
           </div>
         </div>
 
-        {/* Premium Reports Section */}
+        {/* Premium Reports Section
         {user?.role === "owner" && (
           <div className="mt-16 bg-white border border-gray-100 p-10">
             <div className="border-b border-gray-100 pb-6 mb-8">
@@ -313,7 +313,7 @@ const SettingsPage = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Toggle Edit Mode Button for Demo */}
         <div className="mt-8 flex justify-center">
